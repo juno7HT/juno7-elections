@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin électoral — Juno7 Elections</title>
+<style>
+body{
+  font-family:Arial,sans-serif;
+  background:#f4f6f9;
+  padding:40px;
+}
+.card{
+  background:#fff;
+  padding:25px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+  max-width:900px;
+}
+h2{margin-top:0}
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  margin-bottom:15px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-sizing:border-box;
+}
+button{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:6px;
+  cursor:pointer;
+}
+button:hover{background:#1d4ed8}
+#response{
+  padding:12px;
+  border-radius:8px;
+  background:#f3f4f6;
+  color:#111827;
+  font-size:14px;
+}
+.small{color:#666}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+@media (max-width:700px){
+  .row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Admin électoral — Saisie en cascade</h2>
+  <p class="small">Département → Commune → Section → Centre/BV → Candidat → Votes</p>
+
+  <label>Token admin</label>
+  <input type="password" id="token" placeholder="ADMIN_TOKEN">
+
+  <div class="row">
+    <div>
+      <label>Département</label>
+      <select id="deptSelect">
+        <option value="">Chargement...</option>
+      </select>
+    </div>
+    <div>
+      <label>Commune</label>
+      <select id="communeSelect" disabled>
+        <option value="">Choisir d'abord un département</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Section communale</label>
+      <select id="sectionSelect" disabled>
+        <option value="">Choisir d'abord une commune</option>
+      </select>
+    </div>
+    <div>
+      <label>Centre / BV / Code PV</label>
+      <select id="bvSelect" disabled>
+        <option value="">Choisir d'abord une section</option>
+      </select>
+    </div>
+  </div>
+
+  <label>Centre de vote</label>
+  <input id="centreVoteName" readonly>
+
+  <div class="row">
+    <div>
+      <label>BV</label>
+      <input id="bvNo" readonly>
+    </div>
+    <div>
+      <label>Code PV</label>
+      <input id="pvCode" readonly>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Candidat</label>
+      <select id="candidate">
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+        <option>E</option>
+      </select>
+    </div>
+    <div>
+      <label>Votes</label>
+      <input type="number" id="votes" min="0" value="0">
+    </div>
+  </div>
+
+  <button onclick="submitResults()">Envoyer</button>
+
+  <h3>Message</h3>
+  <div id="response">Prêt.</div>
+</div>
+
+<script>
+const deptSelect = document.getElementById("deptSelect");
+const communeSelect = document.getElementById("communeSelect");
+const sectionSelect = document.getElementById("sectionSelect");
+const bvSelect = document.getElementById("bvSelect");
+
+const centreVoteName = document.getElementById("centreVoteName");
+const bvNo = document.getElementById("bvNo");
+const pvCode = document.getElementById("pvCode");
+const responseBox = document.getElementById("response");
+
+function resetSelect(select, text, disabled=true){
+  select.innerHTML = `<option value="">${text}</option>`;
+  select.disabled = disabled;
+}
+
+function setMessage(text, ok=true){
+  responseBox.textContent = text;
+  responseBox.style.background = ok ? "#ecfdf5" : "#fef2f2";
+  responseBox.style.color = ok ? "#065f46" : "#991b1b";
+}
+
+async function getJSON(url){
+  const res = await fetch(url);
+  return res.json();
+}
+
+async function loadDepartments(){
+  const data = await getJSON("/api/electoral/departments");
+  if(!data.ok){
+    deptSelect.innerHTML = `<option value="">Erreur chargement</option>`;
+    return;
+  }
+
+  deptSelect.innerHTML = `<option value="">Choisir un département</option>`;
+  data.items.forEach(item=>{
+    deptSelect.innerHTML += `<option value="${item}">${item}</option>`;
+  });
+}
+
+deptSelect.addEventListener("change", async ()=>{
+  const dept = deptSelect.value;
+
+  resetSelect(communeSelect, "Chargement...", true);
+  resetSelect(sectionSelect, "Choisir d'abord une commune", true);
+  resetSelect(bvSelect, "Choisir d'abord une section", true);
+
+  centreVoteName.value = "";
+  bvNo.value = "";
+  pvCode.value = "";
+
+  if(!dept){
+    resetSelect(communeSelect, "Choisir d'abord un département", true);
+    return;
+  }
+
+  const data = await getJSON(`/api/electoral/communes?dept_name=${encodeURIComponent(dept)}`);
+
+  if(!data.ok){
+    resetSelect(communeSelect, "Erreur chargement communes", true);
+    return;
+  }
+
+  communeSelect.disabled = false;
+  communeSelect.innerHTML = `<option value="">Choisir une commune</option>`;
+  data.items.forEach(item=>{
+    communeSelect.innerHTML += `<option value="${item}">${item}</option>`;
+  });
+});
+
+communeSelect.addEventListener("change", async ()=>{
+  const dept = deptSelect.value;
+  const commune = communeSelect.value;
+
+  resetSelect(sectionSelect, "Chargement...", true);
+  resetSelect(bvSelect, "Choisir d'abord une section", true);
+
+  centreVoteName.value = "";
+  bvNo.value = "";
+  pvCode.value = "";
+
+  if(!dept || !commune){
+    resetSelect(sectionSelect, "Choisir d'abord une commune", true);
+    return;
+  }
+
+  const url = `/api/electoral/sections?dept_name=${encodeURIComponent(dept)}&commune_name=${encodeURIComponent(commune)}`;
+  const data = await getJSON(url);
+
+  if(!data.ok){
+    resetSelect(sectionSelect, "Erreur chargement sections", true);
+    return;
+  }
+
+  sectionSelect.disabled = false;
+  sectionSelect.innerHTML = `<option value="">Choisir une section</option>`;
+  data.items.forEach(item=>{
+    sectionSelect.innerHTML += `<option value="${item}">${item}</option>`;
+  });
+});
+
+sectionSelect.addEventListener("change", async ()=>{
+  const dept = deptSelect.value;
+  const commune = communeSelect.value;
+  const section = sectionSelect.value;
+
+  resetSelect(bvSelect, "Chargement...", true);
+
+  centreVoteName.value = "";
+  bvNo.value = "";
+  pvCode.value = "";
+
+  if(!dept || !commune || !section){
+    resetSelect(bvSelect, "Choisir d'abord une section", true);
+    return;
+  }
+
+  const url = `/api/electoral/bvs?dept_name=${encodeURIComponent(dept)}&commune_name=${encodeURIComponent(commune)}&section_name=${encodeURIComponent(section)}`;
+  const data = await getJSON(url);
+
+  if(!data.ok){
+    resetSelect(bvSelect, "Erreur chargement BV", true);
+    return;
+  }
+
+  bvSelect.disabled = false;
+  bvSelect.innerHTML = `<option value="">Choisir un centre / BV</option>`;
+  data.items.forEach((item, idx)=>{
+    const label = `${item.centre_vote_name || "Centre inconnu"} | BV ${item.bv_no || ""} | ${item.pv_code || ""}`;
+    bvSelect.innerHTML += `<option value="${idx}">${label}</option>`;
+  });
+
+  bvSelect.dataset.items = JSON.stringify(data.items);
+});
+
+bvSelect.addEventListener("change", ()=>{
+  const idx = bvSelect.value;
+  const items = JSON.parse(bvSelect.dataset.items || "[]");
+  const item = items[idx];
+
+  if(!item){
+    centreVoteName.value = "";
+    bvNo.value = "";
+    pvCode.value = "";
+    return;
+  }
+
+  centreVoteName.value = item.centre_vote_name || "";
+  bvNo.value = item.bv_no || "";
+  pvCode.value = item.pv_code || "";
+});
+
+function resetFormAfterSave(){
+  document.getElementById("votes").value = 0;
+  document.getElementById("candidate").selectedIndex = 0;
+
+  deptSelect.selectedIndex = 0;
+  resetSelect(communeSelect, "Choisir d'abord un département", true);
+  resetSelect(sectionSelect, "Choisir d'abord une commune", true);
+  resetSelect(bvSelect, "Choisir d'abord une section", true);
+
+  centreVoteName.value = "";
+  bvNo.value = "";
+  pvCode.value = "";
+}
+
+async function submitResults(){
+  const token = document.getElementById("token").value.trim();
+  const dept = deptSelect.value;
+  const commune = communeSelect.value;
+  const section = sectionSelect.value;
+  const centre = centreVoteName.value.trim();
+  const bv = bvNo.value.trim();
+  const pv = pvCode.value.trim();
+  const candidate = document.getElementById("candidate").value;
+  const votes = parseInt(document.getElementById("votes").value, 10);
+
+  if(!dept || !commune || !section){
+    setMessage("Choisis département, commune et section.", false);
+    return;
+  }
+
+  try{
+    const res = await fetch("/api/submit-electoral-result", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-admin-token": token
+      },
+      body: JSON.stringify({
+        election_id: "demo-2026",
+        dept_name: dept,
+        commune_name: commune,
+        section_name: section,
+        centre_vote_name: centre,
+        bv_no: bv,
+        pv_code: pv,
+        candidate,
+        votes
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.ok){
+      setMessage("✅ Données enregistrées avec succès");
+      resetFormAfterSave();
+    } else {
+      setMessage("❌ Erreur : " + (data.error || "inconnue"), false);
+    }
+  }catch(e){
+    setMessage("❌ Erreur réseau : " + e.message, false);
+  }
+}
+
+loadDepartments();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+        <div class="label">A (%)</div>
+        <div class="value" id="natA">—</div>
+      </div>
+      <div class="card" id="cardB">
+        <div class="label">B (%)</div>
+        <div class="value" id="natB">—</div>
+      </div>
+      <div class="card" id="cardC">
+        <div class="label">C (%)</div>
+        <div class="value" id="natC">—</div>
+      </div>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    (function () {
+      const statusEl = document.getElementById("status");
+      const liveDot  = document.getElementById("liveDot");
+      const liveTxt  = document.getElementById("liveTxt");
+
+      const natValidEl = document.getElementById("natValid");
+      const natAEl = document.getElementById("natA");
+      const natBEl = document.getElementById("natB");
+      const natCEl = document.getElementById("natC");
+      const cardValid = document.getElementById("cardValid");
+      const cardA = document.getElementById("cardA");
+      const cardB = document.getElementById("cardB");
+      const cardC = document.getElementById("cardC");
+
+      const setStatus = (txt) => { if (statusEl) statusEl.innerHTML = "<b>Statut :</b> " + txt; };
+      const setLive = (on, txt) => {
+        if (liveDot) liveDot.classList.toggle("live", !!on);
+        if (liveTxt) liveTxt.textContent = txt || (on ? "LIVE: connecté" : "LIVE: hors ligne");
+      };
+
+      if (!window.L) {
+        setStatus("❌ Leaflet non chargé (CDN bloqué ?)");
+        console.error("Leaflet (L) is not defined. CDN blocked?");
+        return;
+      }
+
+      const safeNum = (v) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
+      };
+      const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+      // --- Carte ---
+      setStatus("chargement de la carte…");
+      const map = L.map("map", { zoomControl: true }).setView([19.0, -72.7], 8);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(map);
+
+      // --- Noms FR ---
+      function getDeptName(props = {}) {
+        const FR_BY_ISO = {
+          "HT-AR": "Artibonite",
+          "HT-CE": "Centre",
+          "HT-GA": "Grand’Anse",
+          "HT-NI": "Nippes",
+          "HT-ND": "Nord",
+          "HT-NE": "Nord-Est",
+          "HT-NO": "Nord-Ouest",
+          "HT-OU": "Ouest",
+          "HT-SD": "Sud",
+          "HT-SE": "Sud-Est",
+        };
+        if (props.ISO_Code && FR_BY_ISO[props.ISO_Code]) return FR_BY_ISO[props.ISO_Code];
+        if (props.NAME && typeof props.NAME === "string") return props.NAME.replace(/\s*Department\s*$/i, "").trim();
+        const candidates = [props.NAME_1, props.name_1, props.ADM1_FR, props.ADM1_EN, props.name, props.NOM_DEP, props.DEPT].filter(Boolean);
+        if (candidates.length) return String(candidates[0]).trim();
+        return "Département";
+      }
+
+      // =========================
+      // DATA: alimentée par SSE /api/live
+      // =========================
+      let deptResults = {}; // { "HT-OU": { valid, candidates: {A,B,C} }, ... }
+      let geoLayer = null;
+
+      function pickWinner(candidatesObj) {
+        const entries = Object.entries(candidatesObj || {})
+          .map(([k, v]) => [String(k), safeNum(v)])
+          .sort((a, b) => b[1] - a[1]);
+        return entries.length ? { key: entries[0][0], votes: entries[0][1] } : null;
+      }
+
+      const CANDIDATE_COLORS = {
+        A: "#2563eb", // bleu
+        B: "#dc2626", // rouge
+        C: "#16a34a", // vert
+        D: "#7c3aed", // violet
+        E: "#ea580c", // orange
+      };
+
+      function hexToRgb(hex) {
+        const h = String(hex).replace("#", "").trim();
+        if (h.length !== 6) return { r: 100, g: 116, b: 139 };
+        return { r: parseInt(h.slice(0,2),16), g: parseInt(h.slice(2,4),16), b: parseInt(h.slice(4,6),16) };
+      }
+      function rgbToHex({ r, g, b }) {
+        const to2 = (n) => n.toString(16).padStart(2, "0");
+        return "#" + to2(r) + to2(g) + to2(b);
+      }
+      function mixHex(c1, c2, t) {
+        t = clamp01(t);
+        const a = hexToRgb(c1);
+        const b = hexToRgb(c2);
+        return rgbToHex({
+          r: Math.round(a.r + (b.r - a.r) * t),
+          g: Math.round(a.g + (b.g - a.g) * t),
+          b: Math.round(a.b + (b.b - a.b) * t),
+        });
+      }
+
+      function getDeptFillColor(props) {
+        const iso = props && props.ISO_Code ? props.ISO_Code : null;
+        const r = iso && deptResults[iso] ? deptResults[iso] : null;
+
+        if (!r || !r.candidates) return "#e2e8f0";
+
+        const valid = safeNum(r.valid);
+        const w = pickWinner(r.candidates);
+        if (!w || valid <= 0) return "#e2e8f0";
+
+        const base = CANDIDATE_COLORS[w.key] || "#64748b";
+        const pct = clamp01(w.votes / valid);
+
+        // Très clair -> couleur candidat selon % gagnant
+        return mixHex("#f8fafc", base, pct);
+      }
+
+      const baseStyle = { weight: 1.5, color: "#334155", fillOpacity: 0.85 };
+      const normalStyle = (feature) => {
+        const props = feature?.properties || {};
+        return { ...baseStyle, fillColor: getDeptFillColor(props) };
+      };
+      const hoverStyle = (feature) => {
+        const props = feature?.properties || {};
+        return { ...baseStyle, weight: 3, color: "#0f172a", fillColor: getDeptFillColor(props), fillOpacity: 1 };
+      };
+
+      // --- Charger GeoJSON ---
+      const GEO_URL = "/geo/HTI_ADM1.geojson";
+      setStatus("chargement des départements…");
+
+      fetch(GEO_URL, { cache: "no-store" })
+        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status + " " + r.statusText); return r.json(); })
+        .then((geo) => {
+          if (!geo || !geo.features || !geo.features.length) throw new Error("GeoJSON vide ou invalide");
+
+          geoLayer = L.geoJSON(geo, {
+            style: (feature) => normalStyle(feature),
+            onEachFeature: (feature, lyr) => {
+              const props = feature.properties || {};
+              const name = getDeptName(props);
+              const iso  = props.ISO_Code || "";
+
+              lyr.bindTooltip(name, { sticky: true });
+
+              lyr.on("mouseover", () => lyr.setStyle(hoverStyle(feature)));
+              lyr.on("mouseout",  () => geoLayer && geoLayer.resetStyle(lyr));
+
+              lyr.on("click", () => {
+                const r = deptResults[iso];
+                let html = `<strong>${name}</strong><br><small>${iso}</small>`;
+                if (r && r.candidates) {
+                  const valid = safeNum(r.valid);
+                  const w = pickWinner(r.candidates);
+                  const pct = valid && w ? Math.round((w.votes/valid)*1000)/10 : 0;
+                  html += `<hr style="border:0;border-top:1px solid #e5e7eb;margin:8px 0" />`;
+                  html += `Gagnant: <b>${w ? w.key : "—"}</b> (${pct}%)<br>`;
+                  html += `Votes valides: <b>${valid.toLocaleString("fr-FR")}</b><br>`;
+                }
+                lyr.bindPopup(html).openPopup();
+              });
+            },
+          }).addTo(map);
+
+          map.fitBounds(geoLayer.getBounds(), { padding: [10, 10] });
+          setStatus("✅ carte prête — en attente du LIVE…");
+        })
+        .catch((e) => {
+          console.error("GeoJSON error:", e);
+          setStatus("❌ erreur GeoJSON : " + e.message);
+          alert("Impossible de charger la carte des départements.\n\nDétail : " + e.message);
+        });
+
+      // =========================
+      // ✅ Animation compteurs (incrémentation) + flash
+      // =========================
+      function flash(el) {
+        if (!el) return;
+        el.classList.remove("flash");
+        void el.offsetWidth; // reflow
+        el.classList.add("flash");
+      }
+
+      function animateNumber(el, to, opts = {}) {
+        if (!el) return;
+        const from = safeNum(el.getAttribute("data-n") || 0);
+        const duration = opts.duration || 650;
+        const start = performance.now();
+
+        function step(now) {
+          const t = Math.min(1, (now - start) / duration);
+          const v = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3))); // easeOutCubic
+          el.textContent = v.toLocaleString("fr-FR");
+          el.setAttribute("data-n", String(v));
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function setPct(el, pct) {
+        if (!el) return;
+        const val = Number(pct);
+        const from = Number(el.getAttribute("data-p") || 0);
+        const duration = 650;
+        const start = performance.now();
+
+        function step(now) {
+          const t = Math.min(1, (now - start) / duration);
+          const v = (from + (val - from) * (1 - Math.pow(1 - t, 3)));
+          const out = Math.round(v * 10) / 10;
+          el.textContent = out.toFixed(1) + "%";
+          el.setAttribute("data-p", String(out));
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      // =========================
+      // ✅ SSE LIVE: /api/live
+      // =========================
+      function connectLive() {
+        setLive(false, "LIVE: connexion…");
+        let es;
+
+        try {
+          es = new EventSource("/api/live");
+        } catch (e) {
+          console.error("EventSource failed:", e);
+          setLive(false, "LIVE: indisponible (navigateur?)");
+          return;
+        }
+
+        es.onopen = () => {
+          setLive(true, "LIVE: connecté");
+        };
+
+        es.onerror = () => {
+          setLive(false, "LIVE: coupé (reconnexion…)");
+
+          // tentative de reconnexion douce
+          try { es.close(); } catch {}
+          setTimeout(connectLive, 1500);
+        };
+
+        es.onmessage = (evt) => {
+          let payload;
+          try { payload = JSON.parse(evt.data); } catch { return; }
+
+          // 1) Résultats départements -> recoloration
+          if (payload.departments) {
+            deptResults = payload.departments;
+            if (geoLayer) geoLayer.setStyle(normalStyle);
+          }
+
+          // 2) National -> animation + flash
+          if (payload.national) {
+            const valid = safeNum(payload.national.valid);
+            animateNumber(natValidEl, valid);
+            flash(cardValid);
+
+            const pct = payload.national.pct || {};
+            setPct(natAEl, pct.A ?? 0); flash(cardA);
+            setPct(natBEl, pct.B ?? 0); flash(cardB);
+            setPct(natCEl, pct.C ?? 0); flash(cardC);
+          }
+        };
+      }
+
+      // Ping API
+      fetch("/health", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((j) => console.log("API /health:", j))
+        .catch(() => console.warn("API /health unreachable"));
+
+      // Start LIVE
+      connectLive();
+    })();
+  </script>
+</body>
+</html>
+HTML

@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juno7 Elections</title>
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --border:#e2e8f0;
+      --card:#ffffff;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+    }
+    body { margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text); }
+    header{
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+      position:sticky; top:0; background:var(--bg); z-index:1000;
+    }
+    .brand{ font-weight:800; }
+    .live{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:13px; color:var(--muted);
+      padding:6px 10px; border:1px solid var(--border); border-radius:999px;
+      background: #f8fafc;
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; background:#94a3b8; }
+    .dot.on{ background:var(--ok); box-shadow:0 0 0 4px rgba(22,163,74,.15); }
+    #status { font-size: 13px; color:var(--muted); }
+    #status b { color:var(--text); }
+
+    .cards{ margin-left:auto; display:flex; gap:10px; flex-wrap:wrap; }
+    .card{
+      min-width:110px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:8px 10px;
+      background:var(--card);
+    }
+    .card .k{ font-size:12px; color:var(--muted); }
+    .card .v{ font-size:18px; font-weight:800; margin-top:2px; }
+
+    #map { height: calc(100vh - 64px); }
+
+    .leaflet-popup-content-wrapper { border-radius: 14px; }
+    .leaflet-popup-content { margin: 12px 14px; font-size: 14px; }
+    .leaflet-interactive { outline: none !important; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <span class="brand">Juno7 Elections</span>
+
+    <span class="live" id="liveBadge">
+      <span class="dot" id="liveDot"></span>
+      <span id="liveText">LIVE : connexion…</span>
+    </span>
+
+    <span id="status"><b>Statut :</b> initialisation…</span>
+
+    <div class="cards">
+      <div class="card"><div class="k">Votes valides</div><div class="v" id="kpiValid">—</div></div>
+      <div class="card"><div class="k">A (%)</div><div class="v" id="kpiA">—</div></div>
+      <div class="card"><div class="k">B (%)</div><div class="v" id="kpiB">—</div></div>
+      <div class="card"><div class="k">C (%)</div><div class="v" id="kpiC">—</div></div>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    (function () {
+      const statusEl = document.getElementById("status");
+      const setStatus = (txt) => { if (statusEl) statusEl.innerHTML = "<b>Statut :</b> " + txt; };
+
+      const liveDot  = document.getElementById("liveDot");
+      const liveText = document.getElementById("liveText");
+      const setLive = (ok, txt) => {
+        if (liveDot) liveDot.classList.toggle("on", !!ok);
+        if (liveText) liveText.textContent = txt || (ok ? "LIVE : connecté" : "LIVE : hors ligne");
+      };
+
+      const kpiValid = document.getElementById("kpiValid");
+      const kpiA = document.getElementById("kpiA");
+      const kpiB = document.getElementById("kpiB");
+      const kpiC = document.getElementById("kpiC");
+
+      if (!window.L) {
+        setStatus("❌ Leaflet non chargé (CDN bloqué ?)");
+        console.error("Leaflet (L) is not defined.");
+        return;
+      }
+
+      const safeNum = (v) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
+      };
+      const clamp01 = (x) => Math.max(0, Math.min(1, x));
+      const fmtInt = (n) => new Intl.NumberFormat("fr-FR").format(Math.round(safeNum(n)));
+      const fmtPct = (x) => (Math.round(clamp01(x) * 1000) / 10).toFixed(1) + "%";
+
+      function getDeptName(props = {}) {
+        const FR_BY_ISO = {
+          "HT-AR": "Artibonite",
+          "HT-CE": "Centre",
+          "HT-GA": "Grand’Anse",
+          "HT-NI": "Nippes",
+          "HT-ND": "Nord",
+          "HT-NE": "Nord-Est",
+          "HT-NO": "Nord-Ouest",
+          "HT-OU": "Ouest",
+          "HT-SD": "Sud",
+          "HT-SE": "Sud-Est",
+        };
+        if (props.ISO_Code && FR_BY_ISO[props.ISO_Code]) return FR_BY_ISO[props.ISO_Code];
+
+        const candidates = [
+          props.NAME_1, props.name_1, props.ADM1_FR, props.ADM1_EN,
+          props.NAME, props.name, props.NOM_DEP, props.DEPT
+        ].filter(Boolean);
+
+        if (candidates.length) return String(candidates[0]).replace(/\s*Department\s*$/i, "").trim();
+        return "Département";
+      }
+
+      // Carte
+      setStatus("chargement de la carte…");
+      const map = L.map("map", { zoomControl: true }).setView([19.0, -72.7], 8);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(map);
+
+      // =======================
+      // RESULTS STATE (from API)
+      // /api/results returns:
+      // { "HT-OU": { winner:"A", winnerPct:0.64, total:15000, byCandidate:{A:9600,B:5400} }, ... }
+      // =======================
+      let deptResults = {};
+      let geoLayer = null;
+
+      const CANDIDATE_COLORS = {
+        A: "#2563eb", // bleu
+        B: "#dc2626", // rouge
+        C: "#16a34a", // vert
+        D: "#7c3aed", // violet
+        E: "#ea580c", // orange
+      };
+
+      function hexToRgb(hex) {
+        const h = String(hex).replace("#", "").trim();
+        if (h.length !== 6) return { r: 100, g: 116, b: 139 };
+        return {
+          r: parseInt(h.slice(0, 2), 16),
+          g: parseInt(h.slice(2, 4), 16),
+          b: parseInt(h.slice(4, 6), 16),
+        };
+      }
+      function rgbToHex({ r, g, b }) {
+        const to2 = (n) => n.toString(16).padStart(2, "0");
+        return "#" + to2(r) + to2(g) + to2(b);
+      }
+      function mixHex(c1, c2, t) {
+        t = clamp01(t);
+        const a = hexToRgb(c1);
+        const b = hexToRgb(c2);
+        return rgbToHex({
+          r: Math.round(a.r + (b.r - a.r) * t),
+          g: Math.round(a.g + (b.g - a.g) * t),
+          b: Math.round(a.b + (b.b - a.b) * t),
+        });
+      }
+
+      function getFillColorByIso(iso) {
+        const r = iso && deptResults[iso] ? deptResults[iso] : null;
+        if (!r || !r.winner) return "#e2e8f0"; // pas de data
+
+        const base = CANDIDATE_COLORS[r.winner] || "#64748b";
+        const pct = clamp01(safeNum(r.winnerPct));
+        const veryLight = "#f8fafc";
+        // intensité: 0.45..1.0 (évite trop pâle)
+        const t = clamp01(0.45 + pct * 0.55);
+        return mixHex(veryLight, base, t);
+      }
+
+      const baseStyle = {
+        weight: 2,
+        color: "#0f172a",
+        opacity: 1,
+        fillOpacity: 0.85
+      };
+
+      function normalStyle(feature) {
+        const props = feature?.properties || {};
+        const iso = props.ISO_Code || "";
+        return {
+          ...baseStyle,
+          fillColor: getFillColorByIso(iso),
+        };
+      }
+
+      function hoverStyle(feature) {
+        const props = feature?.properties || {};
+        const iso = props.ISO_Code || "";
+        return {
+          ...baseStyle,
+          weight: 3,
+          color: "#000000",
+          fillColor: getFillColorByIso(iso),
+          fillOpacity: 1
+        };
+      }
+
+      function buildPopupHTML(props) {
+        const name = getDeptName(props);
+        const iso  = props.ISO_Code || "";
+        const r = iso && deptResults[iso] ? deptResults[iso] : null;
+
+        if (!r) {
+          return `<strong>${name}</strong><br><small>${iso}</small><br><em>Aucun résultat</em>`;
+        }
+
+        const winner = r.winner || "—";
+        const pct = fmtPct(r.winnerPct);
+        const total = fmtInt(r.total || 0);
+
+        // détail top 2 (si dispo)
+        let detail = "";
+        const by = r.byCandidate || {};
+        const entries = Object.entries(by).map(([k,v]) => [k, safeNum(v)]).sort((a,b)=>b[1]-a[1]);
+        if (entries.length) {
+          detail = "<div style='margin-top:8px; font-size:13px; color:#334155'>";
+          for (const [k,v] of entries.slice(0,3)) {
+            detail += `<div>${k}: <b>${fmtInt(v)}</b></div>`;
+          }
+          detail += "</div>";
+        }
+
+        return `
+          <strong>${name}</strong><br>
+          <small>${iso}</small>
+          <div style="margin-top:8px">
+            Gagnant: <b>${winner}</b> (${pct})<br>
+            Votes: <b>${total}</b>
+          </div>
+          ${detail}
+        `;
+      }
+
+      function refreshLayerStyles() {
+        if (!geoLayer) return;
+        geoLayer.setStyle(normalStyle);
+      }
+
+      function updateKPIsFromResults() {
+        // agrège sur tous les départements
+        let valid = 0;
+        const sums = { A:0, B:0, C:0 };
+
+        for (const iso of Object.keys(deptResults || {})) {
+          const r = deptResults[iso];
+          valid += safeNum(r.total);
+          const by = r.byCandidate || {};
+          sums.A += safeNum(by.A);
+          sums.B += safeNum(by.B);
+          sums.C += safeNum(by.C);
+        }
+
+        if (kpiValid) kpiValid.textContent = valid ? fmtInt(valid) : "—";
+
+        const denom = valid > 0 ? valid : 0;
+        if (kpiA) kpiA.textContent = denom ? fmtPct(sums.A/denom) : "—";
+        if (kpiB) kpiB.textContent = denom ? fmtPct(sums.B/denom) : "—";
+        if (kpiC) kpiC.textContent = denom ? fmtPct(sums.C/denom) : "—";
+      }
+
+      // GeoJSON
+      const GEO_URL = "/geo/HTI_ADM1.geojson";
+      setStatus("chargement des départements…");
+
+      fetch(GEO_URL, { cache: "no-store" })
+        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then((geo) => {
+          geoLayer = L.geoJSON(geo, {
+            style: normalStyle,
+            onEachFeature: (feature, lyr) => {
+              const props = feature.properties || {};
+              const name = getDeptName(props);
+
+              lyr.bindTooltip(name, { sticky: true });
+
+              // popup dynamique (on le met à jour quand on clique)
+              lyr.on("click", () => {
+                lyr.bindPopup(buildPopupHTML(props)).openPopup();
+              });
+
+              lyr.on("mouseover", () => lyr.setStyle(hoverStyle(feature)));
+              lyr.on("mouseout",  () => geoLayer.resetStyle(lyr));
+            },
+          }).addTo(map);
+
+          map.fitBounds(geoLayer.getBounds(), { padding: [10, 10] });
+          setStatus("✅ carte prête — en attente du LIVE…");
+
+          // lance le live fetch
+          startLive();
+        })
+        .catch((e) => {
+          console.error("GeoJSON error:", e);
+          setStatus("❌ erreur GeoJSON : " + e.message);
+          alert("Impossible de charger la carte.\n\nDétail : " + e.message);
+        });
+
+      async function fetchResults() {
+        try {
+          const r = await fetch("/api/results", { cache: "no-store" });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const j = await r.json();
+
+          if (!j || typeof j !== "object") throw new Error("Réponse invalide");
+          deptResults = j;
+
+          refreshLayerStyles();
+          updateKPIsFromResults();
+
+          setLive(true, "LIVE : connecté");
+          setStatus("✅ carte prête — résultats mis à jour");
+          return true;
+        } catch (err) {
+          console.warn("fetchResults:", err);
+          setLive(false, "LIVE : hors ligne");
+          setStatus("⚠️ en attente des résultats…");
+          return false;
+        }
+      }
+
+      function startLive() {
+        // 1er fetch immédiat
+        fetchResults();
+
+        // animation / refresh toutes les 3s
+        setInterval(() => {
+          // petit “pulse” visuel même si rien ne change
+          if (liveDot) liveDot.classList.toggle("on", liveDot.classList.contains("on"));
+          fetchResults();
+        }, 3000);
+      }
+
+      // sanity /health
+      fetch("/health", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((j) => console.log("API /health:", j))
+        .catch(() => console.warn("API /health unreachable"));
+    })();
+  </script>
+</body>
+</html>
+HTML

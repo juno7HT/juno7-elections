@@ -1,0 +1,22 @@
+"use strict";
+
+const path = require("path");
+const fastify = require("fastify")({ logger: true });
+
+fastify.register(require("@fastify/static"), {
+  root: path.join(__dirname, "frontend"),
+  prefix: "/",
+});
+
+fastify.get("/health", async () => ({ ok: true }));
+
+fastify.get("/", async (req, reply) => {
+  return reply.sendFile("index.html");
+});
+
+const port = Number(process.env.PORT || 3000);
+
+fastify.listen({ port, host: "0.0.0.0" }).catch((err) => {
+  fastify.log.error(err);
+  process.exit(1);
+});

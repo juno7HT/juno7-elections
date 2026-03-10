@@ -1,0 +1,99 @@
+require("dotenv").config();
+
+const path = require("path");
+const Fastify = require("fastify");
+const cors = require("@fastify/cors");
+const rateLimit = require("@fastify/rate-limit");
+const fastifyStatic = require("@fastify/static");
+const { Pool } = require("pg");
+
+const app = Fastify({ logger: true });
+
+app.register(cors, { origin: true });
+app.register(rateLimit, { max: 200, timeWindow: "1 minute" });
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+// -----------------------------
+// API
+// -----------------------------
+app.get("/health", async () => ({ ok: true }));
+
+app.get("/db", async () => {
+  const r = await pool.query("SELECT NOW() as now");
+  return { db: "ok", now: r.rows[0].now };
+});
+
+app.get("/votes", async () => {
+// --- Résultats par département (TEST)
+app.get("/results/departments", async () => {
+  return {
+    items: [
+      { iso: "HT-OU", winner: "Candidat A", winner_pct: 62 },
+      { iso: "HT-AR", winner: "Candidat B", winner_pct: 55 },
+      { iso: "HT-ND", winner: "Candidat A", winner_pct: 71 },
+      { iso: "HT-SD", winner: "Candidat C", winner_pct: 51 },
+      { iso: "HT-SE", winner: "Candidat A", winner_pct: 66 },
+      { iso: "HT-NE", winner: "Candidat B", winner_pct: 59 },
+      { iso: "HT-NO", winner: "Candidat A", winner_pct: 60 },
+      { iso: "HT-CE", winner: "Candidat C", winner_pct: 53 },
+      { iso: "HT-GA", winner: "Candidat B", winner_pct: 56 },
+      { iso: "HT-NI", winner: "Candidat A", winner_pct: 52 }
+    ]
+  };
+});
+
+  const r = await pool.query(
+    "SELECT id, candidate, created_at FROM votes ORDER BY id DESC LIMIT 50"
+  );
+  return r.rows;
+});
+
+/**
+ * ✅ NOUVEAU: Résultats par département
+ * Format attendu côté frontend:
+ * {
+ *   "HT-OU": { winner: "A", winnerPct: 0.62, total: 12000, byCandidate: { A: 7440, B: 4560 } },
+ *   ...
+ * }
+ *
+ * Version DEMO (statique) : on met des valeurs fake.
+ * Ensuite, à l'étape suivante, on branchera sur ta DB.
+ */
+app.get("/api/results", async () => {
+  return {
+    "HT-AR": { winner: "A", winnerPct: 0.58, total: 10000, byCandidate: { A: 5800, B: 4200 } },
+    "HT-CE": { winner: "B", winnerPct: 0.52, total: 8000,  byCandidate: { A: 3840, B: 4160 } },
+    "HT-GA": { winner: "A", winnerPct: 0.67, total: 6000,  byCandidate: { A: 4020, B: 1980 } },
+    "HT-NI": { winner: "B", winnerPct: 0.55, total: 5000,  byCandidate: { A: 2250, B: 2750 } },
+    "HT-ND": { winner: "A", winnerPct: 0.61, total: 9000,  byCandidate: { A: 5490, B: 3510 } },
+    "HT-NE": { winner: "A", winnerPct: 0.53, total: 4000,  byCandidate: { A: 2120, B: 1880 } },
+    "HT-NO": { winner: "B", winnerPct: 0.57, total: 4500,  byCandidate: { A: 1935, B: 2565 } },
+    "HT-OU": { winner: "A", winnerPct: 0.64, total: 15000, byCandidate: { A: 9600, B: 5400 } },
+    "HT-SD": { winner: "B", winnerPct: 0.51, total: 7000,  byCandidate: { A: 3430, B: 3570 } },
+    "HT-SE": { winner: "A", winnerPct: 0.56, total: 3500,  byCandidate: { A: 1960, B: 1540 } },
+  };
+});
+
+// -----------------------------
+// Frontend (sert /frontend/index.html sur /)
+// -----------------------------
+app.register(fastifyStatic, {
+  root: path.join(__dirname, "frontend"),
+  prefix: "/",
+});
+
+app.get("/", async (req, reply) => {
+  return reply.sendFile("index.html");
+});
+
+// -----------------------------
+// Start server
+// -----------------------------
+const port = Number(process.env.PORT || 3000);
+app.listen({ port, host: "0.0.0.0" }).catch((err) => {
+  app.log.error(err);
+  process.exit(1);
+});

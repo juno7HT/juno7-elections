@@ -1,0 +1,13 @@
+dept_name,commune_name,section_name,centre_vote_name,bv_no,pv_code,source_doc,is_active
+Artibonite,Gros Morne,2eme Sect. Bossous,Ecole Nationale Bossous,1,PV-A01,Elections 2017 PV ecartes,true
+Artibonite,Gros Morne,2eme Sect. Bossous,Ecole Nationale Bossous,2,PV-A02,Elections 2017 PV ecartes,true
+Artibonite,Gros Morne,1ere Sect. Ville,Ecole Nationale Gros Morne,1,PV-A03,Elections 2017 PV ecartes,true
+Centre,Hinche,1ere Sect. Villars,Ecole Nationale Villars,1,PV-C01,Elections 2017 PV ecartes,true
+Centre,Hinche,1ere Sect. Villars,Ecole Nationale Villars,2,PV-C02,Elections 2017 PV ecartes,true
+Grand'Anse,Jeremie,1ere Sect. Ville,Lycee Nord Alexis,1,PV-G01,Elections 2017 PV ecartes,true
+Grand'Anse,Jeremie,1ere Sect. Ville,Lycee Nord Alexis,2,PV-G02,Elections 2017 PV ecartes,true
+Ouest,Port-au-Prince,1ere Sect. Turgeau,Ecole Nationale Turgeau,1,PV-O01,Elections 2017 PV ecartes,true
+Ouest,Port-au-Prince,1ere Sect. Turgeau,Ecole Nationale Turgeau,2,PV-O02,Elections 2017 PV ecartes,true
+Ouest,Delmas,1ere Sect. Ville,Ecole Nationale Delmas,1,PV-O03,Elections 2017 PV ecartes,true
+Ouest,Delmas,1ere Sect. Ville,Ecole Nationale Delmas,2,PV-O04,Elections 2017 PV ecartes,true
+Ouest,Carrefour,1ere Sect. Ville,Lycee Carrefour,1,PV-O05,Elections 2017 PV ecartes,true

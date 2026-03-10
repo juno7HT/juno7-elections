@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juno7 Elections — Communes</title>
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  />
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --border:#e2e8f0;
+      --card:#ffffff;
+      --ok:#16a34a;
+    }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:12px 16px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      gap:14px;
+      align-items:center;
+      flex-wrap:wrap;
+      position:sticky;
+      top:0;
+      background:var(--bg);
+      z-index:1000;
+    }
+    .brand{ font-weight:800; }
+    .live{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      color:var(--muted);
+      padding:6px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#f8fafc;
+    }
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:#94a3b8;
+    }
+    .dot.on{
+      background:var(--ok);
+      box-shadow:0 0 0 4px rgba(22,163,74,.15);
+    }
+
+    #status{
+      font-size:13px;
+      color:var(--muted);
+    }
+    #status b{ color:var(--text); }
+
+    .navlinks{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+    .navlinks a{
+      font-size:13px;
+      text-decoration:none;
+      color:#2563eb;
+      border:1px solid var(--border);
+      padding:6px 10px;
+      border-radius:999px;
+      background:#f8fafc;
+    }
+
+    #map{
+      height:calc(100vh - 64px);
+    }
+
+    .leaflet-popup-content-wrapper{ border-radius:14px; }
+    .leaflet-popup-content{ margin:12px 14px; font-size:14px; }
+    .leaflet-interactive{ outline:none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="brand">Juno7 Elections — Communes</span>
+
+    <span class="live">
+      <span class="dot" id="liveDot"></span>
+      <span id="liveText">LIVE : connexion…</span>
+    </span>
+
+    <span id="status"><b>Statut :</b> chargement de la carte communes…</span>
+
+    <div class="navlinks">
+      <a href="/">Carte départements</a>
+      <a href="/admin-electoral">Tableau de bord</a>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <script>
+    (function () {
+      const statusEl = document.getElementById("status");
+      const liveDot = document.getElementById("liveDot");
+      const liveText = document.getElementById("liveText");
+
+      const setStatus = (txt) => {
+        if (statusEl) statusEl.innerHTML = "<b>Statut :</b> " + txt;
+      };
+
+      const setLive = (ok, txt) => {
+        if (liveDot) liveDot.classList.toggle("on", !!ok);
+        if (liveText) liveText.textContent = txt || (ok ? "LIVE : connecté" : "LIVE : hors ligne");
+      };
+
+      if (!window.L) {
+        setStatus("❌ Leaflet non chargé");
+        return;
+      }
+
+      const safeNum = (v) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
+      };
+
+      const clamp01 = (x) => Math.max(0, Math.min(1, x));
+      const fmtInt = (n) => new Intl.NumberFormat("fr-FR").format(Math.round(safeNum(n)));
+      const fmtPct = (x) => (Math.round(clamp01(x) * 1000) / 10).toFixed(1) + "%";
+
+      const communeResults = {};
+
+      const CANDIDATE_COLORS = {
+        A: "#2563eb",
+        B: "#dc2626",
+        C: "#16a34a",
+        D: "#7c3aed",
+        E: "#ea580c",
+      };
+
+      function hexToRgb(hex) {
+        const h = String(hex).replace("#", "").trim();
+        if (h.length !== 6) return { r: 100, g: 116, b: 139 };
+        return {
+          r: parseInt(h.slice(0, 2), 16),
+          g: parseInt(h.slice(2, 4), 16),
+          b: parseInt(h.slice(4, 6), 16),
+        };
+      }
+
+      function rgbToHex({ r, g, b }) {
+        const to2 = (n) => n.toString(16).padStart(2, "0");
+        return "#" + to2(r) + to2(g) + to2(b);
+      }
+
+      function mixHex(c1, c2, t) {
+        t = clamp01(t);
+        const a = hexToRgb(c1);
+        const b = hexToRgb(c2);
+        return rgbToHex({
+          r: Math.round(a.r + (b.r - a.r) * t),
+          g: Math.round(a.g + (b.g - a.g) * t),
+          b: Math.round(a.b + (b.b - a.b) * t),
+        });
+      }
+
+      function normalizeName(s) {
+        return String(s || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[’']/g, "")
+          .replace(/-/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLowerCase();
+      }
+
+      function getFillColorByName(communeName) {
+        const key = normalizeName(communeName);
+        const r = communeResults[key] || null;
+        if (!r || !r.winner) return "#e2e8f0";
+
+        const base = CANDIDATE_COLORS[r.winner] || "#64748b";
+        const pct = clamp01(safeNum(r.winnerPct));
+        return mixHex("#f8fafc", base, clamp01(0.45 + pct * 0.55));
+      }
+
+      function buildPopupHTML(props) {
+        const communeName = props.shapeName || "Commune";
+        const key = normalizeName(communeName);
+        const r = communeResults[key] || null;
+
+        if (!r) {
+          return `<strong>${communeName}</strong><br><em>Aucun résultat</em>`;
+        }
+
+        const winner = r.winner || "—";
+        const pct = fmtPct(r.winnerPct);
+        const total = fmtInt(r.total || 0);
+
+        let detail = "";
+        const entries = Object.entries(r.byCandidate || {}).sort((a, b) => safeNum(b[1]) - safeNum(a[1]));
+        if (entries.length) {
+          detail = "<div style='margin-top:8px; font-size:13px; color:#334155'>";
+          for (const [k, v] of entries.slice(0, 5)) {
+            detail += `<div>${k}: <b>${fmtInt(v)}</b></div>`;
+          }
+          detail += "</div>";
+        }
+
+        return `
+          <strong>${communeName}</strong>
+          <div style="margin-top:8px">
+            Gagnant: <b>${winner}</b> (${pct})<br>
+            Votes: <b>${total}</b>
+          </div>
+          ${detail}
+        `;
+      }
+
+      async function loadCommuneResults() {
+        try {
+          const res = await fetch("/api/results/communes", { cache: "no-store" });
+          const data = await res.json();
+
+          if (!data.ok || !Array.isArray(data.items)) {
+            setLive(false, "LIVE : hors ligne");
+            setStatus("⚠️ résultats communes indisponibles");
+            return;
+          }
+
+          Object.keys(communeResults).forEach(k => delete communeResults[k]);
+
+          for (const row of data.items) {
+            const key = normalizeName(row.commune_name);
+            const candidate = String(row.candidate || "").trim().toUpperCase();
+            const votes = safeNum(row.total_votes);
+
+            if (!communeResults[key]) {
+              communeResults[key] = {
+                commune_name: row.commune_name,
+                total: 0,
+                byCandidate: {},
+                winner: "",
+                winnerPct: 0
+              };
+            }
+
+            communeResults[key].byCandidate[candidate] = votes;
+            communeResults[key].total += votes;
+          }
+
+          for (const key of Object.keys(communeResults)) {
+            const item = communeResults[key];
+            let winner = "";
+            let winnerVotes = -1;
+
+            for (const [cand, votes] of Object.entries(item.byCandidate)) {
+              if (safeNum(votes) > winnerVotes) {
+                winnerVotes = safeNum(votes);
+                winner = cand;
+              }
+            }
+
+            item.winner = winner;
+            item.winnerPct = item.total > 0 ? winnerVotes / item.total : 0;
+          }
+
+          setLive(true, "LIVE : connecté");
+          setStatus("✅ résultats communes mis à jour");
+
+          if (window._geoLayer) {
+            window._geoLayer.setStyle(styleFn);
+          }
+        } catch (err) {
+          console.error(err);
+          setLive(false, "LIVE : hors ligne");
+          setStatus("⚠️ erreur chargement résultats communes");
+        }
+      }
+
+      const map = L.map("map", { zoomControl: true }).setView([19.0, -72.7], 8);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(map);
+
+      const styleFn = (feature) => {
+        const props = feature?.properties || {};
+        const communeName = props.shapeName || "";
+        return {
+          weight: 1,
+          color: "#0f172a",
+          opacity: 1,
+          fillOpacity: 0.8,
+          fillColor: getFillColorByName(communeName)
+        };
+      };
+
+      fetch("/geo/HTI_COMMUNES.geojson", { cache: "no-store" })
+        .then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then((geo) => {
+          const geoLayer = L.geoJSON(geo, {
+            style: styleFn,
+            onEachFeature: (feature, layer) => {
+              const props = feature.properties || {};
+              const name = props.shapeName || "Commune";
+
+              layer.bindTooltip(name, { sticky: true });
+
+              layer.on("click", () => {
+                layer.bindPopup(buildPopupHTML(props)).openPopup();
+              });
+
+              layer.on("mouseover", () => {
+                layer.setStyle({
+                  weight: 2,
+                  color: "#000000",
+                  fillOpacity: 1,
+                  fillColor: getFillColorByName(props.shapeName || "")
+                });
+              });
+
+              layer.on("mouseout", () => {
+                geoLayer.resetStyle(layer);
+              });
+            }
+          }).addTo(map);
+
+          window._geoLayer = geoLayer;
+
+          map.fitBounds(geoLayer.getBounds(), { padding: [10, 10] });
+          setStatus("✅ carte communes prête");
+
+          loadCommuneResults();
+          setInterval(loadCommuneResults, 3000);
+        })
+        .catch((e) => {
+          console.error(e);
+          setLive(false, "LIVE : hors ligne");
+          setStatus("❌ erreur GeoJSON communes : " + e.message);
+        });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+require("dotenv").config();
+
+const path = require("path");
+const Fastify = require("fastify");
+const fastifyStatic = require("@fastify/static");
+const { Pool } = require("pg");
+
+const app = Fastify({ logger: true });
+
+const PORT = Number(process.env.PORT || 3000);
+const DATABASE_URL = process.env.DATABASE_URL || "";
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "123456";
+
+const pool = new Pool({
+  connectionString: DATABASE_URL,
+});
+
+const DEMO_RESULTS = {
+  "HT-AR": { winner: "A", winnerPct: 0.58, total: 10000, byCandidate: { A: 5800, B: 4200 } },
+  "HT-CE": { winner: "B", winnerPct: 0.52, total: 8000, byCandidate: { A: 3840, B: 4160 } },
+  "HT-GA": { winner: "A", winnerPct: 0.67, total: 6000, byCandidate: { A: 4020, B: 1980 } },
+  "HT-NI": { winner: "B", winnerPct: 0.55, total: 5000, byCandidate: { A: 2250, B: 2750 } },
+  "HT-ND": { winner: "A", winnerPct: 0.61, total: 9000, byCandidate: { A: 5490, B: 3510 } },
+  "HT-NE": { winner: "A", winnerPct: 0.53, total: 4000, byCandidate: { A: 2120, B: 1880 } },
+  "HT-NO": { winner: "B", winnerPct: 0.57, total: 4500, byCandidate: { A: 1935, B: 2565 } },
+  "HT-OU": { winner: "A", winnerPct: 0.64, total: 15000, byCandidate: { A: 9600, B: 5400 } },
+  "HT-SD": { winner: "B", winnerPct: 0.51, total: 7000, byCandidate: { A: 3430, B: 3570 } },
+  "HT-SE": { winner: "A", winnerPct: 0.56, total: 3500, byCandidate: { A: 1960, B: 1540 } },
+};
+
+app.register(fastifyStatic, {
+  root: path.join(__dirname, "frontend"),
+  prefix: "/",
+});
+
+async function ensureSchema() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS results_department (
+      id SERIAL PRIMARY KEY,
+      dept_iso TEXT NOT NULL,
+      candidate TEXT NOT NULL,
+      votes INTEGER NOT NULL DEFAULT 0,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (dept_iso, candidate)
+    );
+  `);
+}
+
+function buildMapResults(rows) {
+  const byDept = {};
+
+  for (const row of rows) {
+    const dept = String(row.dept_iso).trim().toUpperCase();
+    const cand = String(row.candidate).trim().toUpperCase();
+    const votes = Number(row.votes) || 0;
+
+    if (!byDept[dept]) {
+      byDept[dept] = {
+        total: 0,
+        byCandidate: {},
+      };
+    }
+
+    byDept[dept].byCandidate[cand] = votes;
+    byDept[dept].total += votes;
+  }
+
+  const out = {};
+
+  for (const [dept, data] of Object.entries(byDept)) {
+    let winner = "";
+    let winnerVotes = -1;
+
+    for (const [cand, votes] of Object.entries(data.byCandidate)) {
+      if (votes > winnerVotes) {
+        winnerVotes = votes;
+        winner = cand;
+      }
+    }
+
+    out[dept] = {
+      winner,
+      winnerPct: data.total > 0 ? Number((winnerVotes / data.total).toFixed(4)) : 0,
+      total: data.total,
+      byCandidate: data.byCandidate,
+    };
+  }
+
+  return out;
+}
+
+app.get("/health", async () => ({ ok: true }));
+
+app.get("/", async (req, reply) => {
+  return reply.sendFile("index.html");
+});
+
+app.get("/admin", async (req, reply) => {
+  return reply.sendFile("admin.html");
+});
+
+app.get("/demo", async (req, reply) => {
+  return reply.sendFile("demo.html");
+});
+
+app.get("/demo/brief", async (req, reply) => {
+  return reply.sendFile("demo/brief.pdf");
+});
+
+app.get("/stream", async (req, reply) => {
+  reply.raw.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+
+  const interval = setInterval(() => {
+    reply.raw.write(`data: ${JSON.stringify({ time: Date.now() })}\n\n`);
+  }, 5000);
+
+  req.raw.on("close", () => {
+    clearInterval(interval);
+  });
+});
+
+app.get("/votes", async () => {
+  try {
+    const r = await pool.query(
+      "SELECT id, candidate, created_at FROM votes ORDER BY id DESC LIMIT 50"
+    );
+    return r.rows;
+  } catch (err) {
+    return [];
+  }
+});
+
+app.get("/api/results", async () => {
+  try {
+    const r = await pool.query(`
+      SELECT dept_iso, candidate, votes
+      FROM results_department
+      ORDER BY dept_iso, candidate
+    `);
+
+    if (!r.rows.length) {
+      return DEMO_RESULTS;
+    }
+
+    return buildMapResults(r.rows);
+  } catch (err) {
+    app.log.error(err);
+    return DEMO_RESULTS;
+  }
+});
+
+app.get("/results/departments", async () => {
+  const results = await app.inject({
+    method: "GET",
+    url: "/api/results",
+  });
+
+  const json = results.json();
+
+  const items = Object.keys(json).sort().map((iso) => ({
+    iso,
+    winner: json[iso].winner ? `Candidat ${json[iso].winner}` : "Aucun",
+    winner_pct: Math.round((json[iso].winnerPct || 0) * 100),
+  }));
+
+  return { items };
+});
+
+app.post("/api/submit-results", async (req, reply) => {
+  const token = req.headers["x-admin-token"];
+
+  if (!token || token !== ADMIN_TOKEN) {
+    return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  }
+
+  const body = req.body || {};
+  const dept_iso = String(body.dept_iso || "").trim().toUpperCase();
+  const candidate = String(body.candidate || "").trim().toUpperCase();
+  const votes = Number(body.votes);
+
+  if (!dept_iso || !candidate || !Number.isFinite(votes) || votes < 0) {
+    return reply.code(400).send({
+      ok: false,
+      error: "Payload invalide",
+      expected: { dept_iso: "HT-OU", candidate: "A", votes: 12000 },
+    });
+  }
+
+  try {
+    await pool.query(
+      `
+      INSERT INTO results_department (dept_iso, candidate, votes, updated_at)
+      VALUES ($1, $2, $3, NOW())
+      ON CONFLICT (dept_iso, candidate)
+      DO UPDATE SET votes = EXCLUDED.votes, updated_at = NOW()
+      `,
+      [dept_iso, candidate, Math.trunc(votes)]
+    );
+
+    return {
+      ok: true,
+      dept_iso,
+      candidate,
+      votes: Math.trunc(votes),
+    };
+  } catch (err) {
+    app.log.error(err);
+    return reply.code(500).send({ ok: false, error: "DB error" });
+  }
+});
+
+app.get("/api/admin/recent", async (req, reply) => {
+  const token = req.headers["x-admin-token"];
+
+  if (!token || token !== ADMIN_TOKEN) {
+    return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  }
+
+  try {
+    const r = await pool.query(`
+      SELECT dept_iso, candidate, votes, updated_at
+      FROM results_department
+      ORDER BY updated_at DESC
+      LIMIT 20
+    `);
+
+    return {
+      ok: true,
+      items: r.rows
+    };
+  } catch (err) {
+    app.log.error(err);
+    return reply.code(500).send({
+      ok: false,
+      error: "DB error"
+    });
+  }
+});
+
+app.get("/api/national", async () => {
+  try {
+    const r = await pool.query(`
+      SELECT candidate, SUM(votes) AS votes
+      FROM results_department
+      GROUP BY candidate
+      ORDER BY votes DESC
+    `);
+
+    const rows = r.rows || [];
+    const totals = {};
+    let grandTotal = 0;
+
+    for (const row of rows) {
+      const cand = String(row.candidate).toUpperCase();
+      const v = Number(row.votes) || 0;
+      totals[cand] = v;
+      grandTotal += v;
+    }
+
+    const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+    const leader = entries.length ? entries[0][0] : null;
+    const leaderVotes = entries.length ? entries[0][1] : 0;
+
+    const pct = {};
+    for (const [cand, v] of entries) {
+      pct[cand] = grandTotal ? Number((v / grandTotal).toFixed(4)) : 0;
+    }
+
+    return {
+      totalVotes: grandTotal,
+      totals,
+      pct,
+      leader,
+      leaderPct: grandTotal ? Number((leaderVotes / grandTotal).toFixed(4)) : 0
+    };
+  } catch (err) {
+    app.log.error(err);
+    return { totalVotes: 0, totals: {}, pct: {}, leader: null, leaderPct: 0 };
+  }
+});
+
+const start = async () => {
+  await ensureSchema();
+  await app.listen({ port: PORT, host: "0.0.0.0" });
+};
+
+start().catch((err) => {
+  app.log.error(err);
+  process.exit(1);
+});

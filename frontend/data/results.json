@@ -1,0 +1,7 @@
+{
+  "updatedAt": "2026-03-03T00:00:00Z",
+  "departments": {
+    "HT-OU": { "registered": 1000000, "valid": 700000, "candidates": { "A": 320000, "B": 250000, "C": 130000 } },
+    "HT-AR": { "registered": 600000, "valid": 410000, "candidates": { "A": 180000, "B": 150000, "C": 80000 } }
+  }
+}

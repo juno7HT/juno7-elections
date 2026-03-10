@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juno7 Elections — Démo bailleurs</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#fff;color:#0f172a}
+    header{padding:18px 16px;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:980px;margin:0 auto;padding:20px 16px}
+    .tag{display:inline-block;font-size:12px;padding:4px 10px;border:1px solid #e5e7eb;border-radius:999px;color:#334155;background:#f8fafc}
+    h1{margin:10px 0 6px;font-size:28px}
+    p{margin:0 0 14px;color:#334155;line-height:1.45}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+    .card{border:1px solid #e5e7eb;border-radius:14px;padding:16px;background:#fff}
+    .card h2{margin:0 0 10px;font-size:16px}
+    ul{margin:0;padding-left:18px;color:#334155;line-height:1.55}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    a.btn{display:inline-block;text-decoration:none;padding:10px 14px;border-radius:12px;border:1px solid #e5e7eb;color:#0f172a;background:#fff}
+    a.btn.primary{background:#0f172a;color:#fff;border-color:#0f172a}
+    small{color:#64748b}
+    .foot{margin-top:16px;border-top:1px dashed #e5e7eb;padding-top:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <span class="tag">Version DEMO • Juno7 Elections</span>
+      <h1>Plateforme électorale nationale — Démonstration</h1>
+      <p>
+        Démo technique hébergée sur VPS (Fastify/Node.js + Nginx + Cloudflare) avec carte interactive et API de résultats.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="/">Ouvrir la carte</a>
+        <a class="btn" href="/api/results" target="_blank" rel="noopener">Voir l’API /api/results</a>
+        <a class="btn" href="/demo/brief.pdf" target="_blank" rel="noopener">Télécharger la fiche (PDF)</a>
+      </div>
+      <p style="margin-top:10px"><small>Dernière mise à jour : <span id="d"></span></small></p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <h2>Ce qui fonctionne déjà</h2>
+        <ul>
+          <li>Carte Leaflet + GeoJSON des départements d’Haïti</li>
+          <li>API de résultats (démo) + rafraîchissement côté client</li>
+          <li>Infrastructure prête : reverse proxy Nginx, PM2, SSL via Cloudflare</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Prochaines étapes (12 semaines)</h2>
+        <ul>
+          <li>Connexion à une base de données “résultats officiels” + historisation</li>
+          <li>Workflow data-entry + validation (communes → départements → national)</li>
+          <li>Tableau de bord transparence : logs, sources, audits et exports</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Pourquoi c’est utile aux bailleurs</h2>
+        <ul>
+          <li>Réduction des rumeurs : information centralisée, vérifiable</li>
+          <li>Traçabilité : chaque résultat peut être relié à une source et une validation</li>
+          <li>Mesure d’impact : couverture, délais de publication, participation</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Contact</h2>
+        <ul>
+          <li>Juno7 International Corporation</li>
+          <li>Ottawa, Canada</li>
+          <li>Email : admin@juno7group.com</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot">
+      <small>Note : cette démo affiche des données de démonstration. Les intégrations officielles seront activées après validation des partenaires.</small>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("d").textContent = new Date().toLocaleString("fr-CA");
+  </script>
+</body>
+</html>

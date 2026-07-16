@@ -6,6 +6,7 @@ const Fastify = require("fastify");
 const fastifyStatic = require("@fastify/static");
 const { Pool } = require("pg");
 const { registerV2ReadApi } = require("./src/v2/routes");
+const publicResultsBridge = require("./src/v2/repositories/public-results-bridge");
 
 const app = Fastify({ logger: true });
 
@@ -748,6 +749,10 @@ app.post("/api/submit-electoral-result", async (req, reply) => {
 });
 app.get("/api/results/departments-live", async (req, reply) => {
   try {
+    if (publicResultsBridge.isV2PublicResultsBridgeEnabled(process.env)) {
+      return reply.send(await publicResultsBridge.getDepartmentsLive(pool));
+    }
+
     const r = await pool.query(`
       SELECT
         dept_name,
@@ -839,6 +844,10 @@ app.get("/api/results/departments-live", async (req, reply) => {
 
 app.get("/api/results/national-live", async (req, reply) => {
   try {
+    if (publicResultsBridge.isV2PublicResultsBridgeEnabled(process.env)) {
+      return reply.send(await publicResultsBridge.getNationalLive(pool));
+    }
+
     const r = await pool.query(`
       SELECT
         candidate,
@@ -919,6 +928,10 @@ app.get("/api/results/communes", async (req, reply) => {
 });
 app.get("/api/results/progress", async (req, reply) => {
   try {
+    if (publicResultsBridge.isV2PublicResultsBridgeEnabled(process.env)) {
+      return reply.send(await publicResultsBridge.getProgress(pool));
+    }
+
     const totalPvRes = await pool.query(`
       SELECT COUNT(DISTINCT pv_code) AS total
       FROM locations_electoral_units
@@ -955,6 +968,10 @@ app.get("/api/results/progress", async (req, reply) => {
 
 app.get("/api/results/departments-progress", async (req, reply) => {
   try {
+    if (publicResultsBridge.isV2PublicResultsBridgeEnabled(process.env)) {
+      return reply.send(await publicResultsBridge.getDepartmentsProgress(pool));
+    }
+
     const refRes = await pool.query(`
       SELECT
         dept_name,

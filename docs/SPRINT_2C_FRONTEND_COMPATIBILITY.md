@@ -65,8 +65,7 @@ Depuis le worktree MVP:
 ```bash
 git diff --check
 node --check index.js
-NODE_PATH=/home/juno7admin/apps/juno7-elections/node_modules node --test tests/backend-helpers.test.js
-node --test tests/frontend-compatibility.test.js
+npm test
 ```
 
 ## Conditions avant staging

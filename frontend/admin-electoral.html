@@ -58,6 +58,16 @@ button:hover{background:#1d4ed8}
   padding:16px;
 }
 .hidden{display:none}
+.staging-banner{
+  display:none;
+  background:#facc15;
+  color:#111827;
+  font-weight:800;
+  padding:10px 16px;
+  text-align:center;
+  border-bottom:1px solid #ca8a04;
+  margin:-40px -40px 24px;
+}
 .row{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -69,6 +79,8 @@ button:hover{background:#1d4ed8}
 </style>
 </head>
 <body>
+
+<div id="stagingBanner" class="staging-banner">STAGING — DONNÉES DE DÉMONSTRATION</div>
 
 <div class="card">
   <h2>Admin électoral — Saisie en cascade</h2>
@@ -181,6 +193,17 @@ let adminToken = "";
 
 document.getElementById("electionIdDisplay").textContent = String(ACTIVE_ELECTION_ID);
 document.getElementById("electionName").textContent = ACTIVE_ELECTION_NAME;
+
+async function loadPublicConfig(){
+  try{
+    const res = await fetch("/api/config/public", { cache: "no-store" });
+    const config = await res.json();
+    const banner = document.getElementById("stagingBanner");
+    if(banner && config.staging === true){
+      banner.style.display = "block";
+    }
+  }catch(err){}
+}
 
 function resetSelect(select, text, disabled=true){
   select.innerHTML = `<option value="">${text}</option>`;
@@ -456,6 +479,7 @@ async function submitResults(){
   }
 }
 
+loadPublicConfig();
 setMessage("Connecte-toi pour accéder à la saisie.");
 </script>
 

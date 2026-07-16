@@ -132,6 +132,16 @@
 
     #map { height: calc(100vh - 190px); min-height: 520px; }
 
+    .staging-banner{
+      display:none;
+      background:#facc15;
+      color:#111827;
+      font-weight:800;
+      padding:10px 16px;
+      text-align:center;
+      border-bottom:1px solid #ca8a04;
+    }
+
     .leaflet-popup-content-wrapper { border-radius: 14px; }
     .leaflet-popup-content { margin: 12px 14px; font-size: 14px; }
     .leaflet-interactive { outline: none !important; }
@@ -151,6 +161,7 @@
 </head>
 
 <body>
+  <div id="stagingBanner" class="staging-banner">STAGING — DONNÉES DE DÉMONSTRATION</div>
   <header>
     <span class="brand">Juno7 Elections</span>
 
@@ -188,6 +199,19 @@
 
   <script>
     (function () {
+      async function loadPublicConfig(){
+        try{
+          const res = await fetch("/api/config/public", { cache: "no-store" });
+          const config = await res.json();
+          const banner = document.getElementById("stagingBanner");
+          if(banner && config.staging === true){
+            banner.style.display = "block";
+          }
+        }catch(err){}
+      }
+
+      loadPublicConfig();
+
       const statusEl = document.getElementById("status");
       const setStatus = (txt) => { if (statusEl) statusEl.innerHTML = "<b>Statut :</b> " + txt; };
 

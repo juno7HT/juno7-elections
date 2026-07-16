@@ -185,6 +185,84 @@ test('admin routes reject token in query string', async () => {
   assert.equal(response.statusCode, 401);
 });
 
+test('valid staging environment is accepted', () => {
+  const result = helpers.validateStartupEnvironment(stagingEnv());
+  assert.equal(result.ok, true);
+});
+
+test('staging database without staging in name is rejected', () => {
+  const result = helpers.validateStartupEnvironment(stagingEnv({
+    DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/juno7_elections'
+  }));
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /database name/);
+});
+
+test('staging port 3000 is rejected', () => {
+  const result = helpers.validateStartupEnvironment(stagingEnv({ PORT: '3000' }));
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /port 3000/);
+});
+
+test('missing or false STAGING flag is rejected', () => {
+  for (const value of ['', 'false']) {
+    const result = helpers.validateStartupEnvironment(stagingEnv({ STAGING: value }));
+    assert.equal(result.ok, false);
+    assert.match(result.errors.join(' '), /STAGING/);
+  }
+});
+
+test('placeholder staging token is rejected', () => {
+  const result = helpers.validateStartupEnvironment(stagingEnv({
+    ADMIN_TOKEN: 'CHANGE_ME_STAGING_ONLY'
+  }));
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /ADMIN_TOKEN/);
+});
+
+test('missing staging DATABASE_URL is rejected', () => {
+  const result = helpers.validateStartupEnvironment(stagingEnv({ DATABASE_URL: '' }));
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /DATABASE_URL/);
+});
+
+test('staging guard errors do not reveal database URL or token', () => {
+  const env = stagingEnv({
+    DATABASE_URL: 'postgresql://placeholder_user:placeholder_password@127.0.0.1:5432/juno7_elections',
+    ADMIN_TOKEN: 'PLACEHOLDER_TOKEN_VALUE'
+  });
+  const result = helpers.validateStartupEnvironment(env);
+  const message = result.errors.join(' ');
+
+  assert.equal(result.ok, false);
+  assert.doesNotMatch(message, /placeholder_user|placeholder_password|PLACEHOLDER_TOKEN_VALUE|postgresql:\/\//);
+});
+
+test('non-staging environment is not blocked by staging guardrails', () => {
+  const result = helpers.validateStartupEnvironment({
+    NODE_ENV: 'production',
+    PORT: '3000',
+    DATABASE_URL: '',
+    ADMIN_TOKEN: '',
+    STAGING: ''
+  });
+  assert.equal(result.ok, true);
+});
+
+test('public config route exposes no secrets', async () => {
+  const response = await app.inject({ method: 'GET', url: '/api/config/public' });
+  assert.equal(response.statusCode, 200);
+  const body = response.json();
+
+  assert.equal(Object.hasOwn(body, 'environment'), true);
+  assert.equal(Object.hasOwn(body, 'staging'), true);
+  assert.equal(Object.hasOwn(body, 'activeElectionId'), true);
+  assert.equal(Object.hasOwn(body, 'activeElectionLabel'), true);
+  assert.equal(Object.hasOwn(body, 'DATABASE_URL'), false);
+  assert.equal(Object.hasOwn(body, 'ADMIN_TOKEN'), false);
+  assert.doesNotMatch(response.body, /postgresql:\/\/|expected-token/);
+});
+
 function validPayload(overrides = {}) {
   return {
     election_id: '2026',
@@ -196,6 +274,17 @@ function validPayload(overrides = {}) {
     pv_code: 'PV-001',
     candidate: 'A',
     votes: 12,
+    ...overrides
+  };
+}
+
+function stagingEnv(overrides = {}) {
+  return {
+    NODE_ENV: 'staging',
+    PORT: '3100',
+    DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/juno7_elections_staging',
+    ADMIN_TOKEN: 'valid-staging-token',
+    STAGING: 'true',
     ...overrides
   };
 }

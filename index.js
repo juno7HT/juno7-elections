@@ -11,6 +11,58 @@ const app = Fastify({ logger: true });
 const PORT = Number(process.env.PORT || 3000);
 const DATABASE_URL = process.env.DATABASE_URL || "";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
+const ACTIVE_ELECTION_ID = Number(process.env.ACTIVE_ELECTION_ID || 1);
+const ACTIVE_ELECTION_LABEL = process.env.ACTIVE_ELECTION_LABEL || "Election active MVP";
+
+function getDatabaseName(databaseUrl) {
+  try {
+    const parsed = new URL(databaseUrl);
+    return decodeURIComponent(parsed.pathname.replace(/^\/+/, ""));
+  } catch (err) {
+    return "";
+  }
+}
+
+function validateStartupEnvironment(env = process.env) {
+  if (env.NODE_ENV !== "staging") {
+    return { ok: true, errors: [] };
+  }
+
+  const errors = [];
+  const port = Number(env.PORT || 3000);
+  const databaseUrl = String(env.DATABASE_URL || "");
+  const databaseName = getDatabaseName(databaseUrl);
+  const adminToken = String(env.ADMIN_TOKEN || "");
+
+  if (env.STAGING !== "true") {
+    errors.push("STAGING must be true when NODE_ENV is staging");
+  }
+  if (port === 3000) {
+    errors.push("Staging must not use production port 3000");
+  }
+  if (!databaseUrl) {
+    errors.push("DATABASE_URL is required for staging");
+  } else if (!databaseName.toLowerCase().includes("staging")) {
+    errors.push("Staging database name must clearly contain staging");
+  }
+  if (!adminToken || /CHANGE_ME|PLACEHOLDER|DEFAULT/i.test(adminToken)) {
+    errors.push("ADMIN_TOKEN must be set to a non-placeholder staging value");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors
+  };
+}
+
+function assertStartupEnvironment(env = process.env) {
+  const validation = validateStartupEnvironment(env);
+  if (!validation.ok) {
+    const err = new Error(`Invalid startup environment: ${validation.errors.join("; ")}`);
+    err.validationErrors = validation.errors;
+    throw err;
+  }
+}
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -234,6 +286,13 @@ function buildMapResults(rows) {
 }
 
 app.get("/health", async () => ({ ok: true }));
+
+app.get("/api/config/public", async () => ({
+  environment: process.env.NODE_ENV || "production",
+  staging: process.env.NODE_ENV === "staging" && process.env.STAGING === "true",
+  activeElectionId: ACTIVE_ELECTION_ID,
+  activeElectionLabel: ACTIVE_ELECTION_LABEL
+}));
 
 app.get("/", async (req, reply) => {
   return reply.sendFile("index.html");
@@ -1368,6 +1427,7 @@ app.get("/api/candidate-directory", async (req, reply) => {
 });
 
 const start = async () => {
+  assertStartupEnvironment();
   await ensureSchema();
   await app.listen({ port: PORT, host: "0.0.0.0" });
 };
@@ -1480,7 +1540,9 @@ module.exports = {
     safeCompareToken,
     checkAdminToken,
     validateResultPayload,
-    buildCandidateOfficeQuery
+    buildCandidateOfficeQuery,
+    getDatabaseName,
+    validateStartupEnvironment
   }
 };
 

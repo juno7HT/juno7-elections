@@ -12,6 +12,10 @@ const publicPages = [
   'frontend/index.html',
   'frontend/communes.html'
 ];
+const bannerPages = [
+  ...officialPages,
+  ...publicPages
+];
 
 async function read(file) {
   return fs.readFile(path.join(root, file), 'utf8');
@@ -101,5 +105,21 @@ test('html files keep basic structural coherence', async () => {
     assert.equal((source.match(/<html\b/gi) || []).length, 1, file);
     assert.equal((source.match(/<\/html>/gi) || []).length, 1, file);
     assert.equal((source.match(/<script\b/gi) || []).length, (source.match(/<\/script>/gi) || []).length, file);
+  }
+});
+
+test('staging banner is wired through public config on official and public pages', async () => {
+  for (const file of bannerPages) {
+    const source = await read(file);
+    assert.match(source, /STAGING — DONNÉES DE DÉMONSTRATION/, file);
+    assert.match(source, /\/api\/config\/public/, file);
+    assert.match(source, /config\.staging === true/, file);
+  }
+});
+
+test('frontend pages do not reference secret environment variables', async () => {
+  for (const file of bannerPages) {
+    const source = await read(file);
+    assert.doesNotMatch(source, /DATABASE_URL|STAGING_PASSWORD|STAGING_USER/, file);
   }
 });

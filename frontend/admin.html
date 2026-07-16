@@ -240,6 +240,16 @@ hr{
   margin:22px 0;
 }
 
+.staging-banner{
+  display:none;
+  background:#facc15;
+  color:#111827;
+  font-weight:800;
+  padding:10px 16px;
+  text-align:center;
+  border-bottom:1px solid #ca8a04;
+}
+
 @media (max-width: 1100px){
   .layout{ grid-template-columns:1fr; }
   .stats{ grid-template-columns:1fr 1fr; }
@@ -254,6 +264,8 @@ hr{
 </head>
 
 <body>
+
+<div id="stagingBanner" class="staging-banner">STAGING — DONNÉES DE DÉMONSTRATION</div>
 
 <header>
   <h1>Juno7 Elections — Dashboard Admin</h1>
@@ -482,6 +494,17 @@ const ACTIVE_ELECTION_NAME = "Election active MVP";
 let adminToken = "";
 let refreshTimer = null;
 
+async function loadPublicConfig(){
+  try{
+    const res = await fetch("/api/config/public", { cache: "no-store" });
+    const config = await res.json();
+    const banner = document.getElementById("stagingBanner");
+    if(banner && config.staging === true){
+      banner.style.display = "block";
+    }
+  }catch(err){}
+}
+
 function openTab(id, btn){
   document.querySelectorAll(".tab-pane").forEach(el=>el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(el=>el.classList.remove("active"));
@@ -680,6 +703,7 @@ setText("statElection", String(ACTIVE_ELECTION_ID));
 setText("activeElectionId", String(ACTIVE_ELECTION_ID));
 setText("activeElectionName", ACTIVE_ELECTION_NAME);
 document.getElementById("activeElectionDisplay").value = `${ACTIVE_ELECTION_NAME} - ID ${ACTIVE_ELECTION_ID} - Demonstration MVP`;
+loadPublicConfig();
 logoutAdmin();
 </script>
 

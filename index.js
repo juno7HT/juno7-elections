@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const path = require("path");
+const crypto = require("crypto");
 const Fastify = require("fastify");
 const fastifyStatic = require("@fastify/static");
 const { Pool } = require("pg");
@@ -9,7 +10,7 @@ const app = Fastify({ logger: true });
 
 const PORT = Number(process.env.PORT || 3000);
 const DATABASE_URL = process.env.DATABASE_URL || "";
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "123456";
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -27,6 +28,149 @@ const DEMO_RESULTS = {
   "HT-SD": { winner: "B", winnerPct: 0.51, total: 7000, byCandidate: { A: 3430, B: 3570 } },
   "HT-SE": { winner: "A", winnerPct: 0.56, total: 3500, byCandidate: { A: 1960, B: 1540 } },
 };
+
+function normalizeText(value, { uppercase = false, max = 200 } = {}) {
+  const text = String(value ?? "").trim();
+  const clipped = text.length > max ? text.slice(0, max) : text;
+  return uppercase ? clipped.toUpperCase() : clipped;
+}
+
+function safeCompareToken(provided, expected) {
+  if (!provided || !expected) return false;
+  const a = Buffer.from(String(provided));
+  const b = Buffer.from(String(expected));
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+function checkAdminToken(headers = {}, expectedToken = ADMIN_TOKEN, logger = app.log) {
+  const token = headers["x-admin-token"];
+  if (!expectedToken) {
+    logger.error("ADMIN_TOKEN is not configured; refusing admin request");
+    return { ok: false, statusCode: 403, error: "Admin access is not configured" };
+  }
+  if (!token) {
+    return { ok: false, statusCode: 401, error: "Admin token required" };
+  }
+  if (!safeCompareToken(token, expectedToken)) {
+    return { ok: false, statusCode: 403, error: "Invalid admin token" };
+  }
+  return { ok: true };
+}
+
+function requireAdmin(req, reply) {
+  const auth = checkAdminToken(req.headers);
+  if (!auth.ok) {
+    reply.code(auth.statusCode).send({ ok: false, error: auth.error });
+    return false;
+  }
+  return true;
+}
+
+function sendValidationError(reply, errors) {
+  return reply.code(400).send({
+    ok: false,
+    error: "Validation failed",
+    errors
+  });
+}
+
+function sendDbError(reply, logger, err) {
+  logger.error(err);
+  return reply.code(500).send({ ok: false, error: "Internal server error" });
+}
+
+function validateResultPayload(body = {}, options = {}) {
+  const errors = [];
+  const allowedFields = options.allowedFields || [
+    "election_id",
+    "dept_name",
+    "dept_iso",
+    "commune_name",
+    "commune",
+    "section_name",
+    "section",
+    "centre_vote_name",
+    "centre",
+    "bv_no",
+    "bv",
+    "pv_code",
+    "candidate",
+    "candidate_id",
+    "votes",
+    "office",
+    "notes"
+  ];
+
+  for (const key of Object.keys(body || {})) {
+    if (!allowedFields.includes(key) && key.startsWith("__")) {
+      errors.push(`Unexpected field: ${key}`);
+    }
+  }
+
+  const election_id = normalizeText(body.election_id, { max: 32 });
+  if (!/^[1-9]\d*$/.test(election_id)) {
+    errors.push("election_id must be a positive integer string");
+  }
+
+  const dept_name = normalizeText(body.dept_name || body.dept_iso, { max: 100 });
+  const commune_name = normalizeText(body.commune_name || body.commune, { max: 100 });
+  const section_name = normalizeText(body.section_name || body.section, { max: 150 });
+  const centre_vote_name = normalizeText(body.centre_vote_name || body.centre, { max: 200 });
+  const bv_no = normalizeText(body.bv_no || body.bv, { max: 50 });
+  const pv_code = normalizeText(body.pv_code, { max: 80 });
+  const candidate = normalizeText(body.candidate, { uppercase: true, max: 50 });
+  const notes = normalizeText(body.notes, { max: 500 });
+
+  if (options.requireDept !== false && !dept_name) errors.push("dept_name is required");
+  if (options.requireCommune !== false && !commune_name) errors.push("commune_name is required");
+  if (options.requireSection !== false && !section_name) errors.push("section_name is required");
+  if (options.requireCentre && !centre_vote_name) errors.push("centre_vote_name is required");
+  if (options.requireBv && !bv_no) errors.push("bv_no is required");
+  if (!pv_code) errors.push("pv_code is required");
+  if (!candidate && !body.candidate_id) errors.push("candidate is required");
+
+  const votes = Number(body.votes);
+  if (!Number.isInteger(votes) || votes < 0) {
+    errors.push("votes must be an integer greater than or equal to 0");
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+    value: {
+      election_id,
+      dept_name,
+      commune_name,
+      section_name,
+      centre_vote_name,
+      bv_no,
+      pv_code,
+      candidate,
+      candidate_id: body.candidate_id,
+      votes,
+      notes
+    }
+  };
+}
+
+function buildCandidateOfficeQuery(office) {
+  const cleanOffice = normalizeText(office, { max: 50 });
+  const params = [];
+  let sql = `
+    SELECT candidate_code, ballot_name, office
+    FROM candidates
+    WHERE is_active = TRUE
+  `;
+
+  if (cleanOffice) {
+    params.push(cleanOffice);
+    sql += ` AND office = $1`;
+  }
+
+  sql += ` ORDER BY candidate_code ASC`;
+  return { sql, params };
+}
 
 app.register(fastifyStatic, {
   root: path.join(__dirname, "frontend"),
@@ -183,40 +327,32 @@ app.get("/results/departments", async () => {
 });
 
 app.post("/api/submit-results", async (req, reply) => {
-  try {
-    const token = req.headers["x-admin-token"];
-    const expected = process.env.ADMIN_TOKEN || "123456";
+  if (!requireAdmin(req, reply)) return;
 
-    if (!token || token !== expected) {
-      return reply.code(401).send({
-        ok: false,
-        error: "Unauthorized"
-      });
+  try {
+    const validation = validateResultPayload(req.body || {}, {
+      requireDept: true,
+      requireCommune: true,
+      requireSection: true
+    });
+
+    if (!validation.ok) {
+      return sendValidationError(reply, [
+        "This route is deprecated; submit results with election_id, pv_code, candidate, votes, dept_name/dept_iso, commune_name/commune, and section_name/section.",
+        ...validation.errors
+      ]);
     }
 
-    const {
-      dept_iso,
-      candidate,
-      candidate_id,
-      votes,
-      office,
-      commune,
-      section,
-      centre,
-      bv,
-      pv_code,
-      notes
-    } = req.body || {};
+    const payload = validation.value;
+    let finalCandidate = payload.candidate || null;
 
-    let finalCandidate = candidate || null;
-
-    if (!finalCandidate && candidate_id) {
+    if (!finalCandidate && payload.candidate_id) {
       const c = await pool.query(
         `SELECT candidate_code, ballot_name
          FROM candidates
          WHERE id = $1
          LIMIT 1`,
-        [Number(candidate_id)]
+        [Number(payload.candidate_id)]
       );
 
       if (c.rows.length) {
@@ -224,78 +360,62 @@ app.post("/api/submit-results", async (req, reply) => {
       }
     }
 
-    if (!dept_iso || !finalCandidate || votes === undefined || votes === null) {
-      return reply.code(400).send({
-        ok: false,
-        error: "Missing required fields"
-      });
+    if (!finalCandidate) {
+      return sendValidationError(reply, ["candidate could not be resolved"]);
     }
 
-    const cleanVotes = Number(votes);
-    if (!Number.isFinite(cleanVotes) || cleanVotes < 0) {
-      return reply.code(400).send({
-        ok: false,
-        error: "Invalid votes"
-      });
-    }
-
-    const update = await pool.query(
-      `UPDATE results
-       SET votes = $1,
-           updated_at = NOW()
-       WHERE dept_iso = $2
-         AND candidate = $3
-       RETURNING *`,
-      [Math.trunc(cleanVotes), dept_iso, finalCandidate]
+    const result = await pool.query(
+      `
+      INSERT INTO results_votes (
+        election_id,
+        dept_name,
+        commune_name,
+        section_name,
+        centre_vote_name,
+        bv_no,
+        pv_code,
+        candidate,
+        votes,
+        updated_at
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())
+      ON CONFLICT (election_id, pv_code, candidate)
+      DO UPDATE SET
+        dept_name = EXCLUDED.dept_name,
+        commune_name = EXCLUDED.commune_name,
+        section_name = EXCLUDED.section_name,
+        centre_vote_name = EXCLUDED.centre_vote_name,
+        bv_no = EXCLUDED.bv_no,
+        votes = EXCLUDED.votes,
+        updated_at = NOW()
+      RETURNING *
+      `,
+      [
+        payload.election_id,
+        payload.dept_name,
+        payload.commune_name,
+        payload.section_name,
+        payload.centre_vote_name,
+        payload.bv_no,
+        payload.pv_code,
+        finalCandidate,
+        payload.votes
+      ]
     );
-
-    let row;
-    let action;
-
-    if (update.rows.length) {
-      row = update.rows[0];
-      action = "updated";
-    } else {
-      const insert = await pool.query(
-        `INSERT INTO results (dept_iso, candidate, votes)
-         VALUES ($1,$2,$3)
-         RETURNING *`,
-        [dept_iso, finalCandidate, Math.trunc(cleanVotes)]
-      );
-      row = insert.rows[0];
-      action = "inserted";
-    }
 
     return reply.send({
       ok: true,
-      action,
-      item: row,
-      extra: {
-        office: office || null,
-        commune: commune || null,
-        section: section || null,
-        centre: centre || null,
-        bv: bv || null,
-        pv_code: pv_code || null,
-        notes: notes || null,
-        candidate_code: finalCandidate
-      }
+      deprecated: true,
+      message: "Deprecated compatibility route. Result was stored in results_votes.",
+      item: result.rows[0]
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({
-      ok: false,
-      error: "DB error"
-    });
+    return sendDbError(reply, app.log, err);
   }
 });
 
 app.get("/api/admin/recent", async (req, reply) => {
-  const token = req.headers["x-admin-token"];
-
-  if (!token || token !== ADMIN_TOKEN) {
-    return reply.code(401).send({ ok: false, error: "Unauthorized" });
-  }
+  if (!requireAdmin(req, reply)) return;
 
   try {
     const r = await pool.query(`
@@ -310,11 +430,7 @@ app.get("/api/admin/recent", async (req, reply) => {
       items: r.rows
     };
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({
-      ok: false,
-      error: "DB error"
-    });
+    return sendDbError(reply, app.log, err);
   }
 });
 
@@ -472,49 +588,29 @@ app.get("/api/electoral/bvs", async (req, reply) => {
 // =====================
 
 app.post("/api/submit-electoral-result", async (req, reply) => {
-  const token = req.headers["x-admin-token"];
+  if (!requireAdmin(req, reply)) return;
 
-  if (!token || token !== ADMIN_TOKEN) {
-    return reply.code(401).send({ ok: false, error: "Unauthorized" });
+  const validation = validateResultPayload(req.body || {}, {
+    requireDept: true,
+    requireCommune: true,
+    requireSection: true
+  });
+
+  if (!validation.ok) {
+    return sendValidationError(reply, validation.errors);
   }
 
-  const body = req.body || {};
-
-  const election_id = String(body.election_id || "").trim();
-  const dept_name = String(body.dept_name || "").trim();
-  const commune_name = String(body.commune_name || "").trim();
-  const section_name = String(body.section_name || "").trim();
-  const centre_vote_name = String(body.centre_vote_name || "").trim();
-  const bv_no = String(body.bv_no || "").trim();
-  const pv_code = String(body.pv_code || "").trim();
-  const candidate = String(body.candidate || "").trim().toUpperCase();
-  const votes = Number(body.votes);
-
-  if (
-    !election_id ||
-    !dept_name ||
-    !commune_name ||
-    !section_name ||
-    !candidate ||
-    !Number.isFinite(votes) ||
-    votes < 0
-  ) {
-    return reply.code(400).send({
-      ok: false,
-      error: "Payload invalide",
-      expected: {
-        election_id: "demo-2026",
-        dept_name: "Ouest",
-        commune_name: "Port-au-Prince",
-        section_name: "1ere Sect. Turgeau",
-        centre_vote_name: "Ecole Nationale Turgeau",
-        bv_no: "1",
-        pv_code: "PV-O01",
-        candidate: "A",
-        votes: 350
-      }
-    });
-  }
+  const {
+    election_id,
+    dept_name,
+    commune_name,
+    section_name,
+    centre_vote_name,
+    bv_no,
+    pv_code,
+    candidate,
+    votes
+  } = validation.value;
 
   try {
     await pool.query(
@@ -551,7 +647,7 @@ app.post("/api/submit-electoral-result", async (req, reply) => {
         bv_no,
         pv_code,
         candidate,
-        Math.trunc(votes)
+        votes
       ]
     );
 
@@ -566,15 +662,11 @@ app.post("/api/submit-electoral-result", async (req, reply) => {
         bv_no,
         pv_code,
         candidate,
-        votes: Math.trunc(votes)
+        votes
       }
     };
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({
-      ok: false,
-      error: "DB error"
-    });
+    return sendDbError(reply, app.log, err);
   }
 });
 app.get("/api/results/departments-live", async (req, reply) => {
@@ -869,6 +961,8 @@ app.get("/api/results/departments-progress", async (req, reply) => {
 });
 
 app.post("/api/admin/party", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
     const {
       name,
@@ -893,12 +987,13 @@ app.post("/api/admin/party", async (req, reply) => {
       party: r.rows[0]
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false });
+    return sendDbError(reply, app.log, err);
   }
 });
 
 app.get("/api/admin/parties", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
     const r = await pool.query(`
       SELECT *
@@ -911,12 +1006,13 @@ app.get("/api/admin/parties", async (req, reply) => {
       parties: r.rows
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false });
+    return sendDbError(reply, app.log, err);
   }
 });
 
 app.post("/api/admin/candidate", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
     const {
       first_name,
@@ -951,12 +1047,13 @@ app.post("/api/admin/candidate", async (req, reply) => {
       candidate: r.rows[0]
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false });
+    return sendDbError(reply, app.log, err);
   }
 });
 
 app.get("/api/admin/candidates", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
     const r = await pool.query(`
       SELECT
@@ -974,12 +1071,13 @@ app.get("/api/admin/candidates", async (req, reply) => {
       candidates: r.rows
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false });
+    return sendDbError(reply, app.log, err);
   }
 });
 
 app.get("/api/admin/electoral-tree", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
     const r = await pool.query(`
       SELECT
@@ -1021,12 +1119,13 @@ app.get("/api/admin/electoral-tree", async (req, reply) => {
       tree
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false, error: "DB error" });
+    return sendDbError(reply, app.log, err);
   }
 });
 
 app.get("/api/admin/vote-entries", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
     const r = await pool.query(`
       SELECT
@@ -1049,13 +1148,26 @@ app.get("/api/admin/vote-entries", async (req, reply) => {
       items: r.rows
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false, error: "DB error" });
+    return sendDbError(reply, app.log, err);
   }
 });
 
 app.post("/api/admin/vote-entry", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
+    const validation = validateResultPayload(req.body || {}, {
+      requireDept: true,
+      requireCommune: true,
+      requireSection: true,
+      requireCentre: true,
+      requireBv: true
+    });
+
+    if (!validation.ok) {
+      return sendValidationError(reply, validation.errors);
+    }
+
     const {
       election_id,
       dept_name,
@@ -1066,22 +1178,7 @@ app.post("/api/admin/vote-entry", async (req, reply) => {
       pv_code,
       candidate,
       votes
-    } = req.body || {};
-
-    if (!election_id || !dept_name || !commune_name || !section_name || !centre_vote_name || !bv_no || !pv_code || !candidate) {
-      return reply.code(400).send({
-        ok: false,
-        error: "Missing required fields"
-      });
-    }
-
-    const cleanVotes = Number(votes);
-    if (!Number.isFinite(cleanVotes) || cleanVotes < 0) {
-      return reply.code(400).send({
-        ok: false,
-        error: "Invalid votes"
-      });
-    }
+    } = validation.value;
 
     const exists = await pool.query(
       `SELECT id
@@ -1114,7 +1211,7 @@ app.post("/api/admin/vote-entry", async (req, reply) => {
         bv_no,
         pv_code,
         candidate,
-        Math.trunc(cleanVotes)
+        votes
       ]
     );
 
@@ -1123,8 +1220,7 @@ app.post("/api/admin/vote-entry", async (req, reply) => {
       item: r.rows[0]
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false, error: "DB error" });
+    return sendDbError(reply, app.log, err);
   }
 });
 
@@ -1132,6 +1228,8 @@ app.post("/api/admin/vote-entry", async (req, reply) => {
 
 
 app.put("/api/admin/candidate/:id", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+
   try {
     const id = Number(req.params.id);
     if (!Number.isFinite(id)) {
@@ -1207,8 +1305,7 @@ app.put("/api/admin/candidate/:id", async (req, reply) => {
       candidate: r.rows[0]
     });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false });
+    return sendDbError(reply, app.log, err);
   }
 });
 
@@ -1226,14 +1323,8 @@ app.get("/api/results/departments-live-named", async (req, reply) => {
       ORDER BY dept_name, candidate
     `);
 
-    const candidatesRes = await pool.query(
-      `SELECT candidate_code, ballot_name, office
-       FROM candidates
-       WHERE is_active = TRUE
-         ${'${office ? "AND office = $1" : ""}'}`
-      ,
-      office ? [office] : []
-    );
+    const candidateQuery = buildCandidateOfficeQuery(office);
+    const candidatesRes = await pool.query(candidateQuery.sql, candidateQuery.params);
 
     const nameMap = {};
     for (const row of candidatesRes.rows) {
@@ -1249,8 +1340,7 @@ app.get("/api/results/departments-live-named", async (req, reply) => {
 
     return reply.send({ ok: true, items });
   } catch (err) {
-    app.log.error(err);
-    return reply.code(500).send({ ok: false, error: "DB error" });
+    return sendDbError(reply, app.log, err);
   }
 });
 
@@ -1282,11 +1372,6 @@ const start = async () => {
   await app.listen({ port: PORT, host: "0.0.0.0" });
 };
 
-start().catch((err) => {
-  app.log.error(err);
-  process.exit(1);
-});
-
 
 /* ================================
    RAPPORT OFFICIEL ELECTION
@@ -1294,12 +1379,7 @@ start().catch((err) => {
 
 app.post("/api/admin/report", async (req,reply)=>{
 
-const token=req.headers["x-admin-token"];
-const expected=process.env.ADMIN_TOKEN || "123456";
-
-if(token!==expected){
-return reply.code(401).send({ok:false,error:"unauthorized"});
-}
+if (!requireAdmin(req, reply)) return;
 
 try{
 
@@ -1357,13 +1437,11 @@ return reply.send({ok:true,report_id});
 
 }catch(e){
 
-app.log.error(e);
-return reply.code(500).send({ok:false,error:"db error"});
+return sendDbError(reply, app.log, e);
 
 }
 
 });
-
 
 app.get("/api/reports/:id", async (req,reply)=>{
 
@@ -1394,3 +1472,21 @@ return reply.code(500).send({ok:false});
 }
 
 });
+
+module.exports = {
+  app,
+  helpers: {
+    normalizeText,
+    safeCompareToken,
+    checkAdminToken,
+    validateResultPayload,
+    buildCandidateOfficeQuery
+  }
+};
+
+if (require.main === module) {
+  start().catch((err) => {
+    app.log.error(err);
+    process.exit(1);
+  });
+}

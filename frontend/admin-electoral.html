@@ -44,6 +44,20 @@ button:hover{background:#1d4ed8}
   font-size:14px;
 }
 .small{color:#666}
+.meta{
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  border-radius:8px;
+  margin:14px 0;
+  padding:12px;
+}
+.auth{
+  border:1px solid #ddd;
+  border-radius:8px;
+  margin:16px 0;
+  padding:16px;
+}
+.hidden{display:none}
 .row{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -60,8 +74,23 @@ button:hover{background:#1d4ed8}
   <h2>Admin électoral — Saisie en cascade</h2>
   <p class="small">Département → Commune → Section → Centre/BV → Candidat → Votes</p>
 
-  <label>Token admin</label>
-  <input type="password" id="token" placeholder="ADMIN_TOKEN">
+  <div class="meta">
+    <strong id="electionName">Election active MVP</strong><br>
+    Identifiant technique : <span id="electionIdDisplay">1</span><br>
+    Statut : <span>Démonstration MVP</span>
+  </div>
+
+  <div id="authPanel" class="auth">
+    <label>Jeton admin</label>
+    <input type="password" id="tokenInput" autocomplete="off" placeholder="Saisir le jeton admin">
+    <button type="button" onclick="loginAdmin()">Se connecter</button>
+    <div class="small" id="authMessage">Session en mémoire uniquement. Le jeton est oublié au rechargement.</div>
+  </div>
+
+  <div id="entryPanel" class="hidden">
+  <div class="row-actions">
+    <button type="button" class="secondary" onclick="logoutAdmin()">Déconnexion</button>
+  </div>
 
   <div class="row">
     <div>
@@ -124,7 +153,8 @@ button:hover{background:#1d4ed8}
     </div>
   </div>
 
-  <button onclick="submitResults()">Envoyer</button>
+  <button id="submitBtn" type="button" onclick="submitResults()">Envoyer</button>
+  </div>
 
   <h3>Message</h3>
   <div id="response">Prêt.</div>
@@ -140,6 +170,17 @@ const centreVoteName = document.getElementById("centreVoteName");
 const bvNo = document.getElementById("bvNo");
 const pvCode = document.getElementById("pvCode");
 const responseBox = document.getElementById("response");
+const authPanel = document.getElementById("authPanel");
+const entryPanel = document.getElementById("entryPanel");
+const authMessage = document.getElementById("authMessage");
+const tokenInput = document.getElementById("tokenInput");
+const submitBtn = document.getElementById("submitBtn");
+const ACTIVE_ELECTION_ID = 1;
+const ACTIVE_ELECTION_NAME = "Election active MVP";
+let adminToken = "";
+
+document.getElementById("electionIdDisplay").textContent = String(ACTIVE_ELECTION_ID);
+document.getElementById("electionName").textContent = ACTIVE_ELECTION_NAME;
 
 function resetSelect(select, text, disabled=true){
   select.innerHTML = `<option value="">${text}</option>`;
@@ -155,6 +196,58 @@ function setMessage(text, ok=true){
 async function getJSON(url){
   const res = await fetch(url);
   return res.json();
+}
+
+function setAuthMessage(text, ok=false){
+  authMessage.textContent = text;
+  authMessage.style.color = ok ? "#065f46" : "#991b1b";
+}
+
+function formatApiError(status, data){
+  if(status === 401) return "Jeton admin requis.";
+  if(status === 403) return "Jeton admin invalide.";
+  if(status === 400) return data.errors ? data.errors.join(", ") : (data.error || "Requête invalide.");
+  if(status >= 500) return "Erreur serveur.";
+  return data.error || "Erreur inconnue.";
+}
+
+async function loginAdmin(){
+  const candidateToken = tokenInput.value.trim();
+  if(!candidateToken){
+    setAuthMessage("Saisis le jeton admin.");
+    return;
+  }
+
+  try{
+    const res = await fetch("/api/admin/recent", {
+      cache: "no-store",
+      headers: { "x-admin-token": candidateToken }
+    });
+    const data = await res.json();
+
+    if(!res.ok || !data.ok){
+      setAuthMessage(formatApiError(res.status, data));
+      return;
+    }
+
+    adminToken = candidateToken;
+    tokenInput.value = "";
+    authPanel.classList.add("hidden");
+    entryPanel.classList.remove("hidden");
+    setMessage("Session admin active.");
+    loadDepartments();
+  }catch(e){
+    setAuthMessage("Erreur réseau : " + e.message);
+  }
+}
+
+function logoutAdmin(){
+  adminToken = "";
+  tokenInput.value = "";
+  entryPanel.classList.add("hidden");
+  authPanel.classList.remove("hidden");
+  setAuthMessage("Session terminée.", true);
+  setMessage("Déconnecté.");
 }
 
 async function loadDepartments(){
@@ -297,7 +390,6 @@ function resetFormAfterSave(){
 }
 
 async function submitResults(){
-  const token = document.getElementById("token").value.trim();
   const dept = deptSelect.value;
   const commune = communeSelect.value;
   const section = sectionSelect.value;
@@ -305,47 +397,66 @@ async function submitResults(){
   const bv = bvNo.value.trim();
   const pv = pvCode.value.trim();
   const candidate = document.getElementById("candidate").value;
-  const votes = parseInt(document.getElementById("votes").value, 10);
+  const votesRaw = document.getElementById("votes").value.trim();
+  const votes = Number(votesRaw);
 
-  if(!dept || !commune || !section){
-    setMessage("Choisis département, commune et section.", false);
+  if(!adminToken){
+    setMessage("Connecte-toi avant la saisie.", false);
+    return;
+  }
+
+  if(!dept || !commune || !section || !centre || !bv || !pv){
+    setMessage("Département, commune, section, centre, BV et code PV sont obligatoires.", false);
+    return;
+  }
+
+  if(!candidate){
+    setMessage("Choisis un candidat.", false);
+    return;
+  }
+
+  if(!Number.isInteger(votes) || votes < 0){
+    setMessage("Les votes doivent être un entier positif ou nul.", false);
     return;
   }
 
   try{
+    submitBtn.disabled = true;
     const res = await fetch("/api/submit-electoral-result", {
       method:"POST",
       headers:{
         "Content-Type":"application/json",
-        "x-admin-token": token
+        "x-admin-token": adminToken
       },
       body: JSON.stringify({
-        election_id: "demo-2026",
+        election_id: ACTIVE_ELECTION_ID,
         dept_name: dept,
         commune_name: commune,
         section_name: section,
         centre_vote_name: centre,
         bv_no: bv,
         pv_code: pv,
-        candidate,
-        votes
+        candidate: candidate,
+        votes: votes
       })
     });
 
     const data = await res.json();
 
-    if(data.ok){
-      setMessage("✅ Données enregistrées avec succès");
+    if(res.ok && data.ok){
+      setMessage("Données enregistrées avec succès.");
       resetFormAfterSave();
     } else {
-      setMessage("❌ Erreur : " + (data.error || "inconnue"), false);
+      setMessage("Erreur : " + formatApiError(res.status, data), false);
     }
   }catch(e){
-    setMessage("❌ Erreur réseau : " + e.message, false);
+    setMessage("Erreur réseau : " + e.message, false);
+  }finally{
+    submitBtn.disabled = false;
   }
 }
 
-loadDepartments();
+setMessage("Connecte-toi pour accéder à la saisie.");
 </script>
 
 </body>

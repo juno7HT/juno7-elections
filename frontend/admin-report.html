@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Admin Rapport Election</title>
+
+<style>
+
+body{font-family:Arial;background:#f4f6f9;padding:40px}
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+max-width:900px
+}
+
+input{width:100%;padding:8px;margin:6px 0}
+
+button{padding:10px 20px;background:#2563eb;color:white;border:none}
+
+table{width:100%;margin-top:20px}
+
+td{padding:5px}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Créer rapport officiel</h2>
+
+<input id="date" placeholder="Date (2016-11-20)">
+<input id="round" placeholder="Tour">
+<input id="type" placeholder="Type election">
+<input id="office" placeholder="Poste">
+<input id="territory" placeholder="Territoire">
+
+<h3>Statistiques</h3>
+
+<input id="pv1" placeholder="PV non reçus">
+<input id="pv2" placeholder="PV mis à l'écart">
+<input id="pv3" placeholder="PV inclus">
+
+<input id="expr" placeholder="Choix exprimés">
+<input id="nocand" placeholder="Aucun candidat">
+<input id="valid" placeholder="Votes valides">
+<input id="nullv" placeholder="Votes nuls">
+
+<h3>Candidats</h3>
+
+<table id="candTable">
+<tr>
+<td>No</td>
+<td>Parti</td>
+<td>Candidat</td>
+<td>Votes</td>
+<td>%</td>
+</tr>
+</table>
+
+<button onclick="addRow()">Ajouter candidat</button>
+
+<br><br>
+
+<input id="token" placeholder="Admin token">
+
+<button onclick="send()">Enregistrer rapport</button>
+
+<pre id="result"></pre>
+
+</div>
+
+<script>
+
+function addRow(){
+
+const t=document.getElementById("candTable");
+
+const r=t.insertRow();
+
+for(let i=0;i<5;i++){
+r.insertCell().innerHTML="<input>";
+}
+
+}
+
+async function send(){
+
+const rows=[...document.querySelectorAll("#candTable tr")].slice(1);
+
+const candidates=rows.map(r=>{
+const c=r.querySelectorAll("input");
+return{
+candidate_no:c[0].value,
+party_name:c[1].value,
+candidate_name:c[2].value,
+votes:c[3].value,
+pct:c[4].value
+}
+});
+
+const data={
+election_date:date.value,
+round_label:round.value,
+election_type:type.value,
+office:office.value,
+territory_level:"department",
+territory_name:territory.value,
+
+pv_not_received:pv1.value,
+pv_excluded:pv2.value,
+pv_included:pv3.value,
+
+expressed_choice:expr.value,
+no_candidate_votes:nocand.value,
+valid_votes:valid.value,
+null_votes:nullv.value,
+
+candidates:candidates
+};
+
+const res=await fetch("/api/admin/report",{
+method:"POST",
+headers:{
+"content-type":"application/json",
+"x-admin-token":token.value
+},
+body:JSON.stringify(data)
+});
+
+const j=await res.json();
+
+result.textContent=JSON.stringify(j,null,2);
+
+}
+
+</script>
+
+</body>
+</html>

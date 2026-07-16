@@ -191,7 +191,9 @@
       function getFillColorByName(communeName) {
         const key = normalizeName(communeName);
         const r = communeResults[key] || null;
-        if (!r || !r.winner) return "#e2e8f0";
+        if (!r) return "#e2e8f0";
+        if (r.isTie) return "#000000";
+        if (!r.winner) return "#e2e8f0";
 
         const base = CANDIDATE_COLORS[r.winner] || "#64748b";
         const pct = clamp01(safeNum(r.winnerPct));
@@ -207,7 +209,7 @@
           return `<strong>${communeName}</strong><br><em>Aucun résultat</em>`;
         }
 
-        const winner = r.winner || "—";
+        const winner = r.isTie ? "Égalité" : (r.winner || "—");
         const pct = fmtPct(r.winnerPct);
         const total = fmtInt(r.total || 0);
 
@@ -224,7 +226,7 @@
         return `
           <strong>${communeName}</strong>
           <div style="margin-top:8px">
-            Gagnant: <b>${winner}</b> (${pct})<br>
+            ${r.isTie ? `Résultat: <b>${winner}</b><br>` : `Gagnant: <b>${winner}</b> (${pct})<br>`}
             Votes: <b>${total}</b>
           </div>
           ${detail}
@@ -255,7 +257,8 @@
                 total: 0,
                 byCandidate: {},
                 winner: "",
-                winnerPct: 0
+                winnerPct: 0,
+                isTie: false
               };
             }
 
@@ -267,16 +270,22 @@
             const item = communeResults[key];
             let winner = "";
             let winnerVotes = -1;
+            let topCount = 0;
 
             for (const [cand, votes] of Object.entries(item.byCandidate)) {
-              if (safeNum(votes) > winnerVotes) {
-                winnerVotes = safeNum(votes);
+              const n = safeNum(votes);
+              if (n > winnerVotes) {
+                winnerVotes = n;
                 winner = cand;
+                topCount = 1;
+              } else if (n === winnerVotes) {
+                topCount += 1;
               }
             }
 
-            item.winner = winner;
-            item.winnerPct = item.total > 0 ? winnerVotes / item.total : 0;
+            item.isTie = topCount > 1;
+            item.winner = item.isTie ? null : winner;
+            item.winnerPct = (!item.isTie && item.total > 0) ? winnerVotes / item.total : 0;
           }
 
           setLive(true, "LIVE : connecté");

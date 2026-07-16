@@ -80,6 +80,21 @@
       color:var(--muted);
     }
 
+    .progress-bar{
+      width:100%;
+      height:8px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:6px;
+    }
+    #progress-fill{
+      height:100%;
+      width:0%;
+      background:#16a34a;
+      transition:width .6s ease;
+    }
+
     .candidate-list{
       display:flex;
       flex-direction:column;
@@ -87,7 +102,7 @@
     }
     .candidate-row{
       display:grid;
-      grid-template-columns:140px 1fr 110px;
+      grid-template-columns:140px 1fr 150px;
       gap:10px;
       align-items:center;
     }
@@ -115,7 +130,7 @@
       border-radius:999px;
     }
 
-    #map { height: calc(100vh - 180px); min-height: 520px; }
+    #map { height: calc(100vh - 190px); min-height: 520px; }
 
     .leaflet-popup-content-wrapper { border-radius: 14px; }
     .leaflet-popup-content { margin: 12px 14px; font-size: 14px; }
@@ -129,7 +144,7 @@
         text-align:left;
       }
       #map{
-        height: calc(100vh - 260px);
+        height: calc(100vh - 280px);
       }
     }
   </style>
@@ -150,7 +165,13 @@
       <div class="projection-head">
         <div class="title">Projection nationale</div>
         <div class="meta" id="projection-total">Chargement...</div>
+        <div class="meta" id="projection-progress">Chargement du dépouillement...</div>
       </div>
+
+      <div class="progress-bar">
+        <div id="progress-fill"></div>
+      </div>
+
       <div class="candidate-list" id="candidate-list">
         <div class="meta">Chargement des résultats...</div>
       </div>
@@ -178,6 +199,8 @@
       };
 
       const projectionTotalEl = document.getElementById("projection-total");
+      const projectionProgressEl = document.getElementById("projection-progress");
+      const progressFillEl = document.getElementById("progress-fill");
       const candidateListEl = document.getElementById("candidate-list");
 
       if (!window.L) {
@@ -227,6 +250,7 @@
       }).addTo(map);
 
       let deptResults = {};
+      let deptProgress = {};
       let geoLayer = null;
 
       const CANDIDATE_COLORS = {
@@ -263,7 +287,9 @@
 
       function getFillColorByIso(iso) {
         const r = iso && deptResults[iso] ? deptResults[iso] : null;
-        if (!r || !r.winner) return "#e2e8f0";
+        if (!r) return "#e2e8f0";
+        if (r.isTie) return "#000000";
+        if (!r.winner) return "#e2e8f0";
 
         const base = CANDIDATE_COLORS[r.winner] || "#64748b";
         const pct = clamp01(safeNum(r.winnerPct));
@@ -304,14 +330,25 @@
         const name = getDeptName(props);
         const iso  = props.ISO_Code || "";
         const r = iso && deptResults[iso] ? deptResults[iso] : null;
+        const p = iso && deptProgress[iso] ? deptProgress[iso] : null;
 
         if (!r) {
           return `<strong>${name}</strong><br><small>${iso}</small><br><em>Aucun résultat</em>`;
         }
 
-        const winner = r.winner || "—";
+        const winner = r.isTie ? "Égalité" : (r.winner || "—");
         const pct = fmtPct(r.winnerPct);
         const total = fmtInt(r.total || 0);
+
+        let progressHtml = "";
+        if (p) {
+          progressHtml = `
+            <div style="margin-top:8px; font-size:13px; color:#334155">
+              PV traités : <b>${fmtInt(p.processed || 0)}</b> / <b>${fmtInt(p.total || 0)}</b><br>
+              Dépouillement : <b>${safeNum(p.pct).toFixed(1)}%</b>
+            </div>
+          `;
+        }
 
         let detail = "";
         const by = r.byCandidate || {};
@@ -328,9 +365,10 @@
           <strong>${name}</strong><br>
           <small>${iso}</small>
           <div style="margin-top:8px">
-            Gagnant: <b>${winner}</b> (${pct})<br>
+            ${r.isTie ? `Résultat: <b>${winner}</b><br>` : `Gagnant: <b>${winner}</b> (${pct})<br>`}
             Votes: <b>${total}</b>
           </div>
+          ${progressHtml}
           ${detail}
         `;
       }
@@ -350,6 +388,28 @@
 
           const totalVotes = safeNum(data.totalVotes);
           projectionTotalEl.textContent = "Votes valides : " + fmtInt(totalVotes);
+
+          try {
+            const progressRes = await fetch("/api/results/progress", { cache: "no-store" });
+            const progressData = await progressRes.json();
+
+            if (progressData.ok) {
+              projectionProgressEl.textContent =
+                "PV traités : " + fmtInt(progressData.processed) +
+                " / " + fmtInt(progressData.total) +
+                " — Dépouillement : " + progressData.pct + "%";
+
+              if (progressFillEl) {
+                progressFillEl.style.width = progressData.pct + "%";
+              }
+            } else {
+              projectionProgressEl.textContent = "Dépouillement indisponible";
+              if (progressFillEl) progressFillEl.style.width = "0%";
+            }
+          } catch (e) {
+            projectionProgressEl.textContent = "Dépouillement indisponible";
+            if (progressFillEl) progressFillEl.style.width = "0%";
+          }
 
           if (!data.ranking.length) {
             candidateListEl.innerHTML = `<div class="meta">Aucun résultat national pour le moment.</div>`;
@@ -374,6 +434,8 @@
           }).join("");
         } catch (e) {
           projectionTotalEl.textContent = "Projection indisponible";
+          projectionProgressEl.textContent = "Dépouillement indisponible";
+          if (progressFillEl) progressFillEl.style.width = "0%";
           candidateListEl.innerHTML = `<div class="meta">Impossible de charger les résultats nationaux.</div>`;
         }
       }
@@ -414,15 +476,26 @@
 
       async function fetchResults() {
         try {
-          const r = await fetch("/api/results/departments-live", { cache: "no-store" });
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          const j = await r.json();
+          const [r1, r2] = await Promise.all([
+            fetch("/api/results/departments-live", { cache: "no-store" }),
+            fetch("/api/results/departments-progress", { cache: "no-store" })
+          ]);
 
-          if (!j || !j.ok || typeof j.items !== "object") {
-            throw new Error("Réponse invalide");
+          if (!r1.ok) throw new Error("HTTP " + r1.status);
+          const j1 = await r1.json();
+
+          if (!j1 || !j1.ok || typeof j1.items !== "object") {
+            throw new Error("Réponse invalide résultats");
           }
 
-          deptResults = j.items || {};
+          deptResults = j1.items || {};
+
+          if (r2.ok) {
+            const j2 = await r2.json();
+            if (j2 && j2.ok && typeof j2.items === "object") {
+              deptProgress = j2.items || {};
+            }
+          }
 
           refreshLayerStyles();
 

@@ -1,0 +1,1124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juno7 Elections — Admin moderne</title>
+  <style>
+    :root{
+      --bg:#f8fafc;
+      --panel:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --border:#e2e8f0;
+      --primary:#0f172a;
+      --primary-2:#1e293b;
+      --soft:#f1f5f9;
+      --ok:#16a34a;
+      --danger:#dc2626;
+      --shadow:0 10px 30px rgba(15,23,42,.06);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input,select,textarea{font:inherit}
+
+    .wrap{
+      max-width:1480px;
+      margin:0 auto;
+      padding:0 20px;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      padding:18px 0;
+    }
+
+    .brand-block{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+
+    .brand-badge{
+      width:48px;
+      height:48px;
+      border-radius:18px;
+      background:var(--primary);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      letter-spacing:-0.03em;
+    }
+
+    .brand-title{
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:-0.04em;
+      line-height:1;
+    }
+
+    .brand-sub{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:12px 16px;
+      border-radius:18px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .btn.primary{
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
+    }
+
+    .btn.soft{
+      background:var(--soft);
+    }
+
+    main.wrap{
+      padding-top:24px;
+      padding-bottom:40px;
+    }
+
+    .hero{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-bottom:22px;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:40px;
+      line-height:1;
+      letter-spacing:-0.05em;
+    }
+
+    .hero p{
+      margin:10px 0 0;
+      max-width:900px;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:15px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:16px;
+      margin-bottom:24px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .stat-card{
+      padding:20px;
+    }
+
+    .stat-k{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .stat-v{
+      margin-top:10px;
+      font-size:34px;
+      font-weight:900;
+      letter-spacing:-0.04em;
+    }
+
+    .stat-s{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:6px;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+      flex-wrap:wrap;
+    }
+
+    .tab-btn{
+      border:0;
+      background:transparent;
+      padding:12px 18px;
+      border-radius:16px;
+      cursor:pointer;
+      font-weight:700;
+      color:var(--muted);
+    }
+
+    .tab-btn.active{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .tab-panel{
+      display:none;
+    }
+
+    .tab-panel.active{
+      display:block;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:20px;
+    }
+
+    .panel{
+      padding:22px;
+    }
+
+    .panel-head{
+      margin-bottom:18px;
+    }
+
+    .panel-title{
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-0.04em;
+      margin:0;
+    }
+
+    .panel-sub{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .field.full{
+      grid-column:1 / -1;
+    }
+
+    label{
+      font-size:14px;
+      font-weight:700;
+    }
+
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:18px;
+      padding:14px 16px;
+      outline:none;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:#94a3b8;
+      box-shadow:0 0 0 4px rgba(148,163,184,.15);
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical;
+    }
+
+    .upload{
+      border:1px dashed #cbd5e1;
+      background:#f8fafc;
+      border-radius:24px;
+      padding:20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .upload-text{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .inline{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .color-preview{
+      width:56px;
+      height:48px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:#2563eb;
+      flex:0 0 auto;
+    }
+
+    .search-wrap{
+      position:relative;
+      margin-bottom:16px;
+    }
+
+    .search-wrap input{
+      padding-left:16px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .list-item{
+      border:1px solid var(--border);
+      border-radius:24px;
+      background:#fff;
+      padding:16px;
+      transition:border-color .2s ease, background .2s ease;
+    }
+
+    .list-item.active{
+      border-color:var(--primary);
+      background:#f8fafc;
+    }
+
+    .item-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .item-title{
+      font-size:17px;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    .item-sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background:#eef2ff;
+      color:#334155;
+      white-space:nowrap;
+    }
+
+    .badge.ok{
+      background:#ecfdf5;
+      color:#166534;
+    }
+
+    .mini-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .dot{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:#2563eb;
+      border:1px solid rgba(15,23,42,.08);
+    }
+
+    .config-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .config-box{
+      border:1px solid var(--border);
+      border-radius:22px;
+      background:#fff;
+      padding:16px;
+    }
+
+    .rules{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .rule{
+      background:#f8fafc;
+      border-radius:20px;
+      padding:16px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+      border:1px solid var(--border);
+    }
+
+    @media (max-width: 1100px){
+      .stats{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      .grid-2{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 700px){
+      .stats{
+        grid-template-columns:1fr;
+      }
+      .form-grid,
+      .config-grid{
+        grid-template-columns:1fr;
+      }
+      .hero h1{
+        font-size:32px;
+      }
+      .brand-title{
+        font-size:24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand-block">
+          <div class="brand-badge">J7</div>
+          <div>
+            <div class="brand-title">Juno7 Elections 2026</div>
+            <div class="brand-sub">Frontend admin moderne</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary">Nouveau parti</button>
+          <button class="btn">Nouveau candidat</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Frontend admin moderne</h1>
+        <p>
+          Gérer les partis politiques, les candidats, les postes, les couleurs officielles,
+          les logos et les profils électoraux dans une seule interface claire et structurée.
+        </p>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="card stat-card">
+        <div class="stat-k">Partis enregistrés</div>
+        <div class="stat-v" id="statParties">2</div>
+        <div class="stat-s">Base partis active</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-k">Candidats enregistrés</div>
+        <div class="stat-v" id="statCandidates">2</div>
+        <div class="stat-s">Profils déjà créés</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-k">Poste en édition</div>
+        <div class="stat-v" id="statOffice">Président</div>
+        <div class="stat-s">Configuration active</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-k">Statut du module</div>
+        <div class="stat-v" style="font-size:26px">Admin prêt</div>
+        <div class="stat-s">Prêt à être branché au backend</div>
+      </div>
+    </section>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="partis">Partis politiques</button>
+      <button class="tab-btn" data-tab="candidats">Candidats</button>
+      <button class="tab-btn" data-tab="configuration">Configuration électorale</button>
+    </div>
+
+    <section id="tab-partis" class="tab-panel active">
+      <div class="grid-2">
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Créer ou modifier un parti</h2>
+            <div class="panel-sub">Créer d’abord le profil du parti, puis rattacher les candidats à ce parti.</div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label>Nom officiel du parti</label>
+              <input type="text" placeholder="Ex. Alliance Nationale pour la République" />
+            </div>
+
+            <div class="field">
+              <label>Sigle</label>
+              <input type="text" placeholder="Ex. ANR" />
+            </div>
+
+            <div class="field">
+              <label>Couleur officielle</label>
+              <div class="inline">
+                <input id="partyColor" type="text" value="#2563eb" />
+                <div class="color-preview" id="partyColorPreview"></div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>Adresse officielle</label>
+              <textarea placeholder="Adresse complète du siège du parti"></textarea>
+            </div>
+
+            <div class="field">
+              <label>Téléphone</label>
+              <input type="text" placeholder="+509 ..." />
+            </div>
+
+            <div class="field">
+              <label>Email</label>
+              <input type="email" placeholder="contact@parti.ht" />
+            </div>
+
+            <div class="field full">
+              <label>Logo officiel</label>
+              <div class="upload">
+                <div class="upload-text">Importer le logo du parti</div>
+                <button class="btn soft" type="button">Téléverser</button>
+              </div>
+            </div>
+
+            <div class="field full">
+              <div class="inline">
+                <button class="btn primary" type="button">Enregistrer le parti</button>
+                <button class="btn" type="button">Réinitialiser</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Partis enregistrés</h2>
+            <div class="panel-sub">Consulter, filtrer et sélectionner un parti à modifier.</div>
+          </div>
+
+          <div class="search-wrap">
+            <input id="partySearch" type="text" placeholder="Rechercher un parti" />
+          </div>
+
+          <div class="list" id="partyList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-candidats" class="tab-panel">
+      <div class="grid-2">
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Créer un profil candidat</h2>
+            <div class="panel-sub">Associer chaque candidat à un parti politique et à un poste électoral.</div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Prénom</label>
+              <input type="text" placeholder="Prénom" />
+            </div>
+
+            <div class="field">
+              <label>Nom</label>
+              <input type="text" placeholder="Nom" />
+            </div>
+
+            <div class="field full">
+              <label>Nom sur le bulletin</label>
+              <input type="text" placeholder="Nom affiché sur le bulletin" />
+            </div>
+
+            <div class="field">
+              <label>Poste</label>
+              <select id="candidateOffice">
+                <option>Président</option>
+                <option>Sénateur</option>
+                <option>Député</option>
+                <option>Magistrat</option>
+                <option>CASEC</option>
+                <option>ASEC</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Parti politique</label>
+              <select id="candidateParty"></select>
+            </div>
+
+            <div class="field">
+              <label>Département</label>
+              <input type="text" placeholder="Ex. Ouest" />
+            </div>
+
+            <div class="field">
+              <label>Commune</label>
+              <input type="text" placeholder="Ex. Port-au-Prince" />
+            </div>
+
+            <div class="field full">
+              <label>Photo officielle du candidat</label>
+              <div class="upload">
+                <div class="upload-text">Importer la photo officielle</div>
+                <button class="btn soft" type="button">Téléverser</button>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>Biographie courte</label>
+              <textarea placeholder="Résumé public du profil du candidat"></textarea>
+            </div>
+
+            <div class="field full">
+              <div class="inline">
+                <button class="btn primary" type="button">Enregistrer le candidat</button>
+                <button class="btn" type="button">Nouveau profil</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Candidats enregistrés</h2>
+            <div class="panel-sub">Liste des candidats déjà reliés à leur parti.</div>
+          </div>
+
+          <div class="search-wrap">
+            <input id="candidateSearch" type="text" placeholder="Rechercher un candidat" />
+          </div>
+
+          <div class="list" id="candidateList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-configuration" class="tab-panel">
+      <div class="grid-2">
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Paramétrage visuel</h2>
+            <div class="panel-sub">Définir les couleurs, icônes et priorités d’affichage par poste.</div>
+          </div>
+
+          <div class="config-grid" id="configGrid"></div>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Règles de publication</h2>
+            <div class="panel-sub">Encadrer la validation des partis, des candidats et des profils publiés.</div>
+          </div>
+
+          <div class="rules">
+            <div class="rule">1. Créer le parti politique avec logo, adresse et couleur officielle.</div>
+            <div class="rule">2. Créer le profil du candidat et l’associer au parti existant.</div>
+            <div class="rule">3. Valider le poste, le territoire et les visuels avant publication.</div>
+            <div class="rule">4. Publier ensuite dans le moteur de résultats de Juno7 Elections.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <script>
+    const ADMIN_API = location.origin + "/api/admin";
+
+    async function apiGet(path) {
+      const r = await fetch(ADMIN_API + path, { cache: "no-store" });
+      return r.json();
+    }
+
+    async function apiPost(path, payload) {
+      const r = await fetch(ADMIN_API + path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      return r.json();
+    }
+
+    let parties = [];
+    let candidates = [];
+    let electoralTree = {};
+    let voteEntries = [];
+
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.tab;
+        tabButtons.forEach(b => b.classList.remove("active"));
+        tabPanels.forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("tab-" + name).classList.add("active");
+      });
+    });
+
+    const partyList = document.getElementById("partyList");
+    const candidateList = document.getElementById("candidateList");
+    const partySearch = document.getElementById("partySearch");
+    const candidateSearch = document.getElementById("candidateSearch");
+    const voteSearch = document.getElementById("voteSearch");
+    const candidateParty = document.getElementById("candidateParty");
+    const configGrid = document.getElementById("configGrid");
+    const partyColor = document.getElementById("partyColor");
+    const partyColorPreview = document.getElementById("partyColorPreview");
+    const candidateOffice = document.getElementById("candidateOffice");
+    const statOffice = document.getElementById("statOffice");
+    const voteEntriesWrap = document.getElementById("voteEntriesWrap");
+
+    const deptSelects = document.querySelectorAll('[data-role="dept-select"]');
+    const communeSelects = document.querySelectorAll('[data-role="commune-select"]');
+    const sectionSelects = document.querySelectorAll('[data-role="section-select"]');
+    const centreSelects = document.querySelectorAll('[data-role="centre-select"]');
+    const bvSelects = document.querySelectorAll('[data-role="bv-select"]');
+
+    function setOptions(select, items, valueKey = "value", labelKey = "label") {
+      if (!select) return;
+      select.innerHTML = items.map(item => {
+        if (typeof item === "string") return `<option value="${item}">${item}</option>`;
+        return `<option value="${item[valueKey]}">${item[labelKey]}</option>`;
+      }).join("");
+    }
+
+    function getCountryName() {
+      const keys = Object.keys(electoralTree || {});
+      return keys[0] || "Haïti";
+    }
+
+    function getDepartments() {
+      const country = getCountryName();
+      return Object.keys((electoralTree[country] || {}));
+    }
+
+    function getCommunes(dept) {
+      const country = getCountryName();
+      return Object.keys((((electoralTree[country] || {})[dept]) || {}));
+    }
+
+    function getSections(dept, commune) {
+      const country = getCountryName();
+      return Object.keys((((electoralTree[country] || {})[dept] || {})[commune] || {}));
+    }
+
+    function getCentres(dept, commune, section) {
+      const country = getCountryName();
+      return Object.keys((((electoralTree[country] || {})[dept] || {})[commune] || {})[section] || {});
+    }
+
+    function getBvs(dept, commune, section, centre) {
+      const country = getCountryName();
+      return (((((electoralTree[country] || {})[dept] || {})[commune] || {})[section] || {})[centre] || []);
+    }
+
+    function renderPartyOptions() {
+      if (!candidateParty) return;
+      candidateParty.innerHTML = parties.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+    }
+
+    function renderPartyList(query = "") {
+      const q = query.trim().toLowerCase();
+      const filtered = parties.filter(p =>
+        String(p.name || "").toLowerCase().includes(q) ||
+        String(p.acronym || "").toLowerCase().includes(q) ||
+        String(p.address || "").toLowerCase().includes(q)
+      );
+
+      partyList.innerHTML = filtered.map((party, index) => `
+        <div class="list-item ${index === 0 ? "active" : ""}">
+          <div class="item-top">
+            <div>
+              <div class="inline">
+                <div class="color-preview" style="width:40px;height:40px;border-radius:14px;background:${party.color || "#64748b"}"></div>
+                <div>
+                  <div class="item-title">${party.name || "—"}</div>
+                  <div class="item-sub">${party.acronym || "—"} • ${party.address || "Adresse non définie"}</div>
+                </div>
+              </div>
+            </div>
+            <div class="badge ok">${party.status || "active"}</div>
+          </div>
+        </div>
+      `).join("") || `
+        <div class="list-item">
+          <div class="item-title">Aucun parti trouvé</div>
+          <div class="item-sub">Essaie une autre recherche.</div>
+        </div>
+      `;
+    }
+
+    function renderCandidateList(query = "") {
+      const q = query.trim().toLowerCase();
+      const filtered = candidates.filter(c =>
+        `${c.first_name || ""} ${c.last_name || ""}`.toLowerCase().includes(q) ||
+        String(c.office || "").toLowerCase().includes(q) ||
+        String(c.department || "").toLowerCase().includes(q) ||
+        String(c.commune || "").toLowerCase().includes(q)
+      );
+
+      candidateList.innerHTML = filtered.map(candidate => `
+        <div class="list-item">
+          <div class="item-top">
+            <div>
+              <div class="item-title">${candidate.first_name || ""} ${candidate.last_name || ""}</div>
+              <div class="item-sub">${candidate.office || "—"} • ${candidate.department || "—"} • ${candidate.commune || "—"}</div>
+              <div class="mini-row">
+                <span class="dot" style="background:${candidate.party_color || "#64748b"}"></span>
+                ${candidate.party_name || "Parti non défini"}
+              </div>
+            </div>
+            <div class="badge">${candidate.status || "pending"}</div>
+          </div>
+        </div>
+      `).join("") || `
+        <div class="list-item">
+          <div class="item-title">Aucun candidat trouvé</div>
+          <div class="item-sub">Essaie une autre recherche.</div>
+        </div>
+      `;
+    }
+
+    function renderVoteEntries(query = "") {
+      const q = query.trim().toLowerCase();
+      const filtered = voteEntries.filter(v =>
+        String(v.dept_name || "").toLowerCase().includes(q) ||
+        String(v.commune_name || "").toLowerCase().includes(q) ||
+        String(v.section_name || "").toLowerCase().includes(q) ||
+        String(v.candidate || "").toLowerCase().includes(q) ||
+        String(v.pv_code || "").toLowerCase().includes(q)
+      );
+
+      if (!voteEntriesWrap) return;
+
+      voteEntriesWrap.innerHTML = filtered.map(entry => `
+        <div class="list-item">
+          <div class="item-top">
+            <div>
+              <div class="item-title">${entry.pv_code} • ${entry.election_id}</div>
+              <div class="item-sub">${entry.dept_name} • ${entry.commune_name} • ${entry.section_name}</div>
+              <div class="mini-row">${entry.candidate} — ${entry.votes} voix</div>
+              <div class="item-sub">${entry.centre_vote_name} • ${entry.bv_no}</div>
+            </div>
+            <div class="badge ok">Enregistré</div>
+          </div>
+        </div>
+      `).join("") || `
+        <div class="list-item">
+          <div class="item-title">Aucun PV trouvé</div>
+          <div class="item-sub">Aucune saisie ne correspond à cette recherche.</div>
+        </div>
+      `;
+    }
+
+    function renderConfig() {
+      if (!configGrid) return;
+      const offices = ["Président", "Sénateur", "Député", "Magistrat", "CASEC", "ASEC"];
+      configGrid.innerHTML = offices.map(office => `
+        <div class="config-box">
+          <div class="item-title">${office}</div>
+          <div class="inline" style="margin-top:12px;">
+            <div class="color-preview" style="width:38px;height:38px;border-radius:14px;background:#0f172a"></div>
+            <input type="text" value="#0f172a" />
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function bindTerritorySelectors() {
+      const departments = getDepartments();
+      deptSelects.forEach(select => setOptions(select, departments));
+
+      const dept = departments[0] || "";
+      const communes = getCommunes(dept);
+      communeSelects.forEach(select => setOptions(select, communes));
+
+      const commune = communes[0] || "";
+      const sections = getSections(dept, commune);
+      sectionSelects.forEach(select => setOptions(select, sections));
+
+      const section = sections[0] || "";
+      const centres = getCentres(dept, commune, section);
+      centreSelects.forEach(select => setOptions(select, centres));
+
+      const centre = centres[0] || "";
+      const bvs = getBvs(dept, commune, section, centre);
+      bvSelects.forEach(select => setOptions(select, bvs.map(x => ({ value: x.bv_no, label: `${x.bv_no} • ${x.pv_code}` }))));
+    }
+
+    async function loadBackendData() {
+      const [partiesRes, candidatesRes, treeRes, votesRes] = await Promise.all([
+        apiGet("/parties"),
+        apiGet("/candidates"),
+        apiGet("/electoral-tree"),
+        apiGet("/vote-entries")
+      ]);
+
+      parties = partiesRes.parties || [];
+      candidates = candidatesRes.candidates || [];
+      electoralTree = treeRes.tree || {};
+      voteEntries = votesRes.items || [];
+
+      const statParties = document.getElementById("statParties");
+      const statCandidates = document.getElementById("statCandidates");
+      if (statParties) statParties.textContent = String(parties.length);
+      if (statCandidates) statCandidates.textContent = String(candidates.length);
+
+      renderPartyOptions();
+      renderPartyList();
+      renderCandidateList();
+      renderVoteEntries();
+      renderConfig();
+      bindTerritorySelectors();
+    }
+
+    partySearch?.addEventListener("input", (e) => renderPartyList(e.target.value));
+    candidateSearch?.addEventListener("input", (e) => renderCandidateList(e.target.value));
+    voteSearch?.addEventListener("input", (e) => renderVoteEntries(e.target.value));
+
+    partyColor?.addEventListener("input", () => {
+      if (partyColorPreview) partyColorPreview.style.background = partyColor.value || "#2563eb";
+    });
+
+    candidateOffice?.addEventListener("change", () => {
+      if (statOffice) statOffice.textContent = candidateOffice.value;
+    });
+
+    loadBackendData().catch(err => {
+      console.error("Admin backend load error:", err);
+    });
+  </script>
+
+
+
+
+<script>
+const ADMIN_API = location.origin + "/api/admin";
+
+async function apiGet(path){
+  const r = await fetch(ADMIN_API + path, { cache: "no-store" });
+  return r.json();
+}
+
+async function apiPost(path, payload){
+  const r = await fetch(ADMIN_API + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  return r.json();
+}
+
+let parties = [];
+let candidates = [];
+let electoralTree = {};
+let voteEntries = [];
+
+function setOptions(select, items, valueKey="value", labelKey="label"){
+  if(!select) return;
+  select.innerHTML = items.map(item => {
+    if(typeof item === "string") return `<option value="${item}">${item}</option>`;
+    return `<option value="${item[valueKey]}">${item[labelKey]}</option>`;
+  }).join("");
+}
+
+function getCountry(){
+  const keys = Object.keys(electoralTree || {});
+  return keys[0] || "Haïti";
+}
+function getDepartments(){
+  const c = getCountry();
+  return Object.keys((electoralTree[c] || {}));
+}
+function getCommunes(dept){
+  const c = getCountry();
+  return Object.keys((((electoralTree[c] || {})[dept]) || {}));
+}
+function getSections(dept, commune){
+  const c = getCountry();
+  return Object.keys((((electoralTree[c] || {})[dept] || {})[commune] || {}));
+}
+function getCentres(dept, commune, section){
+  const c = getCountry();
+  return Object.keys((((electoralTree[c] || {})[dept] || {})[commune] || {})[section] || {});
+}
+function getBvs(dept, commune, section, centre){
+  const c = getCountry();
+  return (((((electoralTree[c] || {})[dept] || {})[commune] || {})[section] || {})[centre] || []);
+}
+
+function refreshTerritorySelectors(){
+  const dept = document.getElementById("voteDept");
+  const commune = document.getElementById("voteCommune");
+  const section = document.getElementById("voteSection");
+  const centre = document.getElementById("voteCentre");
+  const bv = document.getElementById("voteBv");
+
+  const departments = getDepartments();
+  setOptions(dept, departments);
+  const d = dept.value || departments[0] || "";
+
+  const communes = getCommunes(d);
+  setOptions(commune, communes);
+  const c = commune.value || communes[0] || "";
+
+  const sections = getSections(d, c);
+  setOptions(section, sections);
+  const s = section.value || sections[0] || "";
+
+  const centres = getCentres(d, c, s);
+  setOptions(centre, centres);
+  const ct = centre.value || centres[0] || "";
+
+  const bvs = getBvs(d, c, s, ct);
+  setOptions(bv, bvs.map(x => ({ value: x.bv_no, label: `${x.bv_no} • ${x.pv_code}` })));
+}
+
+function bindSelectors(){
+  ["voteDept","voteCommune","voteSection","voteCentre"].forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.onchange = () => refreshTerritorySelectors();
+  });
+}
+
+function renderCandidatesForVote(){
+  const select = document.getElementById("voteCandidate");
+  if(!select) return;
+  setOptions(select, candidates.map(c => ({
+    value: c.ballot_name || `${c.first_name} ${c.last_name}`,
+    label: `${c.ballot_name || `${c.first_name} ${c.last_name}`} • ${c.office || "—"}`
+  })));
+}
+
+async function submitVoteEntry(){
+  const payload = {
+    election_id: document.getElementById("voteElection")?.value || "demo-2026",
+    dept_name: document.getElementById("voteDept")?.value || "",
+    commune_name: document.getElementById("voteCommune")?.value || "",
+    section_name: document.getElementById("voteSection")?.value || "",
+    centre_vote_name: document.getElementById("voteCentre")?.value || "",
+    bv_no: document.getElementById("voteBv")?.value || "",
+    pv_code: document.getElementById("votePv")?.value || "",
+    candidate: document.getElementById("voteCandidate")?.value || "",
+    votes: Number(document.getElementById("voteVotes")?.value || 0)
+  };
+
+  const data = await apiPost("/vote-entry", payload);
+
+  if(data.ok){
+    alert("PV enregistré");
+    location.reload();
+  } else {
+    alert("Erreur : " + (data.error || "échec enregistrement"));
+  }
+}
+
+async function initAdmin(){
+  const [p, c, t, v] = await Promise.all([
+    apiGet("/parties"),
+    apiGet("/candidates"),
+    apiGet("/electoral-tree"),
+    apiGet("/vote-entries")
+  ]);
+
+  parties = p.parties || [];
+  candidates = c.candidates || [];
+  electoralTree = t.tree || {};
+  voteEntries = v.items || [];
+
+  renderCandidatesForVote();
+  refreshTerritorySelectors();
+  bindSelectors();
+}
+
+initAdmin().catch(err => {
+  console.error(err);
+  alert("Erreur chargement dashboard admin");
+});
+</script>
+
+</body>
+</html>

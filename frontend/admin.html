@@ -2,206 +2,902 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Admin Juno7 Elections</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin — Juno7 Elections</title>
 
 <style>
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#dbe3ee;
+  --primary:#2563eb;
+  --primary-dark:#1d4ed8;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --warning:#f59e0b;
+  --shadow:0 10px 24px rgba(15,23,42,.08);
+  --radius:16px;
+}
+
+*{box-sizing:border-box}
+
 body{
-font-family:Arial;
-background:#f4f6f9;
-padding:40px;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+header{
+  background:#0f172a;
+  color:white;
+  padding:24px 32px;
+}
+
+header h1{
+  margin:0;
+  font-size:28px;
+}
+
+header p{
+  margin:8px 0 0;
+  color:#cbd5e1;
+}
+
+.container{
+  max-width:1500px;
+  margin:24px auto;
+  padding:0 20px 40px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.stat{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+}
+
+.stat .label{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.stat .value{
+  margin-top:8px;
+  font-size:30px;
+  font-weight:bold;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:1.1fr 0.9fr;
+  gap:20px;
 }
 
 .card{
-background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.08);
-max-width:700px;
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:24px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
 }
 
-h2{
-margin-top:0;
+.card h2{
+  margin-top:0;
+  font-size:22px;
 }
 
-input,select{
-width:100%;
-padding:10px;
-margin-top:6px;
-margin-bottom:15px;
-border:1px solid #ccc;
-border-radius:6px;
+.card h3{
+  margin-top:24px;
+  margin-bottom:10px;
+  font-size:18px;
+}
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.grid-3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:14px;
+}
+
+label{
+  display:block;
+  font-size:14px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  background:white;
+  font-size:14px;
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical;
 }
 
 button{
-background:#2563eb;
-color:white;
-border:none;
-padding:10px 18px;
-border-radius:6px;
-cursor:pointer;
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
 }
 
 button:hover{
-background:#1d4ed8;
+  background:var(--primary-dark);
 }
 
+button.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+}
+
+button.success{
+  background:var(--success);
+}
+
+.row-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.tab-btn{
+  padding:10px 14px;
+  background:#e2e8f0;
+  color:#0f172a;
+  border-radius:999px;
+  font-size:14px;
+}
+
+.tab-btn.active{
+  background:#0f172a;
+  color:white;
+}
+
+.tab-pane{
+  display:none;
+}
+
+.tab-pane.active{
+  display:block;
+}
+
+.panel-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.list-item{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  background:#fafcff;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.badge.ok{ background:#dcfce7; color:#166534; }
+.badge.warn{ background:#fef3c7; color:#92400e; }
+.badge.info{ background:#dbeafe; color:#1d4ed8; }
+
 pre{
-background:#111827;
-color:#e5e7eb;
-padding:15px;
-border-radius:8px;
-overflow:auto;
-font-size:13px;
+  background:#111827;
+  color:#e5e7eb;
+  padding:15px;
+  border-radius:10px;
+  overflow:auto;
+  font-size:13px;
+  white-space:pre-wrap;
+}
+
+.small{
+  color:var(--muted);
+  font-size:13px;
+}
+
+hr{
+  border:none;
+  border-top:1px solid var(--border);
+  margin:22px 0;
+}
+
+@media (max-width: 1100px){
+  .layout{ grid-template-columns:1fr; }
+  .stats{ grid-template-columns:1fr 1fr; }
+  .grid-3{ grid-template-columns:1fr; }
+}
+
+@media (max-width: 700px){
+  .stats{ grid-template-columns:1fr; }
+  .grid-2{ grid-template-columns:1fr; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<header>
+  <h1>Juno7 Elections — Dashboard Admin</h1>
+  <p>Gestion des partis, candidats, postes électifs et saisie des résultats par territoire.</p>
+</header>
 
-<h2>Entrer / Mettre à jour un résultat</h2>
+<div class="container">
 
-<p>Chaque envoi fait un <b>upsert</b> (mise à jour) pour le couple <b>département + candidat</b>.</p>
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Poste en cours</div>
+      <div class="value" id="statOffice">Président</div>
+    </div>
+    <div class="stat">
+      <div class="label">Pays</div>
+      <div class="value">Haïti</div>
+    </div>
+    <div class="stat">
+      <div class="label">Mode admin</div>
+      <div class="value">Actif</div>
+    </div>
+    <div class="stat">
+      <div class="label">Mises à jour live</div>
+      <div class="value">5s</div>
+    </div>
+  </div>
 
-<label>Département</label>
-<select id="dept">
-<option value="HT-AR">HT-AR — Artibonite</option>
-<option value="HT-CE">HT-CE — Centre</option>
-<option value="HT-GA">HT-GA — Grand’Anse</option>
-<option value="HT-NI">HT-NI — Nippes</option>
-<option value="HT-ND">HT-ND — Nord</option>
-<option value="HT-NE">HT-NE — Nord-Est</option>
-<option value="HT-NO">HT-NO — Nord-Ouest</option>
-<option value="HT-OU">HT-OU — Ouest</option>
-<option value="HT-SD">HT-SD — Sud</option>
-<option value="HT-SE">HT-SE — Sud-Est</option>
-</select>
+  <div class="layout">
 
-<label>Candidat</label>
-<select id="candidate">
-<option>A</option>
-<option>B</option>
-<option>C</option>
-<option>D</option>
-<option>E</option>
-</select>
+    <div class="card">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('tab-results', this)">Résultats</button>
+        <button class="tab-btn" onclick="openTab('tab-parties', this)">Partis</button>
+        <button class="tab-btn" onclick="openTab('tab-candidates', this)">Candidats</button>
+      </div>
 
-<label>Votes</label>
-<input type="number" id="votes" value="0">
+      <div id="tab-results" class="tab-pane active">
+        <h2>Entrer / Mettre à jour un résultat</h2>
+        <p class="small">Saisie hiérarchique : pays → département → commune → section communale → centre → bureau → poste → candidat.</p>
 
-<label>Token admin</label>
-<input type="password" id="token">
+        <div class="grid-3">
+          <div>
+            <label>Pays</label>
+            <select id="country">
+              <option value="HT">Haïti</option>
+            </select>
+          </div>
 
-<button onclick="sendResults()">Envoyer</button>
+          <div>
+            <label>Poste électif</label>
+            <select id="office" onchange="updateOfficeStat(); loadCandidatesForOffice()">
+              <option value="President">Président</option>
+              <option value="Senateur">Sénateur</option>
+              <option value="Depute">Député</option>
+              <option value="Magistrat">Magistrat</option>
+              <option value="CASEC">CASEC</option>
+              <option value="ASEC">ASEC</option>
+            </select>
+          </div>
 
-<h3>Réponse</h3>
-<pre id="result">—</pre>
+          <div>
+            <label>Token admin</label>
+            <input type="password" id="token">
+          </div>
+        </div>
 
-<h3>Dernières mises à jour</h3>
-<pre id="recentUpdates">Chargement...</pre>
+        <hr>
 
+        <div class="grid-3">
+          <div>
+            <label>Département</label>
+            <select id="dept">
+              <option value="HT-AR">HT-AR — Artibonite</option>
+              <option value="HT-CE">HT-CE — Centre</option>
+              <option value="HT-GA">HT-GA — Grand’Anse</option>
+              <option value="HT-NI">HT-NI — Nippes</option>
+              <option value="HT-ND">HT-ND — Nord</option>
+              <option value="HT-NE">HT-NE — Nord-Est</option>
+              <option value="HT-NO">HT-NO — Nord-Ouest</option>
+              <option value="HT-OU">HT-OU — Ouest</option>
+              <option value="HT-SD">HT-SD — Sud</option>
+              <option value="HT-SE">HT-SE — Sud-Est</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Commune</label>
+            <input type="text" id="commune" placeholder="Ex. Port-au-Prince">
+          </div>
+
+          <div>
+            <label>Section communale</label>
+            <input type="text" id="section" placeholder="Ex. 1ère Section Turgeau">
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <label>Centre de vote</label>
+            <input type="text" id="centre" placeholder="Ex. École Nationale Turgeau">
+          </div>
+
+          <div>
+            <label>Bureau de vote</label>
+            <input type="text" id="bv" placeholder="Ex. BV-01">
+          </div>
+
+          <div>
+            <label>Code PV</label>
+            <input type="text" id="pvcode" placeholder="Ex. PV-OU-001">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>Candidat</label>
+            <select id="candidate"><option value="">Chargement...</option></select>
+          </div>
+
+          <div>
+            <label>Votes</label>
+            <input type="number" id="votes" value="0">
+          </div>
+        </div>
+
+        <div>
+          <label>Observations</label>
+          <textarea id="notes" placeholder="Commentaire, anomalie, observation terrain..."></textarea>
+        </div>
+
+        <div class="row-actions">
+          <button onclick="sendResults()">Enregistrer le résultat</button>
+          <button class="secondary" onclick="clearForm()">Réinitialiser</button>
+          <button class="success" onclick="loadRecentUpdates()">Rafraîchir les mises à jour</button>
+        </div>
+
+        <h3>Réponse serveur</h3>
+        <pre id="result">—</pre>
+      </div>
+
+      <div id="tab-parties" class="tab-pane">
+        <h2>Partis politiques</h2>
+
+        <div class="grid-2">
+          <div>
+            <label>Nom officiel du parti</label>
+            <input type="text" id="partyName" placeholder="Ex. Alliance Nationale">
+          </div>
+
+          <div>
+            <label>Sigle</label>
+            <input type="text" id="partyAcronym" placeholder="Ex. AN">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>Couleur officielle</label>
+            <input type="text" id="partyColor" placeholder="Ex. #2563eb">
+          </div>
+
+          <div>
+            <label>Logo / URL logo</label>
+            <input type="text" id="partyLogo" placeholder="https://...">
+          </div>
+        </div>
+
+        <div>
+          <label>Adresse officielle</label>
+          <input type="text" id="partyAddress" placeholder="Adresse du siège">
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>Téléphone</label>
+            <input type="text" id="partyPhone" placeholder="+509 ...">
+          </div>
+
+          <div>
+            <label>Email</label>
+            <input type="email" id="partyEmail" placeholder="contact@parti.ht">
+          </div>
+        </div>
+
+        <div class="row-actions">
+          <button onclick="saveParty()">Enregistrer le parti</button>
+          <button class="success" onclick="loadParties()">Charger les partis</button>
+        </div>
+
+        <h3>Liste des partis</h3>
+        <pre id="partyResult">—</pre>
+      </div>
+
+      <div id="tab-candidates" class="tab-pane">
+        <h2>Candidats</h2>
+
+        <div class="grid-2">
+          <div>
+            <label>Prénom</label>
+            <input type="text" id="candFirstName" placeholder="Prénom">
+          </div>
+
+          <div>
+            <label>Nom</label>
+            <input type="text" id="candLastName" placeholder="Nom">
+          </div>
+        </div>
+
+        <div>
+          <label>Nom bulletin</label>
+          <input type="text" id="candBallotName" placeholder="Nom sur le bulletin">
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>Poste</label>
+            <select id="candOffice">
+              <option value="President">Président</option>
+              <option value="Senateur">Sénateur</option>
+              <option value="Depute">Député</option>
+              <option value="Magistrat">Magistrat</option>
+              <option value="CASEC">CASEC</option>
+              <option value="ASEC">ASEC</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Parti politique (ID)</label>
+            <input type="number" id="candPartyId" placeholder="Ex. 1">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label>Département</label>
+            <input type="text" id="candDepartment" placeholder="Ex. Ouest">
+          </div>
+
+          <div>
+            <label>Commune</label>
+            <input type="text" id="candCommune" placeholder="Ex. Port-au-Prince">
+          </div>
+        </div>
+
+        <div>
+          <label>Photo / URL photo</label>
+          <input type="text" id="candPhoto" placeholder="https://...">
+        </div>
+
+        <div class="row-actions">
+          <button onclick="saveCandidate()">Enregistrer le candidat</button>
+          <button class="success" onclick="loadCandidates()">Charger les candidats</button>
+        </div>
+
+        <h3>Liste des candidats</h3>
+        <pre id="candidateResult">—</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Dernières mises à jour</h2>
+      <pre id="recentUpdates">Chargement...</pre>
+
+      <h3>Journal rapide</h3>
+      <div class="panel-list">
+        <div class="list-item">
+          <span class="badge info">Président</span>
+          <div style="margin-top:8px;"><b>Suivi national</b></div>
+          <div class="small">Résultats agrégés au niveau pays.</div>
+        </div>
+
+        <div class="list-item">
+          <span class="badge ok">Sénateur</span>
+          <div style="margin-top:8px;"><b>Suivi départemental</b></div>
+          <div class="small">Chaque sénateur est lié au département.</div>
+        </div>
+
+        <div class="list-item">
+          <span class="badge warn">Député / Magistrat / CASEC / ASEC</span>
+          <div style="margin-top:8px;"><b>Suivi local</b></div>
+          <div class="small">Commune, section communale, centre et bureau.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
+function openTab(id, btn){
+  document.querySelectorAll(".tab-pane").forEach(el=>el.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(el=>el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  btn.classList.add("active");
+}
+
+function updateOfficeStat(){
+  const val=document.getElementById("office").value;
+  const map={
+    President:"Président",
+    Senateur:"Sénateur",
+    Depute:"Député",
+    Magistrat:"Magistrat",
+    CASEC:"CASEC",
+    ASEC:"ASEC"
+  };
+  document.getElementById("statOffice").textContent=map[val] || val;
+}
+
+function clearForm(){
+  document.getElementById("commune").value="";
+  document.getElementById("section").value="";
+  document.getElementById("centre").value="";
+  document.getElementById("bv").value="";
+  document.getElementById("pvcode").value="";
+  document.getElementById("votes").value="0";
+  document.getElementById("notes").value="";
+}
+
+
+function getScopeParams(){
+  const office = document.getElementById("office").value;
+  const dept = document.getElementById("dept").value;
+  const commune = document.getElementById("commune").value.trim();
+  const section = document.getElementById("section").value.trim();
+
+  const params = new URLSearchParams();
+
+  if (office) params.set("office", office);
+
+  if (office === "President") {
+    params.set("scope_level", "national");
+  } else if (office === "Senateur") {
+    params.set("scope_level", "department");
+    if (dept) params.set("dept_name", dept);
+  } else if (office === "Depute" || office === "Magistrat") {
+    params.set("scope_level", "commune");
+    if (dept) params.set("dept_name", dept);
+    if (commune) params.set("commune_name", commune);
+  } else if (office === "CASEC" || office === "ASEC") {
+    params.set("scope_level", "section");
+    if (dept) params.set("dept_name", dept);
+    if (commune) params.set("commune_name", commune);
+    if (section) params.set("section_name", section);
+  }
+
+  params.set("active_only", "true");
+  return params;
+}
+
+async function loadCandidatesForContext(){
+  const select = document.getElementById("candidate");
+  if (!select) return;
+
+  select.innerHTML = "<option value=''>Chargement...</option>";
+
+  try{
+    const params = getScopeParams();
+    const res = await fetch("/api/admin/candidates?" + params.toString());
+    const data = await res.json();
+
+    if (!data.ok) {
+      select.innerHTML = "<option value=''>Erreur chargement</option>";
+      return;
+    }
+
+    if (!data.candidates || !data.candidates.length) {
+      select.innerHTML = "<option value=''>Aucun candidat</option>";
+      return;
+    }
+
+    select.innerHTML = "";
+
+    data.candidates.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = `${c.ballot_name || ((c.first_name || "") + " " + (c.last_name || "")).trim()} — ${c.party_name || ""}`;
+      select.appendChild(opt);
+    });
+
+  }catch(err){
+    select.innerHTML = "<option value=''>Erreur serveur</option>";
+  }
+}
+
 
 async function sendResults(){
+  const dept=document.getElementById("dept").value;
+  const candidate_id=document.getElementById("candidate").value;
+  const votes=parseInt(document.getElementById("votes").value || "0");
+  const token=document.getElementById("token").value.trim();
+  const office=document.getElementById("office").value;
+  const commune=document.getElementById("commune").value.trim();
+  const section=document.getElementById("section").value.trim();
+  const centre=document.getElementById("centre").value.trim();
+  const bv=document.getElementById("bv").value.trim();
+  const pvcode=document.getElementById("pvcode").value.trim();
+  const notes=document.getElementById("notes").value.trim();
 
-const dept=document.getElementById("dept").value;
-const candidate=document.getElementById("candidate").value;
-const votes=parseInt(document.getElementById("votes").value);
-const token=document.getElementById("token").value.trim();
+  const out=document.getElementById("result");
 
-const out=document.getElementById("result");
+  try{
+    const res=await fetch("/api/submit-results",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-admin-token":token
+      },
+      body:JSON.stringify({
+        dept_iso:dept,
+        candidate_id:candidate_id,
+        votes:votes,
+        office:office,
+        commune:commune,
+        section:section,
+        centre:centre,
+        bv:bv,
+        pv_code:pvcode,
+        notes:notes
+      })
+    });
 
-try{
+    const data=await res.json();
+    out.textContent=JSON.stringify(data,null,2);
+    loadRecentUpdates();
 
-const res=await fetch("/api/submit-results",{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"x-admin-token":token
-},
-body:JSON.stringify({
-dept_iso:dept,
-candidate:candidate,
-votes:votes
-})
-});
-
-const data=await res.json();
-
-out.textContent=JSON.stringify(data,null,2);
-
-loadRecentUpdates();
-
-}catch(err){
-
-out.textContent="Erreur réseau : "+err.message;
-
+  }catch(err){
+    out.textContent="Erreur réseau : "+err.message;
+  }
 }
-
-}
-
-
 
 async function loadRecentUpdates(){
+  const token=document.getElementById("token").value.trim();
+  const out=document.getElementById("recentUpdates");
 
-const token=document.getElementById("token").value.trim();
-const out=document.getElementById("recentUpdates");
+  if(!token){
+    out.textContent="Entre d'abord le token admin.";
+    return;
+  }
 
-if(!token){
+  try{
+    const res=await fetch("/api/admin/recent",{
+      headers:{ "x-admin-token":token }
+    });
 
-out.textContent="Entre d'abord le token admin.";
+    const data=await res.json();
 
-return;
+    if(!data.ok){
+      out.textContent=JSON.stringify(data,null,2);
+      return;
+    }
 
+    if(!data.items || !data.items.length){
+      out.textContent="Aucune mise à jour.";
+      return;
+    }
+
+    out.textContent=data.items.map(row=>{
+      const d=new Date(row.updated_at).toLocaleString("fr-FR");
+      return `${d} | ${row.dept_iso} | ${row.candidate} | ${row.votes} votes`;
+    }).join("\\n");
+
+  }catch(err){
+    out.textContent="Erreur : "+err.message;
+  }
 }
+
+async function saveParty(){
+  const payload={
+    name:document.getElementById("partyName").value.trim(),
+    acronym:document.getElementById("partyAcronym").value.trim(),
+    color:document.getElementById("partyColor").value.trim(),
+    logo:document.getElementById("partyLogo").value.trim(),
+    address:document.getElementById("partyAddress").value.trim(),
+    phone:document.getElementById("partyPhone").value.trim(),
+    email:document.getElementById("partyEmail").value.trim()
+  };
+
+  const out=document.getElementById("partyResult");
+
+  try{
+    const res=await fetch("/api/admin/party",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json();
+    out.textContent=JSON.stringify(data,null,2);
+
+
+async function loadCandidatesForOffice(){
+
+const office=document.getElementById("office").value;
+const select=document.getElementById("candidate");
+
+select.innerHTML="<option>Chargement...</option>";
 
 try{
 
-const res=await fetch("/api/admin/recent",{
-headers:{
-"x-admin-token":token
-}
-});
-
+const res=await fetch(`/api/admin/candidates?office=${office}`);
 const data=await res.json();
 
 if(!data.ok){
-
-out.textContent=JSON.stringify(data,null,2);
-
+select.innerHTML="<option>Erreur chargement</option>";
 return;
-
 }
 
-if(!data.items || !data.items.length){
-
-out.textContent="Aucune mise à jour.";
-
+if(!data.candidates.length){
+select.innerHTML="<option>Aucun candidat</option>";
 return;
-
 }
 
-out.textContent=data.items.map(row=>{
+select.innerHTML="";
 
-const d=new Date(row.updated_at).toLocaleString("fr-FR");
+data.candidates.forEach(c=>{
 
-return `${d} | ${row.dept_iso} | ${row.candidate} | ${row.votes} votes`;
+const opt=document.createElement("option");
 
-}).join("\n");
+opt.value=c.id;
+opt.textContent=`${c.first_name} ${c.last_name} — ${c.party_name || ""}`;
+
+select.appendChild(opt);
+
+});
 
 }catch(err){
 
-out.textContent="Erreur : "+err.message;
+select.innerHTML="<option>Erreur serveur</option>";
 
 }
 
 }
 
+
+document.getElementById("dept")?.addEventListener("change", loadCandidatesForContext);
+document.getElementById("commune")?.addEventListener("input", loadCandidatesForContext);
+document.getElementById("section")?.addEventListener("input", loadCandidatesForContext);
+
+loadParties();
+  }catch(err){
+    out.textContent="Erreur : "+err.message;
+  }
+}
+
+async function loadParties(){
+  const out=document.getElementById("partyResult");
+  try{
+    const res=await fetch("/api/admin/parties");
+    const data=await res.json();
+    out.textContent=JSON.stringify(data,null,2);
+  }catch(err){
+    out.textContent="Erreur : "+err.message;
+  }
+}
+
+async function saveCandidate(){
+  const payload={
+    first_name:document.getElementById("candFirstName").value.trim(),
+    last_name:document.getElementById("candLastName").value.trim(),
+    ballot_name:document.getElementById("candBallotName").value.trim(),
+    office:document.getElementById("candOffice").value.trim(),
+    department:document.getElementById("candDepartment").value.trim(),
+    commune:document.getElementById("candCommune").value.trim(),
+    photo:document.getElementById("candPhoto").value.trim(),
+    party_id:parseInt(document.getElementById("candPartyId").value || "0")
+  };
+
+  const out=document.getElementById("candidateResult");
+
+  try{
+    const res=await fetch("/api/admin/candidate",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json();
+    out.textContent=JSON.stringify(data,null,2);
+    loadCandidates();
+  }catch(err){
+    out.textContent="Erreur : "+err.message;
+  }
+}
+
+async function loadCandidates(){
+  const out=document.getElementById("candidateResult");
+  try{
+    const res=await fetch("/api/admin/candidates");
+    const data=await res.json();
+    out.textContent=JSON.stringify(data,null,2);
+  }catch(err){
+    out.textContent="Erreur : "+err.message;
+  }
+}
+
+
+
+async function loadCandidatesForOffice(){
+
+const office=document.getElementById("office").value;
+const select=document.getElementById("candidate");
+
+select.innerHTML="<option>Chargement...</option>";
+
+try{
+
+const res=await fetch(`/api/admin/candidates?office=${office}`);
+const data=await res.json();
+
+if(!data.ok){
+select.innerHTML="<option>Erreur chargement</option>";
+return;
+}
+
+if(!data.candidates.length){
+select.innerHTML="<option>Aucun candidat</option>";
+return;
+}
+
+select.innerHTML="";
+
+data.candidates.forEach(c=>{
+
+const opt=document.createElement("option");
+
+opt.value=c.id;
+opt.textContent=`${c.first_name} ${c.last_name} — ${c.party_name || ""}`;
+
+select.appendChild(opt);
+
+});
+
+}catch(err){
+
+select.innerHTML="<option>Erreur serveur</option>";
+
+}
+
+}
+
+loadParties();
+loadCandidates();
 setInterval(loadRecentUpdates,5000);
-
+loadCandidatesForContext();
+loadCandidatesForOffice();
 </script>
 
 </body>

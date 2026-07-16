@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juno7 Elections 2026</title>
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  />
+
+  <style>
+    :root{
+      --bg:#f8fafc;
+      --panel:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --border:#e2e8f0;
+      --ok:#16a34a;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{
+      max-width:1440px;
+      margin:0 auto;
+      padding:0 20px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      padding:16px 0;
+    }
+    .brand{
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-0.02em;
+    }
+    .live{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#fff;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:#94a3b8;
+    }
+    .dot.on{
+      background:var(--ok);
+      box-shadow:0 0 0 4px rgba(22,163,74,.15);
+    }
+    .race-menu{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+    .race-menu a{
+      text-decoration:none;
+      color:var(--text);
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:600;
+    }
+
+    main.wrap{
+      padding-top:22px;
+      padding-bottom:30px;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:20px;
+      margin-bottom:20px;
+    }
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:0 4px 18px rgba(15,23,42,.04);
+    }
+    .hero-left{
+      padding:28px;
+      background:linear-gradient(135deg,#0f172a 0%,#111827 55%,#1e293b 100%);
+      color:#fff;
+    }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.08);
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:12px;
+      color:#cbd5e1;
+    }
+    .hero h1{
+      margin:18px 0 10px;
+      font-size:44px;
+      line-height:1;
+      letter-spacing:-0.04em;
+    }
+    .hero p{
+      margin:0;
+      max-width:760px;
+      color:#cbd5e1;
+      line-height:1.6;
+      font-size:15px;
+    }
+    .search-wrap{
+      margin-top:20px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .search{
+      flex:1 1 340px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      padding:12px 14px;
+    }
+    .search input{
+      flex:1;
+      border:0;
+      background:transparent;
+      color:#fff;
+      outline:none;
+      font-size:14px;
+    }
+    .search input::placeholder{ color:#94a3b8; }
+    .search-btn{
+      border:0;
+      background:#fff;
+      color:#111827;
+      border-radius:18px;
+      padding:12px 16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .hero-right{
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .stat-card{
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:16px;
+      background:#fff;
+    }
+    .stat-card .k{
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    .stat-card .v{
+      margin-top:6px;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-0.03em;
+    }
+    .stat-card .s{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:20px;
+    }
+    .map-panel{
+      padding:18px;
+    }
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .panel-title{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-0.03em;
+    }
+    .panel-sub{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:4px;
+    }
+    #map{
+      height:680px;
+      border-radius:20px;
+      overflow:hidden;
+      border:1px solid var(--border);
+      background:#f8fafc;
+    }
+
+    .side-panel{
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .search-results,
+    .dept-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .result-item,
+    .dept-item{
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+      background:#fff;
+    }
+    .result-item strong,
+    .dept-item strong{
+      display:block;
+      font-size:16px;
+    }
+    .muted{
+      color:var(--muted);
+      font-size:13px;
+    }
+    .kpi-row{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      font-size:13px;
+    }
+
+    .legend{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .legend span{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:999px;
+      padding:6px 10px;
+    }
+    .sw{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      display:inline-block;
+    }
+
+    .leaflet-popup-content-wrapper { border-radius: 16px; }
+    .leaflet-popup-content { margin: 12px 14px; font-size: 14px; }
+
+    @media (max-width: 1100px){
+      .hero, .grid{
+        grid-template-columns:1fr;
+      }
+      .hero h1{
+        font-size:34px;
+      }
+      #map{
+        height:560px;
+      }
+      .race-menu{
+        margin-left:0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">Juno7 Elections 2026</div>
+
+        <span class="live">
+          <span class="dot" id="liveDot"></span>
+          <span id="liveText">LIVE : connexion…</span>
+        </span>
+
+        <nav class="race-menu">
+          <a href="#">Président</a>
+          <a href="#">Sénateur</a>
+          <a href="#">Député</a>
+          <a href="#">Magistrat</a>
+          <a href="#">CASEC</a>
+          <a href="#">ASEC</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="panel hero-left">
+        <div class="eyebrow">
+          <span class="dot on"></span>
+          Résultats en direct • Juno7 Election Desk
+        </div>
+
+        <h1>Résultats en direct, état du dépouillement, cartes territoriales et tendances.</h1>
+
+        <div class="search-wrap">
+          <div class="search">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M21 21l-4.35-4.35"></path>
+            </svg>
+            <input id="globalSearch" type="text" placeholder="Rechercher une ville, une commune ou un département" />
+          </div>
+          <button class="search-btn" id="searchBtn">Rechercher</button>
+        </div>
+
+        <div class="legend">
+          <span><i class="sw" style="background:#2563eb"></i> A</span>
+          <span><i class="sw" style="background:#dc2626"></i> B</span>
+          <span><i class="sw" style="background:#16a34a"></i> C</span>
+          <span><i class="sw" style="background:#7c3aed"></i> D</span>
+          <span><i class="sw" style="background:#ea580c"></i> E</span>
+          <span><i class="sw" style="background:#000000"></i> Égalité</span>
+        </div>
+      </div>
+
+      <div class="panel hero-right">
+        <div class="stat-card">
+          <div class="k">Projection nationale</div>
+          <div class="v" id="heroLeader">Chargement…</div>
+          <div class="s" id="heroLeaderMeta">Résultats nationaux en direct</div>
+        </div>
+        <div class="stat-card">
+          <div class="k">Votes valides</div>
+          <div class="v" id="heroVotes">—</div>
+          <div class="s" id="heroProgress">Chargement du dépouillement…</div>
+        </div>
+        <div class="stat-card">
+          <div class="k">Carte nationale</div>
+          <div class="v">Départements & communes</div>
+          <div class="s">Clique une zone pour voir les résultats détaillés.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel map-panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Résultats par département</div>
+            <div class="panel-sub" id="statusText">Chargement de la carte interactive…</div>
+          </div>
+        </div>
+
+        <div id="map"></div>
+      </div>
+
+      <aside class="panel side-panel">
+        <div>
+          <div class="panel-title" style="font-size:20px;">Recherche intelligente</div>
+          <div class="panel-sub">Résultats par ville, commune ou département.</div>
+        </div>
+
+        <div class="search-results" id="searchResults">
+          <div class="result-item">
+            <strong>Port-au-Prince</strong>
+            <div class="muted">Commune • Président</div>
+            <div class="kpi-row">
+              <span>En tête : A</span>
+              <span>54.2%</span>
+            </div>
+          </div>
+          <div class="result-item">
+            <strong>Ouest</strong>
+            <div class="muted">Département • Sénateur</div>
+            <div class="kpi-row">
+              <span>En tête : B</span>
+              <span>48.8%</span>
+            </div>
+          </div>
+          <div class="result-item">
+            <strong>Cap-Haïtien</strong>
+            <div class="muted">Ville • Magistrat</div>
+            <div class="kpi-row">
+              <span>En tête : C</span>
+              <span>57.3%</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel-title" style="font-size:20px;">Tableau départements</div>
+          <div class="panel-sub">Vue rapide des départements les plus suivis.</div>
+        </div>
+
+        <div class="dept-list" id="deptList">
+          <div class="dept-item">
+            <strong>Chargement…</strong>
+            <div class="muted">Récupération des résultats live</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <script>
+    (function () {
+      const liveDot = document.getElementById("liveDot");
+      const liveText = document.getElementById("liveText");
+      const statusText = document.getElementById("statusText");
+
+      const heroLeader = document.getElementById("heroLeader");
+      const heroLeaderMeta = document.getElementById("heroLeaderMeta");
+      const heroVotes = document.getElementById("heroVotes");
+      const heroProgress = document.getElementById("heroProgress");
+      const deptList = document.getElementById("deptList");
+      const searchInput = document.getElementById("globalSearch");
+      const searchBtn = document.getElementById("searchBtn");
+      const searchResults = document.getElementById("searchResults");
+
+      const setLive = (ok, txt) => {
+        if (liveDot) liveDot.classList.toggle("on", !!ok);
+        if (liveText) liveText.textContent = txt || (ok ? "LIVE : connecté" : "LIVE : hors ligne");
+      };
+
+      const setStatus = (txt) => {
+        if (statusText) statusText.textContent = txt;
+      };
+
+      const safeNum = (v) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
+      };
+
+      const clamp01 = (x) => Math.max(0, Math.min(1, x));
+      const fmtInt = (n) => new Intl.NumberFormat("fr-FR").format(Math.round(safeNum(n)));
+      const fmtPct = (x) => (Math.round(clamp01(x) * 1000) / 10).toFixed(1) + "%";
+
+      const deptResults = {};
+      const deptProgress = {};
+
+      const CANDIDATE_COLORS = {
+        A: "#2563eb",
+        B: "#dc2626",
+        C: "#16a34a",
+        D: "#7c3aed",
+        E: "#ea580c",
+      };
+
+      function hexToRgb(hex) {
+        const h = String(hex).replace("#", "").trim();
+        if (h.length !== 6) return { r: 100, g: 116, b: 139 };
+        return {
+          r: parseInt(h.slice(0, 2), 16),
+          g: parseInt(h.slice(2, 4), 16),
+          b: parseInt(h.slice(4, 6), 16),
+        };
+      }
+
+      function rgbToHex({ r, g, b }) {
+        const to2 = (n) => n.toString(16).padStart(2, "0");
+        return "#" + to2(r) + to2(g) + to2(b);
+      }
+
+      function mixHex(c1, c2, t) {
+        t = clamp01(t);
+        const a = hexToRgb(c1);
+        const b = hexToRgb(c2);
+        return rgbToHex({
+          r: Math.round(a.r + (b.r - a.r) * t),
+          g: Math.round(a.g + (b.g - a.g) * t),
+          b: Math.round(a.b + (b.b - a.b) * t),
+        });
+      }
+
+      function getDeptName(props = {}) {
+        const FR_BY_ISO = {
+          "HT-AR": "Artibonite",
+          "HT-CE": "Centre",
+          "HT-GA": "Grand’Anse",
+          "HT-NI": "Nippes",
+          "HT-ND": "Nord",
+          "HT-NE": "Nord-Est",
+          "HT-NO": "Nord-Ouest",
+          "HT-OU": "Ouest",
+          "HT-SD": "Sud",
+          "HT-SE": "Sud-Est",
+        };
+        if (props.ISO_Code && FR_BY_ISO[props.ISO_Code]) return FR_BY_ISO[props.ISO_Code];
+
+        const candidates = [
+          props.NAME_1, props.name_1, props.ADM1_FR, props.ADM1_EN,
+          props.NAME, props.name, props.NOM_DEP, props.DEPT
+        ].filter(Boolean);
+
+        if (candidates.length) return String(candidates[0]).replace(/\s*Department\s*$/i, "").trim();
+        return "Département";
+      }
+
+      function getFillColorByIso(iso) {
+        const r = iso && deptResults[iso] ? deptResults[iso] : null;
+        if (!r) return "#e2e8f0";
+        if (r.isTie) return "#000000";
+        if (!r.winner) return "#e2e8f0";
+
+        const base = CANDIDATE_COLORS[r.winner] || "#64748b";
+        const pct = clamp01(safeNum(r.winnerPct));
+        return mixHex("#f8fafc", base, clamp01(0.45 + pct * 0.55));
+      }
+
+      function buildPopupHTML(props) {
+        const name = getDeptName(props);
+        const iso = props.ISO_Code || "";
+        const r = iso && deptResults[iso] ? deptResults[iso] : null;
+        const p = iso && deptProgress[iso] ? deptProgress[iso] : null;
+
+        if (!r) {
+          return `<strong>${name}</strong><br><small>${iso}</small><br><em>Aucun résultat</em>`;
+        }
+
+        const winner = r.isTie ? "Égalité" : (r.winner || "—");
+        const pct = fmtPct(r.winnerPct);
+        const total = fmtInt(r.total || 0);
+
+        let progressHtml = "";
+        if (p) {
+          progressHtml = `
+            <div style="margin-top:8px; font-size:13px; color:#334155">
+              PV traités : <b>${fmtInt(p.processed || 0)}</b> / <b>${fmtInt(p.total || 0)}</b><br>
+              Dépouillement : <b>${safeNum(p.pct).toFixed(1)}%</b>
+            </div>
+          `;
+        }
+
+        let detail = "";
+        const entries = Object.entries(r.byCandidate || {})
+          .map(([k,v]) => [k, safeNum(v)])
+          .sort((a,b)=>b[1]-a[1]);
+
+        if (entries.length) {
+          detail = "<div style='margin-top:8px; font-size:13px; color:#334155'>";
+          for (const [k,v] of entries.slice(0,5)) {
+            detail += `<div>${k}: <b>${fmtInt(v)}</b></div>`;
+          }
+          detail += "</div>";
+        }
+
+        return `
+          <strong>${name}</strong><br>
+          <small>${iso}</small>
+          <div style="margin-top:8px">
+            ${r.isTie ? `Résultat: <b>${winner}</b><br>` : `Gagnant: <b>${winner}</b> (${pct})<br>`}
+            Votes: <b>${total}</b>
+          </div>
+          ${progressHtml}
+          ${detail}
+        `;
+      }
+
+      function updateDeptList() {
+        const items = Object.entries(deptResults)
+          .map(([iso, r]) => {
+            const progress = deptProgress[iso] || { processed: 0, total: 0, pct: 0 };
+            return { iso, ...r, progress };
+          })
+          .sort((a, b) => safeNum(b.total) - safeNum(a.total))
+          .slice(0, 6);
+
+        if (!items.length) {
+          deptList.innerHTML = `
+            <div class="dept-item">
+              <strong>Aucun résultat</strong>
+              <div class="muted">Les départements apparaîtront ici dès qu'ils seront chargés.</div>
+            </div>
+          `;
+          return;
+        }
+
+        deptList.innerHTML = items.map(item => `
+          <div class="dept-item">
+            <strong>${item.iso}</strong>
+            <div class="muted">${item.isTie ? "Égalité" : "Leader " + item.winner} • ${fmtInt(item.total)} votes</div>
+            <div class="kpi-row">
+              <span>${item.progress.processed} / ${item.progress.total} PV</span>
+              <span>${safeNum(item.progress.pct).toFixed(1)}%</span>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      async function loadNationalHero() {
+        try {
+          const [nationalRes, progressRes] = await Promise.all([
+            fetch("/api/results/national-live", { cache: "no-store" }),
+            fetch("/api/results/progress", { cache: "no-store" })
+          ]);
+
+          if (nationalRes.ok) {
+            const data = await nationalRes.json();
+            if (data.ok && Array.isArray(data.ranking) && data.ranking.length) {
+              if (data.isTie) {
+                heroLeader.textContent = "Résultat national : Égalité";
+                heroLeaderMeta.textContent = "Aucun leader provisoire";
+              } else {
+                heroLeader.textContent = "En tête : " + (data.leader || data.ranking[0].candidate);
+                heroLeaderMeta.textContent = fmtPct(data.ranking[0].pct) + " • " + fmtInt(data.ranking[0].votes) + " voix";
+              }
+              heroVotes.textContent = fmtInt(data.totalVotes || 0);
+            }
+          }
+
+          if (progressRes.ok) {
+            const p = await progressRes.json();
+            if (p.ok) {
+              heroProgress.textContent = "PV traités : " + fmtInt(p.processed) + " / " + fmtInt(p.total) + " • " + p.pct + "%";
+            }
+          }
+        } catch (e) {
+          heroLeader.textContent = "Indisponible";
+          heroLeaderMeta.textContent = "Les résultats nationaux ne sont pas encore chargés";
+          heroProgress.textContent = "Dépouillement indisponible";
+        }
+      }
+
+      function runSearch() {
+        const q = (searchInput.value || "").trim().toLowerCase();
+        if (!q) return;
+
+        const samples = [
+          { type: "Commune", name: "Port-au-Prince", race: "Président", leader: "A", pct: "54.2%" },
+          { type: "Département", name: "Ouest", race: "Sénateur", leader: "B", pct: "48.8%" },
+          { type: "Ville", name: "Cap-Haïtien", race: "Magistrat", leader: "C", pct: "57.3%" },
+          { type: "Commune", name: "Gros Morne", race: "Président", leader: "Égalité", pct: "50.0%" }
+        ];
+
+        const results = samples.filter(item => item.name.toLowerCase().includes(q));
+
+        searchResults.innerHTML = results.length
+          ? results.map(item => `
+              <div class="result-item">
+                <strong>${item.name}</strong>
+                <div class="muted">${item.type} • ${item.race}</div>
+                <div class="kpi-row">
+                  <span>En tête : ${item.leader}</span>
+                  <span>${item.pct}</span>
+                </div>
+              </div>
+            `).join("")
+          : `
+              <div class="result-item">
+                <strong>Aucun résultat</strong>
+                <div class="muted">Aucune zone ne correspond à ta recherche.</div>
+              </div>
+            `;
+      }
+
+      searchBtn.addEventListener("click", runSearch);
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") runSearch();
+      });
+
+      const map = L.map("map", { zoomControl: true }).setView([19.0, -72.7], 8);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(map);
+
+      let geoLayer = null;
+
+      function styleFn(feature) {
+        const props = feature?.properties || {};
+        const iso = props.ISO_Code || "";
+        return {
+          weight: 2,
+          color: "#0f172a",
+          opacity: 1,
+          fillOpacity: 0.85,
+          fillColor: getFillColorByIso(iso)
+        };
+      }
+
+      async function fetchResults() {
+        try {
+          const [r1, r2] = await Promise.all([
+            fetch("/api/results/departments-live", { cache: "no-store" }),
+            fetch("/api/results/departments-progress", { cache: "no-store" })
+          ]);
+
+          if (!r1.ok) throw new Error("HTTP " + r1.status);
+
+          const j1 = await r1.json();
+          if (!j1.ok || typeof j1.items !== "object") throw new Error("Réponse invalide résultats");
+
+          Object.keys(deptResults).forEach(k => delete deptResults[k]);
+          Object.assign(deptResults, j1.items || {});
+
+          if (r2.ok) {
+            const j2 = await r2.json();
+            if (j2.ok && typeof j2.items === "object") {
+              Object.keys(deptProgress).forEach(k => delete deptProgress[k]);
+              Object.assign(deptProgress, j2.items || {});
+            }
+          }
+
+          if (geoLayer) {
+            geoLayer.setStyle(styleFn);
+          }
+
+          updateDeptList();
+          setLive(true, "LIVE : connecté");
+          setStatus("Carte interactive chargée et mise à jour.");
+        } catch (err) {
+          console.warn(err);
+          setLive(false, "LIVE : hors ligne");
+          setStatus("Résultats indisponibles pour le moment.");
+        }
+      }
+
+      fetch("/geo/HTI_ADM1.geojson", { cache: "no-store" })
+        .then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then((geo) => {
+          geoLayer = L.geoJSON(geo, {
+            style: styleFn,
+            onEachFeature: (feature, layer) => {
+              const props = feature.properties || {};
+              const name = getDeptName(props);
+
+              layer.bindTooltip(name, { sticky: true });
+
+              layer.on("click", () => {
+                layer.bindPopup(buildPopupHTML(props)).openPopup();
+              });
+
+              layer.on("mouseover", () => {
+                const iso = props.ISO_Code || "";
+                layer.setStyle({
+                  weight: 3,
+                  color: "#000000",
+                  fillOpacity: 1,
+                  fillColor: getFillColorByIso(iso)
+                });
+              });
+
+              layer.on("mouseout", () => {
+                geoLayer.resetStyle(layer);
+              });
+            }
+          }).addTo(map);
+
+          map.fitBounds(geoLayer.getBounds(), { padding: [20, 20] });
+          setStatus("Carte interactive prête.");
+          fetchResults();
+          loadNationalHero();
+
+          setInterval(fetchResults, 3000);
+          setInterval(loadNationalHero, 3000);
+        })
+        .catch((e) => {
+          console.error(e);
+          setLive(false, "LIVE : hors ligne");
+          setStatus("Impossible de charger la carte.");
+        });
+    })();
+  </script>
+</body>
+</html>

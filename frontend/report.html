@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport officiel — Juno7 Elections</title>
+<style>
+:root{
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#dbe3ee;
+  --shadow:0 10px 24px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#0f172a;color:#fff;padding:24px 32px}
+header h1{margin:0;font-size:30px}
+header p{margin:8px 0 0;color:#cbd5e1}
+.wrap{max-width:1300px;margin:24px auto;padding:0 20px 40px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:24px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.stat{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fafcff}
+.label{font-size:12px;color:var(--muted)}
+.value{margin-top:6px;font-size:24px;font-weight:700}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid var(--border);padding:10px;text-align:left}
+th{background:#eef2f7}
+.small{color:var(--muted);font-size:13px}
+@media (max-width:900px){
+  .grid,.grid3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Juno7 Elections — Rapport officiel</h1>
+  <p id="subtitle">Chargement du rapport…</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="grid">
+      <div>
+        <div class="small">Date</div>
+        <div id="electionDate" class="value">—</div>
+      </div>
+      <div>
+        <div class="small">Tour</div>
+        <div id="roundLabel" class="value">—</div>
+      </div>
+      <div>
+        <div class="small">Type d’élection</div>
+        <div id="electionType" class="value">—</div>
+      </div>
+      <div>
+        <div class="small">Poste</div>
+        <div id="office" class="value">—</div>
+      </div>
+      <div>
+        <div class="small">Niveau territorial</div>
+        <div id="territoryLevel" class="value">—</div>
+      </div>
+      <div>
+        <div class="small">Territoire</div>
+        <div id="territoryName" class="value">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Statistiques générales</h2>
+    <div class="grid3">
+      <div class="stat"><div class="label">PV non reçus</div><div id="pv1" class="value">—</div></div>
+      <div class="stat"><div class="label">PV mis à l’écart</div><div id="pv2" class="value">—</div></div>
+      <div class="stat"><div class="label">PV inclus</div><div id="pv3" class="value">—</div></div>
+      <div class="stat"><div class="label">Choix exprimés</div><div id="expr" class="value">—</div></div>
+      <div class="stat"><div class="label">Aucun candidat</div><div id="nocand" class="value">—</div></div>
+      <div class="stat"><div class="label">Votes valides</div><div id="valid" class="value">—</div></div>
+      <div class="stat"><div class="label">Votes nuls</div><div id="nullv" class="value">—</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Participants</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Parti</th>
+          <th>Candidat</th>
+          <th>Votes</th>
+          <th>%</th>
+        </tr>
+      </thead>
+      <tbody id="candidateRows">
+        <tr><td colspan="5">Chargement…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function fmt(n){
+  return new Intl.NumberFormat("fr-FR").format(Number(n || 0));
+}
+async function loadReport(){
+  const params = new URLSearchParams(location.search);
+  const id = params.get("id") || "1";
+
+  const res = await fetch("/api/reports/" + id, { cache: "no-store" });
+  const data = await res.json();
+
+  if(!data.ok){
+    document.getElementById("subtitle").textContent = "Rapport introuvable";
+    return;
+  }
+
+  const r = data.report;
+  const cands = data.candidates || [];
+
+  document.getElementById("subtitle").textContent = `${r.office} — ${r.territory_name}`;
+  document.getElementById("electionDate").textContent = r.election_date || "—";
+  document.getElementById("roundLabel").textContent = r.round_label || "—";
+  document.getElementById("electionType").textContent = r.election_type || "—";
+  document.getElementById("office").textContent = r.office || "—";
+  document.getElementById("territoryLevel").textContent = r.territory_level || "—";
+  document.getElementById("territoryName").textContent = r.territory_name || "—";
+
+  document.getElementById("pv1").textContent = fmt(r.pv_not_received);
+  document.getElementById("pv2").textContent = fmt(r.pv_excluded);
+  document.getElementById("pv3").textContent = fmt(r.pv_included);
+  document.getElementById("expr").textContent = fmt(r.expressed_choice);
+  document.getElementById("nocand").textContent = fmt(r.no_candidate_votes);
+  document.getElementById("valid").textContent = fmt(r.valid_votes);
+  document.getElementById("nullv").textContent = fmt(r.null_votes);
+
+  document.getElementById("candidateRows").innerHTML = cands.map(c => `
+    <tr>
+      <td>${c.candidate_no ?? ""}</td>
+      <td>${c.party_name ?? ""}</td>
+      <td>${c.candidate_name ?? ""}</td>
+      <td>${fmt(c.votes)}</td>
+      <td>${c.pct ?? ""}%</td>
+    </tr>
+  `).join("");
+}
+loadReport();
+</script>
+
+</body>
+</html>

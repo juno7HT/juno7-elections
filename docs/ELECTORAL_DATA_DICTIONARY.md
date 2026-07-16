@@ -331,7 +331,7 @@ Sensibilite: publique avec metadonnees internes.
 
 Suppression/archivage: archivage logique.
 
-### coalition_parties
+### coalition_members
 
 Objectif: lier les coalitions a leurs partis membres.
 
@@ -354,7 +354,7 @@ Contraintes:
 
 Index:
 
-- `idx_coalition_parties_party`.
+- `idx_coalition_members_party`.
 
 Sensibilite: publique/interne selon periode.
 

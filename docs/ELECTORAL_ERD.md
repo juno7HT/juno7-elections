@@ -28,8 +28,8 @@ erDiagram
     TERRITORIES ||--o{ POLLING_CENTERS : "hosts"
     POLLING_CENTERS ||--o{ POLLING_STATIONS : "contains"
 
-    POLITICAL_PARTIES ||--o{ COALITION_PARTIES : "member"
-    COALITIONS ||--o{ COALITION_PARTIES : "groups"
+    POLITICAL_PARTIES ||--o{ COALITION_MEMBERS : "member"
+    COALITIONS ||--o{ COALITION_MEMBERS : "groups"
     PERSONS ||--o{ CANDIDACIES : "stands as"
     ELECTIONS ||--o{ CANDIDACIES : "has"
     ELECTION_ROUNDS ||--o{ CANDIDACIES : "optional round"
@@ -183,7 +183,7 @@ erDiagram
         timestamptz archived_at
     }
 
-    COALITION_PARTIES {
+    COALITION_MEMBERS {
         bigint id PK
         bigint coalition_id FK
         bigint party_id FK

@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const Fastify = require("fastify");
 const fastifyStatic = require("@fastify/static");
 const { Pool } = require("pg");
+const { registerV2ReadApi } = require("./src/v2/routes");
 
 const app = Fastify({ logger: true });
 
@@ -228,6 +229,10 @@ app.register(fastifyStatic, {
   root: path.join(__dirname, "frontend"),
   prefix: "/",
 });
+
+if (process.env.V2_READ_API === "true") {
+  registerV2ReadApi(app, { env: process.env });
+}
 
 async function ensureSchema() {
   await pool.query(`

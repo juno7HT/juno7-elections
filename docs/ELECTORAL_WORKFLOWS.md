@@ -15,11 +15,11 @@ Le cycle cible est pilote par `elections.status` et `election_rounds.status`. Un
 | Scrutin ouvert | Vote en cours | `election_rounds` | Suivi operationnel |
 | Depouillement | Production locale des PV | `expected_pvs` | PV papier ou numerique disponible |
 | Reception des PV | Transmission et enregistrement | `pv_submissions`, `pv_documents` | PV recu et qualifie |
-| Verification | Saisie, controles et validation | `pv_results`, `pv_candidate_results`, `pv_validations` | Donnees verifiees ou contestees |
-| Consolidation | Selection des donnees retenues | `pv_results`, `result_corrections` | Resultats retenus |
-| Publication provisoire | Version publique provisoire | `publication_batches`, `publication_batch_items` | Resultats publics provisoires |
-| Contestation | Traitement des recours et corrections | `pv_validations`, `result_corrections` | Decisions tracees |
-| Publication definitive | Version finale | `publication_batches` | Resultats publics definitifs |
+| Verification | Saisie, controles et validation | `pv_results`, `pv_candidate_results`, `pv_validation_checks`, `pv_anomalies`, `pv_validations` | Donnees verifiees ou contestees |
+| Consolidation | Selection des donnees retenues | `pv_results`, `pv_decisions`, `result_corrections` | Resultats retenus |
+| Publication provisoire | Version publique provisoire | `publication_batches`, `publication_batch_items`, `published_result_snapshots` | Resultats publics provisoires |
+| Contestation | Traitement des recours et corrections | `pv_anomalies`, `pv_validations`, `pv_decisions`, `result_corrections`, `result_correction_items` | Decisions tracees |
+| Publication definitive | Version finale | `publication_batches`, `published_result_snapshots` | Resultats publics definitifs |
 | Archivage | Conservation et gel | toutes tables metier, `audit_logs` | Dossier electoral archivé |
 
 ## 2. Workflow complet d'un PV
@@ -34,7 +34,7 @@ Le cycle cible est pilote par `elections.status` et `election_rounds.status`. Un
    - poste;
    - circonscription;
    - bureau de vote.
-5. Chaque PV attendu recoit un `pv_code` unique dans le tour.
+5. Chaque PV attendu recoit un `expected_pv_code` unique dans le tour.
 
 Statut: `expected`.
 
@@ -43,7 +43,7 @@ Statut: `expected`.
 1. Un agent terrain ou un centre de scan transmet un document.
 2. Le systeme cree `pv_submissions`.
 3. Le document est attache dans `pv_documents`.
-4. Le systeme tente de rapprocher `received_pv_code` d'un `expected_pvs.pv_code`.
+4. Le systeme tente de rapprocher `received_pv_code` d'un `expected_pvs.expected_pv_code`.
 5. Les controles initiaux qualifient:
    - canal de transmission;
    - heure de reception;
@@ -51,14 +51,14 @@ Statut: `expected`.
    - doublon potentiel;
    - PV hors referentiel.
 
-Statuts possibles: `received`, `contested`, `rejected`.
+Statuts possibles de `processing_status`: `received`, `matched`, `contested`, `rejected`.
 
 ### 2.3 Saisie
 
 1. Un operateur data entry ouvre une submission recue.
-2. Il saisit les compteurs du PV dans `pv_results` avec `data_layer = 'entered'`.
+2. Il saisit les compteurs du PV dans `pv_results` avec `result_layer = 'entered'`.
 3. Il saisit les votes par candidature dans `pv_candidate_results`.
-4. Les controles automatiques detectent anomalies et ecarts.
+4. Les controles automatiques creent des `pv_validation_checks` et, si necessaire, des `pv_anomalies`.
 5. Le PV passe en `entered` ou `to_verify`.
 
 Regles:
@@ -70,9 +70,9 @@ Regles:
 ### 2.4 Verification
 
 1. Un verificateur compare le document source, les donnees declarees et les donnees saisies.
-2. Il cree une decision dans `pv_validations`.
+2. Il cree une validation dans `pv_validations`.
 3. Si les controles passent, un `pv_results` de couche `verified` est cree ou approuve.
-4. Si une erreur existe, le PV est marque `needs_correction`, `contested` ou `rejected`.
+4. Si une erreur existe, une anomalie ou une decision operationnelle est creee dans `pv_anomalies` ou `pv_decisions`.
 
 Statuts possibles:
 
@@ -85,10 +85,11 @@ Statuts possibles:
 
 1. Une correction est demandee avec motif.
 2. Le resultat source est reference dans `result_corrections.source_pv_result_id`.
-3. Un nouveau resultat corrige est cree dans `pv_results`.
-4. Les votes par candidature corriges sont recrees dans `pv_candidate_results`.
-5. Un superviseur ou verificateur autorise approuve la correction.
-6. La correction passe a `applied`.
+3. Les changements champ par champ sont consignes dans `result_correction_items`.
+4. Un nouveau resultat corrige est cree dans `pv_results`.
+5. Les votes par candidature corriges sont recrees dans `pv_candidate_results`.
+6. Un superviseur ou verificateur autorise approuve la correction.
+7. La correction passe a `applied`.
 
 Regles:
 
@@ -100,18 +101,19 @@ Regles:
 
 1. Le superviseur decide que le PV verifie ou corrige est retenu.
 2. Un `pv_results` de couche `retained` existe.
-3. Une validation `included` est creee.
+3. Une validation `included` ou une decision `include` est creee.
 4. Le PV devient eligible aux aggregations publiques.
 
 Statut: `included`.
 
 ### 2.7 Publication
 
-1. Le responsable publication cree un `publication_batches` de type `provisional`, `final`, `partial` ou `correction`.
-2. Les items de publication sont generes depuis les resultats retenus uniquement.
-3. Le batch est controle par un superviseur national.
-4. Le batch passe a `published`.
-5. L'API publique lit ce batch publie, pas les tables de saisie.
+1. Le responsable publication cree un `publication_batches` de type `provisional`, `corrected`, `final` ou `withdrawal`.
+2. Les `publication_batch_items` referencent les objets retenus.
+3. Les resultats publics sont materialises dans `published_result_snapshots`.
+4. Le batch est controle par un superviseur national.
+5. Le batch passe a `published`.
+6. L'API publique lit les snapshots du batch publie, pas les tables de saisie.
 
 Statut: `published`.
 
@@ -167,11 +169,11 @@ Difference cle:
 
 | Couche | Table | Description |
 | --- | --- | --- |
-| Declaree | `pv_results.data_layer = 'declared'` | Valeurs lues sur document, OCR ou extraction |
-| Saisie | `pv_results.data_layer = 'entered'` | Transcription par operateur |
-| Verifiee | `pv_results.data_layer = 'verified'` | Donnees approuvees par verification |
-| Retenue | `pv_results.data_layer = 'retained'` | Donnees incluses dans consolidation |
-| Publiee | `publication_batches` | Aggregation versionnee exposee au public |
+| Declaree | `pv_results.result_layer = 'declared'` | Valeurs lues sur document, OCR ou extraction |
+| Saisie | `pv_results.result_layer = 'entered'` | Transcription par operateur |
+| Verifiee | `pv_results.result_layer = 'verified'` | Donnees approuvees par verification |
+| Retenue | `pv_results.result_layer = 'retained'` | Donnees incluses dans consolidation |
+| Publiee | `published_result_snapshots` | Aggregation versionnee exposee au public |
 
 ### Controles minimaux
 

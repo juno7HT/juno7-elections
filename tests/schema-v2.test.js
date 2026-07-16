@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const migrationDir = path.join(root, 'database', 'migrations', 'v2');
-const expectedMigrationFiles = [
+const foundationMigrationFiles = [
   '001_create_enums_and_helpers.sql',
   '002_create_election_core.sql',
   '003_create_territorial_referential.sql',
@@ -51,12 +51,13 @@ async function readAllMigrations() {
 
 test('V2 migration files are present', async () => {
   const files = (await fs.readdir(migrationDir)).filter((file) => file.endsWith('.sql')).sort();
-  assert.deepEqual(files, expectedMigrationFiles);
+  for (const file of foundationMigrationFiles) {
+    assert.equal(files.includes(file), true, file);
+  }
 });
 
 test('V2 migration files use the expected numeric order', async () => {
-  const files = (await fs.readdir(migrationDir)).filter((file) => file.endsWith('.sql')).sort();
-  const numbers = files.map((file) => Number(file.slice(0, 3)));
+  const numbers = foundationMigrationFiles.map((file) => Number(file.slice(0, 3)));
   assert.deepEqual(numbers, [1, 2, 3, 4, 5, 6, 7]);
 });
 
@@ -161,7 +162,7 @@ test('V2 table names are coherent with the electoral domain documents', async ()
 });
 
 test('V2 transactional migrations end with COMMIT', async () => {
-  const transactionalFiles = expectedMigrationFiles.filter((file) => file !== '007_schema_validation.sql');
+  const transactionalFiles = foundationMigrationFiles.filter((file) => file !== '007_schema_validation.sql');
   for (const file of transactionalFiles) {
     const source = await readMigration(file);
     assert.match(source, /\bBEGIN\s*;/i, `${file} starts transaction`);

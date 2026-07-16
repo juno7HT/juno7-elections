@@ -4,7 +4,7 @@ Date: 2026-07-16
 
 ## 1. Purpose
 
-This document maps the current MVP tables to the Sprint 4 V2 schema foundations and the future Sprint 5 PV/publication model. It is a planning document only. Sprint 4 does not migrate historical data.
+This document maps the current MVP tables to the Sprint 4 V2 schema foundations and the Sprint 5 PV/publication model. It is a planning document only. These migrations do not migrate historical data.
 
 ## 2. `locations_electoral_units` To V2 Referential Tables
 
@@ -15,7 +15,7 @@ This document maps the current MVP tables to the Sprint 4 V2 schema foundations 
 | `section_name` | `elections_v2.territories` level `section` | Attach section to commune parent | Missing or unofficial section names | Count sections per commune and compare source totals | Keep source row unmapped until reviewed |
 | `centre_vote_name` | `elections_v2.polling_centers.name` | Create center under the most specific territory | Center names may be duplicated | Unique candidate key by territory and normalized center name | Create exception for duplicate center names |
 | `bv_no` | `elections_v2.polling_stations.code` | Create station under polling center | Blank or inconsistent BV numbers | Enforce uniqueness by center and code | Mark station incomplete and exclude from PV generation |
-| `pv_code` | Sprint 5 `expected_pvs.pv_code` | Defer until PV model exists | Existing PV code can be missing or duplicated | Count distinct nonblank PV codes | Keep as source evidence; do not invent a PV |
+| `pv_code` | `elections_v2.expected_pvs.expected_pv_code` | Map only after election, round, office, district and polling station are resolved | Existing PV code can be missing or duplicated | Count distinct nonblank PV codes | Keep as source evidence; do not invent a PV |
 
 ## 3. `candidates` To `persons` And `candidacies`
 
@@ -42,11 +42,19 @@ This document maps the current MVP tables to the Sprint 4 V2 schema foundations 
 
 | Source | Future Target | Transformation | Risk | Quality Control | Non-Mappable Strategy |
 | --- | --- | --- | --- | --- | --- |
-| `election_id` | `elections_v2.elections` and `election_rounds` | Map MVP numeric id to configured election/tour | MVP id may not identify a legal round | Explicit election/tour mapping table | Stop import for unmapped election id |
-| territory and BV fields | `territories`, `polling_centers`, `polling_stations` | Reuse referential mapping | Text fields may not match normalized V2 records | Join by approved source mapping | Create location exception |
-| `pv_code` | Sprint 5 `pv_submissions` or `expected_pvs` | Group rows by election and PV code | Missing or duplicate PV code | Count candidate rows per PV | Keep source rows as unverified import evidence |
-| `candidate` | `elections_v2.candidacies.candidate_code` | Resolve candidate code | Candidate can be letter, name or code | Candidate mapping report | Do not create public candidature automatically |
-| `votes` | Sprint 5 `pv_candidate_results.votes` | Preserve integer votes | Existing rows lack full PV totals | Check nonnegative integer and candidate sum | Import as partial entered layer with warning |
+| `election_id` | `elections_v2.elections` and `elections_v2.election_rounds` | Map MVP numeric id to one approved election and one approved round before grouping | MVP id may not identify a legal election/tour | Explicit election/tour mapping table | Reject the group as `election_id invalide`; no PV is generated |
+| territory and BV fields | `elections_v2.territories`, `elections_v2.polling_centers`, `elections_v2.polling_stations` | Resolve department, commune, section, center and BV before creating a PV context | Text fields may not match normalized V2 records | Join by approved source mapping and count unresolved rows | Mark as `territoire non mappable`; keep source evidence outside publication |
+| `pv_code` | `elections_v2.expected_pvs` and `elections_v2.pv_submissions` | Group rows by election, round, territory, center, BV and nonblank PV code; match an existing expected PV when possible | Missing or duplicate PV code can merge unrelated rows | Count distinct nonblank PV codes and candidate rows per PV group | Create an unmatched submission/exception; do not invent an expected PV |
+| `candidate` | `elections_v2.candidacies.candidate_code` | Resolve candidate code in the election, office, round and district context | Candidate can be letter, name or code | Candidate mapping report by grouped PV | Mark row as `candidate non mappable`; do not create public candidature automatically |
+| `votes` | `elections_v2.pv_candidate_results.votes` | Preserve integer votes under a grouped `pv_results` row | Existing rows lack full PV totals and may be partial | Check nonnegative integer and compare candidate sum with available totals | Import as partial `entered` evidence with warning, not as verified or retained data |
+
+Mapping shape:
+
+- One grouped source PV can map to one `expected_pvs` row when the expected PV is already defined.
+- One grouped source PV creates or references one `pv_submissions` import evidence row.
+- Candidate rows in the group create one `pv_results` row in the `entered` layer and multiple `pv_candidate_results` rows.
+- Duplicate PV groups are reported before any publication decision.
+- Every rejected or deferred row keeps its original source fields in an import error report for later audit.
 
 ## 6. `results_department` To Future Published Aggregations
 

@@ -38,39 +38,60 @@ erDiagram
     POLITICAL_PARTIES ||--o{ CANDIDACIES : "endorses"
     COALITIONS ||--o{ CANDIDACIES : "endorses"
 
+    ELECTIONS ||--o{ EXPECTED_PVS : "expects"
     ELECTION_ROUNDS ||--o{ EXPECTED_PVS : "expects"
     ELECTORAL_OFFICES ||--o{ EXPECTED_PVS : "for office"
     ELECTORAL_DISTRICTS ||--o{ EXPECTED_PVS : "for district"
     POLLING_STATIONS ||--o{ EXPECTED_PVS : "produces"
+    ELECTIONS ||--o{ PV_SUBMISSIONS : "receives"
+    ELECTION_ROUNDS ||--o{ PV_SUBMISSIONS : "round evidence"
     EXPECTED_PVS ||--o{ PV_SUBMISSIONS : "received as"
     PV_SUBMISSIONS ||--o{ PV_SUBMISSIONS : "potential duplicate"
     PV_SUBMISSIONS ||--o{ PV_DOCUMENTS : "has source"
     PV_SUBMISSIONS ||--o{ PV_RESULTS : "has result layers"
-    PV_RESULTS ||--o{ PV_RESULTS : "superseded by"
     PV_RESULTS ||--o{ PV_CANDIDATE_RESULTS : "details"
     CANDIDACIES ||--o{ PV_CANDIDATE_RESULTS : "receives votes"
+    PV_SUBMISSIONS ||--o{ PV_VALIDATION_CHECKS : "checked"
+    PV_RESULTS ||--o{ PV_VALIDATION_CHECKS : "checked"
+    PV_SUBMISSIONS ||--o{ PV_ANOMALIES : "has anomaly"
+    PV_RESULTS ||--o{ PV_ANOMALIES : "has anomaly"
+    PV_DOCUMENTS ||--o{ PV_ANOMALIES : "has anomaly"
     PV_SUBMISSIONS ||--o{ PV_VALIDATIONS : "reviewed by"
-    PV_SUBMISSIONS ||--o{ RESULT_CORRECTIONS : "corrected by"
+    PV_RESULTS ||--o{ PV_VALIDATIONS : "reviewed by"
+    PV_SUBMISSIONS ||--o{ PV_DECISIONS : "decided"
+    PV_RESULTS ||--o{ PV_DECISIONS : "decided"
+    PV_DECISIONS ||--o{ PV_DECISIONS : "supersedes"
     PV_RESULTS ||--o{ RESULT_CORRECTIONS : "source result"
-    PV_RESULTS ||--o{ RESULT_CORRECTIONS : "corrected result"
+    PV_RESULTS ||--o{ RESULT_CORRECTIONS : "target result"
+    PV_ANOMALIES ||--o{ RESULT_CORRECTIONS : "drives"
+    RESULT_CORRECTIONS ||--o{ RESULT_CORRECTION_ITEMS : "details"
 
     ELECTIONS ||--o{ PUBLICATION_BATCHES : "publishes"
     ELECTION_ROUNDS ||--o{ PUBLICATION_BATCHES : "round publication"
     PUBLICATION_BATCHES ||--o{ PUBLICATION_BATCH_ITEMS : "contains"
+    EXPECTED_PVS ||--o{ PUBLICATION_BATCH_ITEMS : "batch expected"
+    PV_SUBMISSIONS ||--o{ PUBLICATION_BATCH_ITEMS : "batch submission"
     PV_RESULTS ||--o{ PUBLICATION_BATCH_ITEMS : "published result"
-    ELECTORAL_DISTRICTS ||--o{ PUBLICATION_BATCH_ITEMS : "aggregation district"
-    ELECTORAL_OFFICES ||--o{ PUBLICATION_BATCH_ITEMS : "aggregation office"
+    PV_DECISIONS ||--o{ PUBLICATION_BATCH_ITEMS : "batch decision"
+    PUBLICATION_BATCHES ||--o{ PUBLISHED_RESULT_SNAPSHOTS : "publishes snapshot"
+    TERRITORIES ||--o{ PUBLISHED_RESULT_SNAPSHOTS : "aggregation territory"
+    ELECTORAL_DISTRICTS ||--o{ PUBLISHED_RESULT_SNAPSHOTS : "aggregation district"
+    ELECTORAL_OFFICES ||--o{ PUBLISHED_RESULT_SNAPSHOTS : "aggregation office"
+    CANDIDACIES ||--o{ PUBLISHED_RESULT_SNAPSHOTS : "candidate snapshot"
 
     USERS ||--o{ USER_ROLES : "assigned"
     ROLES ||--o{ USER_ROLES : "grants"
     TERRITORIES ||--o{ USER_ROLES : "scope"
     ELECTIONS ||--o{ USER_ROLES : "scope"
-    USERS ||--o{ PV_SUBMISSIONS : "field or receiver"
-    USERS ||--o{ PV_DOCUMENTS : "uploaded"
+    USERS ||--o{ PV_SUBMISSIONS : "field or source"
+    USERS ||--o{ PV_DOCUMENTS : "created"
     USERS ||--o{ PV_RESULTS : "entered"
+    USERS ||--o{ PV_VALIDATION_CHECKS : "executed"
+    USERS ||--o{ PV_ANOMALIES : "assigned"
     USERS ||--o{ PV_VALIDATIONS : "validated"
+    USERS ||--o{ PV_DECISIONS : "decided"
     USERS ||--o{ RESULT_CORRECTIONS : "requested or approved"
-    USERS ||--o{ PUBLICATION_BATCHES : "published or withdrawn"
+    USERS ||--o{ PUBLICATION_BATCHES : "prepared or approved"
     USERS ||--o{ AUDIT_LOGS : "actor"
 
     TERRITORIES {
@@ -224,118 +245,250 @@ erDiagram
 
     EXPECTED_PVS {
         bigint id PK
+        text public_id UK
+        bigint election_id FK
         bigint round_id FK
         bigint office_id FK
         bigint district_id FK
         bigint polling_station_id FK
-        text pv_code
+        text expected_pv_code
         text status
-        integer expected_registered_voters
+        jsonb metadata
+        boolean is_active
         timestamptz created_at
+        timestamptz updated_at
         timestamptz archived_at
     }
 
     PV_SUBMISSIONS {
         bigint id PK
+        text public_id UK
         bigint expected_pv_id FK
+        bigint election_id FK
+        bigint round_id FK
         text received_pv_code
+        text transmission_channel
         timestamptz received_at
-        text channel
         bigint field_agent_user_id FK
-        bigint received_by_user_id FK
-        text status
+        bigint source_user_id FK
+        text processing_status
         text document_quality
+        text content_hash
         bigint potential_duplicate_of_id FK
-        text technical_source
+        text notes
+        jsonb technical_metadata
+        boolean is_active
         timestamptz created_at
+        timestamptz updated_at
+        timestamptz archived_at
     }
 
     PV_DOCUMENTS {
         bigint id PK
+        text public_id UK
         bigint pv_submission_id FK
         text storage_uri
-        text file_name
         text mime_type
-        text sha256 UK
-        integer page_count
-        bigint uploaded_by_user_id FK
-        timestamptz uploaded_at
+        bigint file_size_bytes
+        text checksum
+        integer page_number
+        integer document_order
+        text status
+        jsonb metadata
+        bigint created_by_user_id FK
+        timestamptz created_at
+        timestamptz updated_at
+        timestamptz archived_at
     }
 
     PV_RESULTS {
         bigint id PK
+        text public_id UK
         bigint pv_submission_id FK
-        text data_layer
+        text result_layer
+        integer version_number
+        text result_status
         integer registered_voters
         integer voters
         integer valid_ballots
         integer blank_votes
         integer null_votes
         integer expressed_votes
-        text control_status
-        text anomaly_summary
+        integer envelopes_count
+        integer ballots_count
+        text data_source
+        text source_notes
         bigint created_by_user_id FK
+        bigint updated_by_user_id FK
+        jsonb metadata
+        boolean is_active
         timestamptz created_at
-        bigint superseded_by_id FK
+        timestamptz updated_at
+        timestamptz archived_at
     }
 
     PV_CANDIDATE_RESULTS {
         bigint id PK
+        text public_id UK
         bigint pv_result_id FK
         bigint candidacy_id FK
         integer votes
+        integer entry_order
+        text observations
+        jsonb metadata
         timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PV_VALIDATION_CHECKS {
+        bigint id PK
+        text public_id UK
+        bigint pv_submission_id FK
+        bigint pv_result_id FK
+        text check_type
+        text check_status
+        jsonb expected_value
+        jsonb observed_value
+        jsonb details
+        boolean executed_by_system
+        bigint executed_by_user_id FK
+        timestamptz executed_at
+    }
+
+    PV_ANOMALIES {
+        bigint id PK
+        text public_id UK
+        bigint pv_submission_id FK
+        bigint pv_result_id FK
+        bigint pv_document_id FK
+        text anomaly_type
+        text severity
+        text description
+        text anomaly_status
+        bigint assigned_to_user_id FK
+        text resolution_notes
+        timestamptz opened_at
+        timestamptz closed_at
+        jsonb metadata
     }
 
     PV_VALIDATIONS {
         bigint id PK
+        text public_id UK
         bigint pv_submission_id FK
+        bigint pv_result_id FK
+        bigint validator_user_id FK
         text validation_type
-        text status
-        bigint validated_by_user_id FK
+        text validation_decision
+        text comment
+        integer validated_version
+        jsonb metadata
         timestamptz validated_at
+    }
+
+    PV_DECISIONS {
+        bigint id PK
+        text public_id UK
+        bigint pv_submission_id FK
+        bigint pv_result_id FK
+        text decision_type
+        text decision_status
+        bigint decided_by_user_id FK
+        text role_code
         text reason
-        text notes
+        timestamptz decided_at
+        integer target_version
+        text approval_level
+        bigint previous_decision_id FK
+        jsonb metadata
+        boolean is_active
     }
 
     RESULT_CORRECTIONS {
         bigint id PK
-        bigint pv_submission_id FK
+        text public_id UK
+        text correction_target_type
+        bigint correction_target_id
         bigint source_pv_result_id FK
-        bigint corrected_pv_result_id FK
+        bigint target_pv_result_id FK
         bigint requested_by_user_id FK
         bigint approved_by_user_id FK
+        bigint anomaly_id FK
         text reason
-        text status
-        timestamptz created_at
+        text correction_status
+        timestamptz requested_at
         timestamptz approved_at
+        timestamptz applied_at
+        text sensitivity_level
+        jsonb metadata
+    }
+
+    RESULT_CORRECTION_ITEMS {
+        bigint id PK
+        bigint correction_id FK
+        text field_name
+        jsonb old_value
+        jsonb new_value
+        text justification
+        integer item_order
+        text validation_status
+        timestamptz created_at
     }
 
     PUBLICATION_BATCHES {
         bigint id PK
+        text public_id UK
         bigint election_id FK
         bigint round_id FK
         text publication_type
-        text status
-        text version_label
+        integer version_number
+        text publication_status
+        bigint prepared_by_user_id FK
+        bigint approved_by_user_id FK
+        timestamptz prepared_at
+        timestamptz approved_at
         timestamptz published_at
-        bigint published_by_user_id FK
         timestamptz withdrawn_at
-        bigint withdrawn_by_user_id FK
-        text withdrawal_reason
-        text payload_uri
+        text public_note
+        text batch_checksum
+        jsonb metadata
         timestamptz created_at
+        timestamptz updated_at
     }
 
     PUBLICATION_BATCH_ITEMS {
         bigint id PK
         bigint publication_batch_id FK
+        text item_type
+        bigint expected_pv_id FK
+        bigint pv_submission_id FK
         bigint pv_result_id FK
+        bigint pv_decision_id FK
+        integer item_order
+        jsonb metadata
+        timestamptz created_at
+    }
+
+    PUBLISHED_RESULT_SNAPSHOTS {
+        bigint id PK
+        text public_id UK
+        bigint publication_batch_id FK
+        text aggregation_level
+        bigint territory_id FK
         bigint district_id FK
         bigint office_id FK
-        text aggregation_level
-        text aggregation_key
-        jsonb payload
+        bigint candidacy_id FK
+        integer votes
+        integer registered_voters
+        integer voters
+        integer valid_ballots
+        integer blank_votes
+        integer null_votes
+        integer expressed_votes
+        numeric percentage
+        integer ranking
+        timestamptz calculated_at
+        jsonb metadata
     }
 
     USERS {
@@ -394,12 +547,15 @@ erDiagram
 - Chaque PV recu peut etre rapproche d'un PV attendu.
 - Chaque resultat de PV appartient a une submission.
 - Chaque resultat par candidat appartient a une candidature.
+- Chaque controle, anomalie, validation et decision cible une submission, un resultat ou un document source.
+- Chaque correction conserve un en-tete et des items champ par champ.
 - Chaque publication appartient a une election et peut cibler un tour.
+- Chaque publication publique expose des `published_result_snapshots` separes des tables de saisie.
 - Chaque action sensible peut etre rattachee a un utilisateur et a l'audit.
 
 ## 4. Notes de conception
 
-- `publication_batch_items.payload` permet de publier des aggregations sans dupliquer toutes les tables analytiques des le MVP cible.
+- `published_result_snapshots` permet de publier des aggregations sans exposer directement les tables de saisie.
 - Les couches de `pv_results` remplacent la confusion actuelle entre donnees saisies, verifiees et publiees.
 - `expected_pvs` permet de calculer la progression sans deduire les PV attendus des seuls resultats recus.
 - `candidacies` separe le contexte electoral de l'identite generale dans `persons`.

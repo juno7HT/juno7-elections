@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juno7 Elections - Tableau V2</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #18202f;
+      --muted: #657086;
+      --line: #d9dee8;
+      --accent: #116a7b;
+      --accent-2: #8a4f18;
+      --danger: #a33b38;
+      --ok: #2f7d51;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .topbar {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2vw, 2rem);
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    .banner {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid #d6a25b;
+      background: #fff6df;
+      color: #573711;
+      font-weight: 700;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 42px;
+    }
+
+    .status {
+      min-height: 40px;
+      margin-bottom: 16px;
+      color: var(--muted);
+    }
+
+    .status.error { color: var(--danger); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 330px) 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    button.election {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 11px 12px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button.election:hover,
+    button.election[aria-current="true"] {
+      border-color: var(--accent);
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .content-grid .wide { grid-column: 1 / -1; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 700;
+      background: #fafbfc;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      min-height: 84px;
+      background: #fbfcfd;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.45rem;
+      color: var(--accent);
+    }
+
+    .empty {
+      padding: 18px;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eef6f7;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .rank {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+
+    @media (max-width: 820px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .layout,
+      .content-grid,
+      .metric-row {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>Tableau de lecture V2</h1>
+        <div class="muted">Consultation du schéma elections_v2 via l’API publique de démonstration.</div>
+      </div>
+      <div class="banner">V2 — DONNÉES DE DÉMONSTRATION</div>
+    </div>
+  </header>
+
+  <main>
+    <div id="page-status" class="status">Chargement des élections...</div>
+    <div class="layout">
+      <section class="panel" aria-labelledby="elections-title">
+        <div class="panel-header">
+          <h2 id="elections-title">Élections</h2>
+          <span id="elections-count" class="muted"></span>
+        </div>
+        <div id="elections-list" class="list"></div>
+      </section>
+
+      <section class="content-grid" aria-live="polite">
+        <article class="panel wide" aria-labelledby="selected-title">
+          <div class="panel-header">
+            <h2 id="selected-title">Élection sélectionnée</h2>
+            <span id="selected-status" class="badge">Aucune</span>
+          </div>
+          <div id="selected-election" class="empty">Sélectionnez une élection pour afficher les détails.</div>
+        </article>
+
+        <article class="panel" aria-labelledby="rounds-title">
+          <div class="panel-header"><h2 id="rounds-title">Tours</h2></div>
+          <div id="rounds-content"></div>
+        </article>
+
+        <article class="panel" aria-labelledby="offices-title">
+          <div class="panel-header"><h2 id="offices-title">Postes électifs</h2></div>
+          <div id="offices-content"></div>
+        </article>
+
+        <article class="panel wide" aria-labelledby="candidacies-title">
+          <div class="panel-header"><h2 id="candidacies-title">Candidatures</h2></div>
+          <div id="candidacies-content"></div>
+        </article>
+
+        <article class="panel wide" aria-labelledby="progress-title">
+          <div class="panel-header"><h2 id="progress-title">Progression des PV</h2></div>
+          <div id="progress-content"></div>
+        </article>
+
+        <article class="panel wide" aria-labelledby="publication-title">
+          <div class="panel-header"><h2 id="publication-title">Dernière publication</h2></div>
+          <div id="publication-content"></div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const state = {
+      elections: [],
+      selectedElection: null
+    };
+
+    const endpoints = {
+      elections: "/api/v2/elections",
+      election: (publicId) => `/api/v2/elections/${encodeURIComponent(publicId)}`,
+      rounds: (publicId) => `/api/v2/elections/${encodeURIComponent(publicId)}/rounds`,
+      offices: "/api/v2/offices",
+      candidacies: (publicId) => `/api/v2/candidacies?electionPublicId=${encodeURIComponent(publicId)}`,
+      progress: (publicId) => `/api/v2/pvs/progress?electionPublicId=${encodeURIComponent(publicId)}`,
+      latestPublication: (publicId) => `/api/v2/publications/latest?electionPublicId=${encodeURIComponent(publicId)}`
+    };
+
+    function setStatus(message, isError = false) {
+      const status = document.getElementById("page-status");
+      status.textContent = message;
+      status.classList.toggle("error", isError);
+    }
+
+    function empty(message) {
+      return `<div class="empty">${escapeHtml(message)}</div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    async function readJson(url) {
+      const response = await fetch(url, { headers: { Accept: "application/json" } });
+      if (response.status === 404) {
+        return { ok: false, items: [], meta: { error: "Not found", statusCode: 404 } };
+      }
+      const payload = await response.json();
+      if (!response.ok || payload.ok === false) {
+        const error = new Error(payload?.meta?.error || "Erreur de lecture");
+        error.payload = payload;
+        throw error;
+      }
+      return payload;
+    }
+
+    function renderElections() {
+      document.getElementById("elections-count").textContent = `${state.elections.length} élément(s)`;
+      const list = document.getElementById("elections-list");
+      if (!state.elections.length) {
+        list.innerHTML = empty("Aucune élection disponible.");
+        return;
+      }
+      list.innerHTML = state.elections.map((election) => `
+        <button class="election" type="button" data-public-id="${escapeHtml(election.publicId)}" aria-current="${state.selectedElection?.publicId === election.publicId}">
+          <strong>${escapeHtml(election.name)}</strong><br>
+          <span class="muted">${escapeHtml(election.code)} · ${escapeHtml(election.status)}</span>
+        </button>
+      `).join("");
+      for (const button of list.querySelectorAll("button[data-public-id]")) {
+        button.addEventListener("click", () => selectElection(button.dataset.publicId));
+      }
+    }
+
+    function table(headers, rows, emptyMessage) {
+      if (!rows.length) return empty(emptyMessage);
+      return `
+        <table>
+          <thead><tr>${headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr></thead>
+          <tbody>${rows.join("")}</tbody>
+        </table>
+      `;
+    }
+
+    function renderSelected(election) {
+      document.getElementById("selected-status").textContent = election.status || "Statut indisponible";
+      document.getElementById("selected-election").innerHTML = `
+        <table>
+          <tbody>
+            <tr><th>Nom</th><td>${escapeHtml(election.name)}</td></tr>
+            <tr><th>Identifiant public</th><td>${escapeHtml(election.publicId)}</td></tr>
+            <tr><th>Code</th><td>${escapeHtml(election.code)}</td></tr>
+            <tr><th>Type</th><td>${escapeHtml(election.electionType)}</td></tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderRounds(payload) {
+      const rows = payload.items.map((round) => `
+        <tr>
+          <td>${escapeHtml(round.roundNumber)}</td>
+          <td>${escapeHtml(round.label)}</td>
+          <td><span class="badge">${escapeHtml(round.status)}</span></td>
+        </tr>
+      `);
+      document.getElementById("rounds-content").innerHTML = table(["Tour", "Libellé", "Statut"], rows, "Aucun tour disponible.");
+    }
+
+    function renderOffices(payload) {
+      const rows = payload.items.map((office) => `
+        <tr>
+          <td>${escapeHtml(office.code)}</td>
+          <td>${escapeHtml(office.name)}</td>
+          <td>${escapeHtml(office.scopeLevel)}</td>
+        </tr>
+      `);
+      document.getElementById("offices-content").innerHTML = table(["Code", "Nom", "Portée"], rows, "Aucun poste électif disponible.");
+    }
+
+    function renderCandidacies(payload) {
+      const rows = payload.items.map((candidacy) => `
+        <tr>
+          <td>${escapeHtml(candidacy.candidateCode)}</td>
+          <td>${escapeHtml(candidacy.ballotName)}</td>
+          <td>${escapeHtml(candidacy.party?.name || candidacy.coalition?.name || "Indépendant")}</td>
+          <td><span class="badge">${escapeHtml(candidacy.status)}</span></td>
+        </tr>
+      `);
+      document.getElementById("candidacies-content").innerHTML = table(["Code", "Nom bulletin", "Appui", "Statut"], rows, "Aucune candidature disponible.");
+    }
+
+    function renderProgress(payload) {
+      const progress = payload.items[0];
+      if (!progress) {
+        document.getElementById("progress-content").innerHTML = empty("Aucune progression PV disponible.");
+        return;
+      }
+      document.getElementById("progress-content").innerHTML = `
+        <div class="metric-row">
+          <div class="metric"><span class="muted">PV attendus</span><strong>${escapeHtml(progress.expectedPvs)}</strong></div>
+          <div class="metric"><span class="muted">Soumissions</span><strong>${escapeHtml(progress.submissions)}</strong></div>
+          <div class="metric"><span class="muted">Résultats retenus</span><strong>${escapeHtml(progress.retainedResults)}</strong></div>
+          <div class="metric"><span class="muted">Publication</span><strong>${escapeHtml(progress.publishedResults)}</strong></div>
+        </div>
+      `;
+    }
+
+    function renderPublication(payload) {
+      const publication = payload.items[0];
+      if (!publication) {
+        document.getElementById("publication-content").innerHTML = empty("Aucune publication disponible.");
+        return;
+      }
+      const rows = publication.snapshots.map((snapshot) => `
+        <tr>
+          <td class="rank">${escapeHtml(snapshot.ranking || "")}</td>
+          <td>${escapeHtml(snapshot.ballotName || snapshot.candidateCode || "N/A")}</td>
+          <td>${escapeHtml(snapshot.votes ?? "N/A")}</td>
+          <td>${escapeHtml(snapshot.percentage ?? "N/A")}</td>
+        </tr>
+      `);
+      document.getElementById("publication-content").innerHTML = `
+        <div class="empty">
+          ${escapeHtml(publication.publicationType)} · version ${escapeHtml(publication.versionNumber)} · ${escapeHtml(publication.publicationStatus)}
+        </div>
+        ${table(["Rang", "Candidat", "Voix", "Pourcentage"], rows, "Aucun snapshot publié.")}
+      `;
+    }
+
+    async function selectElection(publicId) {
+      try {
+        setStatus("Chargement des données V2...");
+        const [electionPayload, rounds, offices, candidacies, progress, publication] = await Promise.all([
+          readJson(endpoints.election(publicId)),
+          readJson(endpoints.rounds(publicId)),
+          readJson(endpoints.offices),
+          readJson(endpoints.candidacies(publicId)),
+          readJson(endpoints.progress(publicId)),
+          readJson(endpoints.latestPublication(publicId))
+        ]);
+        if (!electionPayload.items.length) {
+          setStatus("Élection introuvable.", true);
+          return;
+        }
+        state.selectedElection = electionPayload.items[0];
+        renderElections();
+        renderSelected(state.selectedElection);
+        renderRounds(rounds);
+        renderOffices(offices);
+        renderCandidacies(candidacies);
+        renderProgress(progress);
+        renderPublication(publication);
+        setStatus("Données V2 chargées.");
+      } catch (error) {
+        setStatus(error.message || "Erreur de chargement.", true);
+      }
+    }
+
+    async function init() {
+      try {
+        const payload = await readJson(`${endpoints.elections}?limit=25`);
+        state.elections = payload.items;
+        renderElections();
+        if (state.elections.length) {
+          await selectElection(state.elections[0].publicId);
+        } else {
+          setStatus("Aucune donnée V2 disponible.");
+        }
+      } catch (error) {
+        renderElections();
+        setStatus(error.message || "Impossible de charger l’interface V2.", true);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

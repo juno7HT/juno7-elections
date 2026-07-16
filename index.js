@@ -234,6 +234,19 @@ if (process.env.V2_READ_API === "true") {
   registerV2ReadApi(app, { env: process.env });
 }
 
+if (process.env.V2_PUBLIC_UI === "true") {
+  app.get("/v2-dashboard", async (req, reply) => {
+    return reply.sendFile("v2-dashboard.html");
+  });
+  app.get("/v2-dashboard.html", async (req, reply) => {
+    return reply.sendFile("v2-dashboard.html");
+  });
+} else {
+  app.get("/v2-dashboard.html", async (req, reply) => {
+    return reply.code(404).send({ ok: false, error: "Not found" });
+  });
+}
+
 async function ensureSchema() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS results_department (

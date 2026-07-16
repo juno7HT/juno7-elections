@@ -1,0 +1,2695 @@
+{
+  "version": 1,
+  "source": "haiti_geojson_national_referential",
+  "generatedFrom": {
+    "departments": "frontend/geo/HTI_ADM1.geojson",
+    "communes": "frontend/geo/HTI_COMMUNES.geojson",
+    "adm3": "frontend/geo/HTI_ADM3.geojson"
+  },
+  "hashes": {
+    "adm1": "de04b21affb9daeee0cc45ae7167e11939112f5f20c105d42ecc5225ba0db663",
+    "communes": "d160108744880f4e62d7d0fa0d3b35505ba87f5dfc436ffb3868227aafbd7112",
+    "adm3": "d160108744880f4e62d7d0fa0d3b35505ba87f5dfc436ffb3868227aafbd7112"
+  },
+  "analysis": {
+    "departmentFeatureCount": 10,
+    "communeFeatureCount": 140,
+    "adm3FeatureCount": 140,
+    "adm3IsCommunesDuplicate": true,
+    "sectionSourceAvailable": false,
+    "trueSectionCount": 0,
+    "unmappedCommuneCount": 0,
+    "ambiguousCommuneCount": 0,
+    "duplicateCommuneNameCount": 0,
+    "duplicateCommuneCodeCount": 0
+  },
+  "country": {
+    "publicId": "hti_country_national",
+    "code": "HT",
+    "name": "Haiti",
+    "normalizedName": "haiti",
+    "path": "/HT",
+    "isoCode": "HT"
+  },
+  "departments": [
+    {
+      "name": "l'Ouest",
+      "code": "HT-OU",
+      "isoCode": "HT-OU",
+      "geojsonName": "Département de l'Ouest",
+      "geojsonCode": "HT-OU",
+      "publicId": "hti_department_ht_ou",
+      "path": "/HT/HT-OU",
+      "normalizedName": "l ouest",
+      "featureId": "0",
+      "gbid": "HTI_ADM1_1_3_3_0",
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "name": "Grande-Anse",
+      "code": "HT-GA",
+      "isoCode": "HT-GA",
+      "geojsonName": "Département de la Grande-Anse",
+      "geojsonCode": "HT-GA",
+      "publicId": "hti_department_ht_ga",
+      "path": "/HT/HT-GA",
+      "normalizedName": "grande anse",
+      "featureId": "1",
+      "gbid": "HTI_ADM1_1_3_3_1",
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "name": "Nippes",
+      "code": "HT-NI",
+      "isoCode": "HT-NI",
+      "geojsonName": "Département des Nippes",
+      "geojsonCode": "HT-NI",
+      "publicId": "hti_department_ht_ni",
+      "path": "/HT/HT-NI",
+      "normalizedName": "nippes",
+      "featureId": "2",
+      "gbid": "HTI_ADM1_1_3_3_2",
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "name": "Sud-Est",
+      "code": "HT-SE",
+      "isoCode": "HT-SE",
+      "geojsonName": "Département du Sud-Est",
+      "geojsonCode": "HT-SE",
+      "publicId": "hti_department_ht_se",
+      "path": "/HT/HT-SE",
+      "normalizedName": "sud est",
+      "featureId": "3",
+      "gbid": "HTI_ADM1_1_3_3_3",
+      "geometryType": "Polygon"
+    },
+    {
+      "name": "Nord-Ouest",
+      "code": "HT-NO",
+      "isoCode": "HT-NO",
+      "geojsonName": "Nord-Ouest Department",
+      "geojsonCode": "HT-NO",
+      "publicId": "hti_department_ht_no",
+      "path": "/HT/HT-NO",
+      "normalizedName": "nord ouest",
+      "featureId": "4",
+      "gbid": "HTI_ADM1_1_3_3_4",
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "name": "Nord",
+      "code": "HT-ND",
+      "isoCode": "HT-ND",
+      "geojsonName": "Département du Nord",
+      "geojsonCode": "HT-ND",
+      "publicId": "hti_department_ht_nd",
+      "path": "/HT/HT-ND",
+      "normalizedName": "nord",
+      "featureId": "5",
+      "gbid": "HTI_ADM1_1_3_3_5",
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "name": "Nord-Est",
+      "code": "HT-NE",
+      "isoCode": "HT-NE",
+      "geojsonName": "Nord-Est Department",
+      "geojsonCode": "HT-NE",
+      "publicId": "hti_department_ht_ne",
+      "path": "/HT/HT-NE",
+      "normalizedName": "nord est",
+      "featureId": "6",
+      "gbid": "HTI_ADM1_1_3_3_6",
+      "geometryType": "Polygon"
+    },
+    {
+      "name": "Centre",
+      "code": "HT-CE",
+      "isoCode": "HT-CE",
+      "geojsonName": "Centre Department",
+      "geojsonCode": "HT-CE",
+      "publicId": "hti_department_ht_ce",
+      "path": "/HT/HT-CE",
+      "normalizedName": "centre",
+      "featureId": "7",
+      "gbid": "HTI_ADM1_1_3_3_7",
+      "geometryType": "Polygon"
+    },
+    {
+      "name": "Artibonite",
+      "code": "HT-AR",
+      "isoCode": "HT-AR",
+      "geojsonName": "Artibonite Department",
+      "geojsonCode": "HT-AR",
+      "publicId": "hti_department_ht_ar",
+      "path": "/HT/HT-AR",
+      "normalizedName": "artibonite",
+      "featureId": "8",
+      "gbid": "HTI_ADM1_1_3_3_8",
+      "geometryType": "Polygon"
+    },
+    {
+      "name": "Sud",
+      "code": "HT-SD",
+      "isoCode": "HT-SD",
+      "geojsonName": "Sud Department",
+      "geojsonCode": "HT-SD",
+      "publicId": "hti_department_ht_sd",
+      "path": "/HT/HT-SD",
+      "normalizedName": "sud",
+      "featureId": "9",
+      "gbid": "HTI_ADM1_1_3_3_9",
+      "geometryType": "MultiPolygon"
+    }
+  ],
+  "communes": [
+    {
+      "name": "Port au Prince",
+      "code": "HT-COM-OU-PORT-AU-PRINCE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Port au Prince",
+      "geojsonCode": "83149761B8555518489205",
+      "publicId": "hti_commune_ht_ou_port_au_prince",
+      "path": "/HT/HT-OU/HT-COM-OU-PORT-AU-PRINCE",
+      "normalizedName": "port au prince",
+      "shapeId": "83149761B8555518489205",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3368178,
+        "latitude": 18.5256123
+      }
+    },
+    {
+      "name": "Delmas",
+      "code": "HT-COM-OU-DELMAS",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Delmas",
+      "geojsonCode": "83149761B22601147367921",
+      "publicId": "hti_commune_ht_ou_delmas",
+      "path": "/HT/HT-OU/HT-COM-OU-DELMAS",
+      "normalizedName": "delmas",
+      "shapeId": "83149761B22601147367921",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2976444,
+        "latitude": 18.5543057
+      }
+    },
+    {
+      "name": "Carrefour",
+      "code": "HT-COM-OU-CARREFOUR",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Carrefour",
+      "geojsonCode": "83149761B48100998469378",
+      "publicId": "hti_commune_ht_ou_carrefour",
+      "path": "/HT/HT-OU/HT-COM-OU-CARREFOUR",
+      "normalizedName": "carrefour",
+      "shapeId": "83149761B48100998469378",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4109818,
+        "latitude": 18.4660571
+      }
+    },
+    {
+      "name": "Petionville",
+      "code": "HT-COM-OU-PETIONVILLE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Petionville",
+      "geojsonCode": "83149761B36347436450808",
+      "publicId": "hti_commune_ht_ou_petionville",
+      "path": "/HT/HT-OU/HT-COM-OU-PETIONVILLE",
+      "normalizedName": "petionville",
+      "shapeId": "83149761B36347436450808",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2566909,
+        "latitude": 18.4836092
+      }
+    },
+    {
+      "name": "Kenscoff",
+      "code": "HT-COM-OU-KENSCOFF",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Kenscoff",
+      "geojsonCode": "83149761B36583209481786",
+      "publicId": "hti_commune_ht_ou_kenscoff",
+      "path": "/HT/HT-OU/HT-COM-OU-KENSCOFF",
+      "normalizedName": "kenscoff",
+      "shapeId": "83149761B36583209481786",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2896601,
+        "latitude": 18.4030828
+      }
+    },
+    {
+      "name": "Gressier",
+      "code": "HT-COM-OU-GRESSIER",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Gressier",
+      "geojsonCode": "83149761B37383642715559",
+      "publicId": "hti_commune_ht_ou_gressier",
+      "path": "/HT/HT-OU/HT-COM-OU-GRESSIER",
+      "normalizedName": "gressier",
+      "shapeId": "83149761B37383642715559",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.5095695,
+        "latitude": 18.5078663
+      }
+    },
+    {
+      "name": "Cite Soleil",
+      "code": "HT-COM-OU-CITE-SOLEIL",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Cite Soleil",
+      "geojsonCode": "83149761B91805103931605",
+      "publicId": "hti_commune_ht_ou_cite_soleil",
+      "path": "/HT/HT-OU/HT-COM-OU-CITE-SOLEIL",
+      "normalizedName": "cite soleil",
+      "shapeId": "83149761B91805103931605",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.325788,
+        "latitude": 18.5954789
+      }
+    },
+    {
+      "name": "Tabarre",
+      "code": "HT-COM-OU-TABARRE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Tabarre",
+      "geojsonCode": "83149761B31527624476908",
+      "publicId": "hti_commune_ht_ou_tabarre",
+      "path": "/HT/HT-OU/HT-COM-OU-TABARRE",
+      "normalizedName": "tabarre",
+      "shapeId": "83149761B31527624476908",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2660751,
+        "latitude": 18.573339
+      }
+    },
+    {
+      "name": "Leogane",
+      "code": "HT-COM-OU-LEOGANE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Leogane",
+      "geojsonCode": "83149761B845394497088",
+      "publicId": "hti_commune_ht_ou_leogane",
+      "path": "/HT/HT-OU/HT-COM-OU-LEOGANE",
+      "normalizedName": "leogane",
+      "shapeId": "83149761B845394497088",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.5879014,
+        "latitude": 18.4386319
+      }
+    },
+    {
+      "name": "Petit Goave",
+      "code": "HT-COM-OU-PETIT-GOAVE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Petit Goave",
+      "geojsonCode": "83149761B5029293912908",
+      "publicId": "hti_commune_ht_ou_petit_goave",
+      "path": "/HT/HT-OU/HT-COM-OU-PETIT-GOAVE",
+      "normalizedName": "petit goave",
+      "shapeId": "83149761B5029293912908",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.9282372,
+        "latitude": 18.3756711
+      }
+    },
+    {
+      "name": "Grand Goave",
+      "code": "HT-COM-OU-GRAND-GOAVE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Grand Goave",
+      "geojsonCode": "83149761B14083185314397",
+      "publicId": "hti_commune_ht_ou_grand_goave",
+      "path": "/HT/HT-OU/HT-COM-OU-GRAND-GOAVE",
+      "normalizedName": "grand goave",
+      "shapeId": "83149761B14083185314397",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.7620099,
+        "latitude": 18.3659209
+      }
+    },
+    {
+      "name": "Croix des Bouquets",
+      "code": "HT-COM-OU-CROIX-DES-BOUQUETS",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Croix des Bouquets",
+      "geojsonCode": "83149761B23477956437387",
+      "publicId": "hti_commune_ht_ou_croix_des_bouquets",
+      "path": "/HT/HT-OU/HT-COM-OU-CROIX-DES-BOUQUETS",
+      "normalizedName": "croix des bouquets",
+      "shapeId": "83149761B23477956437387",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.1836479,
+        "latitude": 18.5392892
+      }
+    },
+    {
+      "name": "Thomazeau",
+      "code": "HT-COM-OU-THOMAZEAU",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Thomazeau",
+      "geojsonCode": "83149761B8898099011724",
+      "publicId": "hti_commune_ht_ou_thomazeau",
+      "path": "/HT/HT-OU/HT-COM-OU-THOMAZEAU",
+      "normalizedName": "thomazeau",
+      "shapeId": "83149761B8898099011724",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.1247328,
+        "latitude": 18.661622
+      }
+    },
+    {
+      "name": "Ganthier",
+      "code": "HT-COM-OU-GANTHIER",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Ganthier",
+      "geojsonCode": "83149761B15861200786729",
+      "publicId": "hti_commune_ht_ou_ganthier",
+      "path": "/HT/HT-OU/HT-COM-OU-GANTHIER",
+      "normalizedName": "ganthier",
+      "shapeId": "83149761B15861200786729",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0103601,
+        "latitude": 18.4982829
+      }
+    },
+    {
+      "name": "Cornillon",
+      "code": "HT-COM-OU-CORNILLON",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Cornillon",
+      "geojsonCode": "83149761B52718505833991",
+      "publicId": "hti_commune_ht_ou_cornillon",
+      "path": "/HT/HT-OU/HT-COM-OU-CORNILLON",
+      "normalizedName": "cornillon",
+      "shapeId": "83149761B52718505833991",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.9249049,
+        "latitude": 18.6823534
+      }
+    },
+    {
+      "name": "Fonds Verrettes",
+      "code": "HT-COM-OU-FONDS-VERRETTES",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Fonds Verrettes",
+      "geojsonCode": "83149761B44552497518496",
+      "publicId": "hti_commune_ht_ou_fonds_verrettes",
+      "path": "/HT/HT-OU/HT-COM-OU-FONDS-VERRETTES",
+      "normalizedName": "fonds verrettes",
+      "shapeId": "83149761B44552497518496",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.8385367,
+        "latitude": 18.3515474
+      }
+    },
+    {
+      "name": "Arcahaie",
+      "code": "HT-COM-OU-ARCAHAIE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Arcahaie",
+      "geojsonCode": "83149761B67801374422459",
+      "publicId": "hti_commune_ht_ou_arcahaie",
+      "path": "/HT/HT-OU/HT-COM-OU-ARCAHAIE",
+      "normalizedName": "arcahaie",
+      "shapeId": "83149761B67801374422459",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.5287474,
+        "latitude": 18.8839625
+      }
+    },
+    {
+      "name": "Cabaret",
+      "code": "HT-COM-OU-CABARET",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Cabaret",
+      "geojsonCode": "83149761B28075991304906",
+      "publicId": "hti_commune_ht_ou_cabaret",
+      "path": "/HT/HT-OU/HT-COM-OU-CABARET",
+      "normalizedName": "cabaret",
+      "shapeId": "83149761B28075991304906",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3940348,
+        "latitude": 18.7751082
+      }
+    },
+    {
+      "name": "Anse a Galets",
+      "code": "HT-COM-OU-ANSE-A-GALETS",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Anse a Galets",
+      "geojsonCode": "83149761B16523227126072",
+      "publicId": "hti_commune_ht_ou_anse_a_galets",
+      "path": "/HT/HT-OU/HT-COM-OU-ANSE-A-GALETS",
+      "normalizedName": "anse a galets",
+      "shapeId": "83149761B16523227126072",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.9528699,
+        "latitude": 18.8157919
+      }
+    },
+    {
+      "name": "Pointe a Raquette",
+      "code": "HT-COM-OU-POINTE-A-RAQUETTE",
+      "departmentCode": "HT-OU",
+      "departmentIsoCode": "HT-OU",
+      "geojsonName": "Pointe a Raquette",
+      "geojsonCode": "83149761B87057496800907",
+      "publicId": "hti_commune_ht_ou_pointe_a_raquette",
+      "path": "/HT/HT-OU/HT-COM-OU-POINTE-A-RAQUETTE",
+      "normalizedName": "pointe a raquette",
+      "shapeId": "83149761B87057496800907",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.1586054,
+        "latitude": 18.8750999
+      }
+    },
+    {
+      "name": "Jacmel",
+      "code": "HT-COM-SE-JACMEL",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Jacmel",
+      "geojsonCode": "83149761B97444673201730",
+      "publicId": "hti_commune_ht_se_jacmel",
+      "path": "/HT/HT-SE/HT-COM-SE-JACMEL",
+      "normalizedName": "jacmel",
+      "shapeId": "83149761B97444673201730",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.5207798,
+        "latitude": 18.2953409
+      }
+    },
+    {
+      "name": "Marigot",
+      "code": "HT-COM-SE-MARIGOT",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Marigot",
+      "geojsonCode": "83149761B75338414121061",
+      "publicId": "hti_commune_ht_se_marigot",
+      "path": "/HT/HT-SE/HT-COM-SE-MARIGOT",
+      "normalizedName": "marigot",
+      "shapeId": "83149761B75338414121061",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2964186,
+        "latitude": 18.2874974
+      }
+    },
+    {
+      "name": "Cayes Jacmel",
+      "code": "HT-COM-SE-CAYES-JACMEL",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Cayes Jacmel",
+      "geojsonCode": "83149761B56143281675165",
+      "publicId": "hti_commune_ht_se_cayes_jacmel",
+      "path": "/HT/HT-SE/HT-COM-SE-CAYES-JACMEL",
+      "normalizedName": "cayes jacmel",
+      "shapeId": "83149761B56143281675165",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4028283,
+        "latitude": 18.2739057
+      }
+    },
+    {
+      "name": "La Vallee de Jacmel",
+      "code": "HT-COM-SE-LA-VALLEE-DE-JACMEL",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "La Vallee de Jacmel",
+      "geojsonCode": "83149761B32820612731035",
+      "publicId": "hti_commune_ht_se_la_vallee_de_jacmel",
+      "path": "/HT/HT-SE/HT-COM-SE-LA-VALLEE-DE-JACMEL",
+      "normalizedName": "la vallee de jacmel",
+      "shapeId": "83149761B32820612731035",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.7067651,
+        "latitude": 18.2829037
+      }
+    },
+    {
+      "name": "Bainet",
+      "code": "HT-COM-SE-BAINET",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Bainet",
+      "geojsonCode": "83149761B18267601717078",
+      "publicId": "hti_commune_ht_se_bainet",
+      "path": "/HT/HT-SE/HT-COM-SE-BAINET",
+      "normalizedName": "bainet",
+      "shapeId": "83149761B18267601717078",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.788342,
+        "latitude": 18.2118612
+      }
+    },
+    {
+      "name": "Cotes de Fer",
+      "code": "HT-COM-SE-COTES-DE-FER",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Cotes de Fer",
+      "geojsonCode": "83149761B37912304158648",
+      "publicId": "hti_commune_ht_se_cotes_de_fer",
+      "path": "/HT/HT-SE/HT-COM-SE-COTES-DE-FER",
+      "normalizedName": "cotes de fer",
+      "shapeId": "83149761B37912304158648",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.9488606,
+        "latitude": 18.2310444
+      }
+    },
+    {
+      "name": "Belle Anse",
+      "code": "HT-COM-SE-BELLE-ANSE",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Belle Anse",
+      "geojsonCode": "83149761B41598074108264",
+      "publicId": "hti_commune_ht_se_belle_anse",
+      "path": "/HT/HT-SE/HT-COM-SE-BELLE-ANSE",
+      "normalizedName": "belle anse",
+      "shapeId": "83149761B41598074108264",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0865904,
+        "latitude": 18.2780222
+      }
+    },
+    {
+      "name": "Grand Gosier",
+      "code": "HT-COM-SE-GRAND-GOSIER",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Grand Gosier",
+      "geojsonCode": "83149761B43568041963824",
+      "publicId": "hti_commune_ht_se_grand_gosier",
+      "path": "/HT/HT-SE/HT-COM-SE-GRAND-GOSIER",
+      "normalizedName": "grand gosier",
+      "shapeId": "83149761B43568041963824",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.9023924,
+        "latitude": 18.2622527
+      }
+    },
+    {
+      "name": "Thiotte",
+      "code": "HT-COM-SE-THIOTTE",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Thiotte",
+      "geojsonCode": "83149761B28584809273942",
+      "publicId": "hti_commune_ht_se_thiotte",
+      "path": "/HT/HT-SE/HT-COM-SE-THIOTTE",
+      "normalizedName": "thiotte",
+      "shapeId": "83149761B28584809273942",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.8518904,
+        "latitude": 18.2176715
+      }
+    },
+    {
+      "name": "Anse a Pitres",
+      "code": "HT-COM-SE-ANSE-A-PITRES",
+      "departmentCode": "HT-SE",
+      "departmentIsoCode": "HT-SE",
+      "geojsonName": "Anse a Pitres",
+      "geojsonCode": "83149761B71332813273922",
+      "publicId": "hti_commune_ht_se_anse_a_pitres",
+      "path": "/HT/HT-SE/HT-COM-SE-ANSE-A-PITRES",
+      "normalizedName": "anse a pitres",
+      "shapeId": "83149761B71332813273922",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.7841081,
+        "latitude": 18.1573307
+      }
+    },
+    {
+      "name": "Cap Haitien",
+      "code": "HT-COM-ND-CAP-HAITIEN",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Cap Haitien",
+      "geojsonCode": "83149761B29374303460316",
+      "publicId": "hti_commune_ht_nd_cap_haitien",
+      "path": "/HT/HT-ND/HT-COM-ND-CAP-HAITIEN",
+      "normalizedName": "cap haitien",
+      "shapeId": "83149761B29374303460316",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2186769,
+        "latitude": 19.7493612
+      }
+    },
+    {
+      "name": "Quartier Morin",
+      "code": "HT-COM-ND-QUARTIER-MORIN",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Quartier Morin",
+      "geojsonCode": "83149761B48053393863442",
+      "publicId": "hti_commune_ht_nd_quartier_morin",
+      "path": "/HT/HT-ND/HT-COM-ND-QUARTIER-MORIN",
+      "normalizedName": "quartier morin",
+      "shapeId": "83149761B48053393863442",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.1689277,
+        "latitude": 19.6851551
+      }
+    },
+    {
+      "name": "Limonade",
+      "code": "HT-COM-ND-LIMONADE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Limonade",
+      "geojsonCode": "83149761B52741972644983",
+      "publicId": "hti_commune_ht_nd_limonade",
+      "path": "/HT/HT-ND/HT-COM-ND-LIMONADE",
+      "normalizedName": "limonade",
+      "shapeId": "83149761B52741972644983",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.1092317,
+        "latitude": 19.6697163
+      }
+    },
+    {
+      "name": "Acul du Nord",
+      "code": "HT-COM-ND-ACUL-DU-NORD",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Acul du Nord",
+      "geojsonCode": "83149761B67875610829069",
+      "publicId": "hti_commune_ht_nd_acul_du_nord",
+      "path": "/HT/HT-ND/HT-COM-ND-ACUL-DU-NORD",
+      "normalizedName": "acul du nord",
+      "shapeId": "83149761B67875610829069",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3334777,
+        "latitude": 19.6442768
+      }
+    },
+    {
+      "name": "Plaine du Nord",
+      "code": "HT-COM-ND-PLAINE-DU-NORD",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Plaine du Nord",
+      "geojsonCode": "83149761B70309373151364",
+      "publicId": "hti_commune_ht_nd_plaine_du_nord",
+      "path": "/HT/HT-ND/HT-COM-ND-PLAINE-DU-NORD",
+      "normalizedName": "plaine du nord",
+      "shapeId": "83149761B70309373151364",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2688063,
+        "latitude": 19.6806287
+      }
+    },
+    {
+      "name": "Milot",
+      "code": "HT-COM-ND-MILOT",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Milot",
+      "geojsonCode": "83149761B70868361391411",
+      "publicId": "hti_commune_ht_nd_milot",
+      "path": "/HT/HT-ND/HT-COM-ND-MILOT",
+      "normalizedName": "milot",
+      "shapeId": "83149761B70868361391411",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2179536,
+        "latitude": 19.6535057
+      }
+    },
+    {
+      "name": "Grande Riviere du Nord",
+      "code": "HT-COM-ND-GRANDE-RIVIERE-DU-NORD",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Grande Riviere du Nord",
+      "geojsonCode": "83149761B23598768415150",
+      "publicId": "hti_commune_ht_nd_grande_riviere_du_nord",
+      "path": "/HT/HT-ND/HT-COM-ND-GRANDE-RIVIERE-DU-NORD",
+      "normalizedName": "grande riviere du nord",
+      "shapeId": "83149761B23598768415150",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.1631907,
+        "latitude": 19.5512715
+      }
+    },
+    {
+      "name": "Bahon",
+      "code": "HT-COM-ND-BAHON",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Bahon",
+      "geojsonCode": "83149761B86271232504898",
+      "publicId": "hti_commune_ht_nd_bahon",
+      "path": "/HT/HT-ND/HT-COM-ND-BAHON",
+      "normalizedName": "bahon",
+      "shapeId": "83149761B86271232504898",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.121375,
+        "latitude": 19.4645331
+      }
+    },
+    {
+      "name": "Saint Raphael",
+      "code": "HT-COM-ND-SAINT-RAPHAEL",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Saint Raphael",
+      "geojsonCode": "83149761B55630837928005",
+      "publicId": "hti_commune_ht_nd_saint_raphael",
+      "path": "/HT/HT-ND/HT-COM-ND-SAINT-RAPHAEL",
+      "normalizedName": "saint raphael",
+      "shapeId": "83149761B55630837928005",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.19293,
+        "latitude": 19.4029908
+      }
+    },
+    {
+      "name": "Dondon",
+      "code": "HT-COM-ND-DONDON",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Dondon",
+      "geojsonCode": "83149761B35700199183026",
+      "publicId": "hti_commune_ht_nd_dondon",
+      "path": "/HT/HT-ND/HT-COM-ND-DONDON",
+      "normalizedName": "dondon",
+      "shapeId": "83149761B35700199183026",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2713013,
+        "latitude": 19.5202983
+      }
+    },
+    {
+      "name": "Ranquitte",
+      "code": "HT-COM-ND-RANQUITTE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Ranquitte",
+      "geojsonCode": "83149761B41111916879928",
+      "publicId": "hti_commune_ht_nd_ranquitte",
+      "path": "/HT/HT-ND/HT-COM-ND-RANQUITTE",
+      "normalizedName": "ranquitte",
+      "shapeId": "83149761B41111916879928",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0575917,
+        "latitude": 19.3994594
+      }
+    },
+    {
+      "name": "Pignon",
+      "code": "HT-COM-ND-PIGNON",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Pignon",
+      "geojsonCode": "83149761B53425427829190",
+      "publicId": "hti_commune_ht_nd_pignon",
+      "path": "/HT/HT-ND/HT-COM-ND-PIGNON",
+      "normalizedName": "pignon",
+      "shapeId": "83149761B53425427829190",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.107049,
+        "latitude": 19.3241028
+      }
+    },
+    {
+      "name": "La Victoire",
+      "code": "HT-COM-ND-LA-VICTOIRE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "La Victoire",
+      "geojsonCode": "83149761B29459053853562",
+      "publicId": "hti_commune_ht_nd_la_victoire",
+      "path": "/HT/HT-ND/HT-COM-ND-LA-VICTOIRE",
+      "normalizedName": "la victoire",
+      "shapeId": "83149761B29459053853562",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.02195,
+        "latitude": 19.3507993
+      }
+    },
+    {
+      "name": "Borgne",
+      "code": "HT-COM-ND-BORGNE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Borgne",
+      "geojsonCode": "83149761B87756690097933",
+      "publicId": "hti_commune_ht_nd_borgne",
+      "path": "/HT/HT-ND/HT-COM-ND-BORGNE",
+      "normalizedName": "borgne",
+      "shapeId": "83149761B87756690097933",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.5718793,
+        "latitude": 19.8022652
+      }
+    },
+    {
+      "name": "Port Margot",
+      "code": "HT-COM-ND-PORT-MARGOT",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Port Margot",
+      "geojsonCode": "83149761B87120501946175",
+      "publicId": "hti_commune_ht_nd_port_margot",
+      "path": "/HT/HT-ND/HT-COM-ND-PORT-MARGOT",
+      "normalizedName": "port margot",
+      "shapeId": "83149761B87120501946175",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4638662,
+        "latitude": 19.7539691
+      }
+    },
+    {
+      "name": "Limbe",
+      "code": "HT-COM-ND-LIMBE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Limbe",
+      "geojsonCode": "83149761B4843651653260",
+      "publicId": "hti_commune_ht_nd_limbe",
+      "path": "/HT/HT-ND/HT-COM-ND-LIMBE",
+      "normalizedName": "limbe",
+      "shapeId": "83149761B4843651653260",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4093454,
+        "latitude": 19.6579618
+      }
+    },
+    {
+      "name": "Bas Limbe",
+      "code": "HT-COM-ND-BAS-LIMBE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Bas Limbe",
+      "geojsonCode": "83149761B74114335674374",
+      "publicId": "hti_commune_ht_nd_bas_limbe",
+      "path": "/HT/HT-ND/HT-COM-ND-BAS-LIMBE",
+      "normalizedName": "bas limbe",
+      "shapeId": "83149761B74114335674374",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3953577,
+        "latitude": 19.7600366
+      }
+    },
+    {
+      "name": "Plaisance",
+      "code": "HT-COM-ND-PLAISANCE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Plaisance",
+      "geojsonCode": "83149761B8423823803463",
+      "publicId": "hti_commune_ht_nd_plaisance",
+      "path": "/HT/HT-ND/HT-COM-ND-PLAISANCE",
+      "normalizedName": "plaisance",
+      "shapeId": "83149761B8423823803463",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4789194,
+        "latitude": 19.5946064
+      }
+    },
+    {
+      "name": "Pilate",
+      "code": "HT-COM-ND-PILATE",
+      "departmentCode": "HT-ND",
+      "departmentIsoCode": "HT-ND",
+      "geojsonName": "Pilate",
+      "geojsonCode": "83149761B36762079436623",
+      "publicId": "hti_commune_ht_nd_pilate",
+      "path": "/HT/HT-ND/HT-COM-ND-PILATE",
+      "normalizedName": "pilate",
+      "shapeId": "83149761B36762079436623",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.5529555,
+        "latitude": 19.6928534
+      }
+    },
+    {
+      "name": "Fort Liberte",
+      "code": "HT-COM-NE-FORT-LIBERTE",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Fort Liberte",
+      "geojsonCode": "83149761B79500015887901",
+      "publicId": "hti_commune_ht_ne_fort_liberte",
+      "path": "/HT/HT-NE/HT-COM-NE-FORT-LIBERTE",
+      "normalizedName": "fort liberte",
+      "shapeId": "83149761B79500015887901",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.8542754,
+        "latitude": 19.5726922
+      }
+    },
+    {
+      "name": "Ferrier",
+      "code": "HT-COM-NE-FERRIER",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Ferrier",
+      "geojsonCode": "83149761B20257345934905",
+      "publicId": "hti_commune_ht_ne_ferrier",
+      "path": "/HT/HT-NE/HT-COM-NE-FERRIER",
+      "normalizedName": "ferrier",
+      "shapeId": "83149761B20257345934905",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.7695553,
+        "latitude": 19.6410084
+      }
+    },
+    {
+      "name": "Perches",
+      "code": "HT-COM-NE-PERCHES",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Perches",
+      "geojsonCode": "83149761B90628182724838",
+      "publicId": "hti_commune_ht_ne_perches",
+      "path": "/HT/HT-NE/HT-COM-NE-PERCHES",
+      "normalizedName": "perches",
+      "shapeId": "83149761B90628182724838",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.9346836,
+        "latitude": 19.5178922
+      }
+    },
+    {
+      "name": "Ouanaminthe",
+      "code": "HT-COM-NE-OUANAMINTHE",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Ouanaminthe",
+      "geojsonCode": "83149761B33151674304397",
+      "publicId": "hti_commune_ht_ne_ouanaminthe",
+      "path": "/HT/HT-NE/HT-COM-NE-OUANAMINTHE",
+      "normalizedName": "ouanaminthe",
+      "shapeId": "83149761B33151674304397",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.7731455,
+        "latitude": 19.5038872
+      }
+    },
+    {
+      "name": "Capotille",
+      "code": "HT-COM-NE-CAPOTILLE",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Capotille",
+      "geojsonCode": "83149761B9152727407591",
+      "publicId": "hti_commune_ht_ne_capotille",
+      "path": "/HT/HT-NE/HT-COM-NE-CAPOTILLE",
+      "normalizedName": "capotille",
+      "shapeId": "83149761B9152727407591",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.7101594,
+        "latitude": 19.4412733
+      }
+    },
+    {
+      "name": "Mont Organise",
+      "code": "HT-COM-NE-MONT-ORGANISE",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Mont Organise",
+      "geojsonCode": "83149761B51023509330005",
+      "publicId": "hti_commune_ht_ne_mont_organise",
+      "path": "/HT/HT-NE/HT-COM-NE-MONT-ORGANISE",
+      "normalizedName": "mont organise",
+      "shapeId": "83149761B51023509330005",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.7842184,
+        "latitude": 19.3869566
+      }
+    },
+    {
+      "name": "Trou du Nord",
+      "code": "HT-COM-NE-TROU-DU-NORD",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Trou du Nord",
+      "geojsonCode": "83149761B71099638383176",
+      "publicId": "hti_commune_ht_ne_trou_du_nord",
+      "path": "/HT/HT-NE/HT-COM-NE-TROU-DU-NORD",
+      "normalizedName": "trou du nord",
+      "shapeId": "83149761B71099638383176",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0162373,
+        "latitude": 19.5863195
+      }
+    },
+    {
+      "name": "Sainte-Suzanne",
+      "code": "HT-COM-NE-SAINTE-SUZANNE",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Sainte-Suzanne",
+      "geojsonCode": "83149761B36403348112345",
+      "publicId": "hti_commune_ht_ne_sainte_suzanne",
+      "path": "/HT/HT-NE/HT-COM-NE-SAINTE-SUZANNE",
+      "normalizedName": "sainte suzanne",
+      "shapeId": "83149761B36403348112345",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0635192,
+        "latitude": 19.5218896
+      }
+    },
+    {
+      "name": "Terrier Rouge",
+      "code": "HT-COM-NE-TERRIER-ROUGE",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Terrier Rouge",
+      "geojsonCode": "83149761B15412023736244",
+      "publicId": "hti_commune_ht_ne_terrier_rouge",
+      "path": "/HT/HT-NE/HT-COM-NE-TERRIER-ROUGE",
+      "normalizedName": "terrier rouge",
+      "shapeId": "83149761B15412023736244",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.9261325,
+        "latitude": 19.6374887
+      }
+    },
+    {
+      "name": "Caracol",
+      "code": "HT-COM-NE-CARACOL",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Caracol",
+      "geojsonCode": "83149761B41464218147461",
+      "publicId": "hti_commune_ht_ne_caracol",
+      "path": "/HT/HT-NE/HT-COM-NE-CARACOL",
+      "normalizedName": "caracol",
+      "shapeId": "83149761B41464218147461",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0007653,
+        "latitude": 19.6848264
+      }
+    },
+    {
+      "name": "Vallieres",
+      "code": "HT-COM-NE-VALLIERES",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Vallieres",
+      "geojsonCode": "83149761B2624288912843",
+      "publicId": "hti_commune_ht_ne_vallieres",
+      "path": "/HT/HT-NE/HT-COM-NE-VALLIERES",
+      "normalizedName": "vallieres",
+      "shapeId": "83149761B2624288912843",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.9544997,
+        "latitude": 19.4436224
+      }
+    },
+    {
+      "name": "Carice",
+      "code": "HT-COM-NE-CARICE",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Carice",
+      "geojsonCode": "83149761B59259116856686",
+      "publicId": "hti_commune_ht_ne_carice",
+      "path": "/HT/HT-NE/HT-COM-NE-CARICE",
+      "normalizedName": "carice",
+      "shapeId": "83149761B59259116856686",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.8193532,
+        "latitude": 19.3512513
+      }
+    },
+    {
+      "name": "Mombin Crochu",
+      "code": "HT-COM-NE-MOMBIN-CROCHU",
+      "departmentCode": "HT-NE",
+      "departmentIsoCode": "HT-NE",
+      "geojsonName": "Mombin Crochu",
+      "geojsonCode": "83149761B55934858087279",
+      "publicId": "hti_commune_ht_ne_mombin_crochu",
+      "path": "/HT/HT-NE/HT-COM-NE-MOMBIN-CROCHU",
+      "normalizedName": "mombin crochu",
+      "shapeId": "83149761B55934858087279",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.8917051,
+        "latitude": 19.332297
+      }
+    },
+    {
+      "name": "Gonaives",
+      "code": "HT-COM-AR-GONAIVES",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Gonaives",
+      "geojsonCode": "83149761B43746017548002",
+      "publicId": "hti_commune_ht_ar_gonaives",
+      "path": "/HT/HT-AR/HT-COM-AR-GONAIVES",
+      "normalizedName": "gonaives",
+      "shapeId": "83149761B43746017548002",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.6259785,
+        "latitude": 19.4933509
+      }
+    },
+    {
+      "name": "Ennery",
+      "code": "HT-COM-AR-ENNERY",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Ennery",
+      "geojsonCode": "83149761B93791815865106",
+      "publicId": "hti_commune_ht_ar_ennery",
+      "path": "/HT/HT-AR/HT-COM-AR-ENNERY",
+      "normalizedName": "ennery",
+      "shapeId": "83149761B93791815865106",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4835146,
+        "latitude": 19.4905479
+      }
+    },
+    {
+      "name": "L'Estere",
+      "code": "HT-COM-AR-L-ESTERE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "L'Estere",
+      "geojsonCode": "83149761B30512451698021",
+      "publicId": "hti_commune_ht_ar_l_estere",
+      "path": "/HT/HT-AR/HT-COM-AR-L-ESTERE",
+      "normalizedName": "l estere",
+      "shapeId": "83149761B30512451698021",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.6218405,
+        "latitude": 19.3560732
+      }
+    },
+    {
+      "name": "Gros Morne",
+      "code": "HT-COM-AR-GROS-MORNE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Gros Morne",
+      "geojsonCode": "83149761B57903493155522",
+      "publicId": "hti_commune_ht_ar_gros_morne",
+      "path": "/HT/HT-AR/HT-COM-AR-GROS-MORNE",
+      "normalizedName": "gros morne",
+      "shapeId": "83149761B57903493155522",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.7054812,
+        "latitude": 19.7015644
+      }
+    },
+    {
+      "name": "Terre Neuve",
+      "code": "HT-COM-AR-TERRE-NEUVE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Terre Neuve",
+      "geojsonCode": "83149761B39269980754912",
+      "publicId": "hti_commune_ht_ar_terre_neuve",
+      "path": "/HT/HT-AR/HT-COM-AR-TERRE-NEUVE",
+      "normalizedName": "terre neuve",
+      "shapeId": "83149761B39269980754912",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.7996899,
+        "latitude": 19.6108136
+      }
+    },
+    {
+      "name": "Anse Rouge",
+      "code": "HT-COM-AR-ANSE-ROUGE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Anse Rouge",
+      "geojsonCode": "83149761B12757552518600",
+      "publicId": "hti_commune_ht_ar_anse_rouge",
+      "path": "/HT/HT-AR/HT-COM-AR-ANSE-ROUGE",
+      "normalizedName": "anse rouge",
+      "shapeId": "83149761B12757552518600",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.9592281,
+        "latitude": 19.6432958
+      }
+    },
+    {
+      "name": "Saint-Marc",
+      "code": "HT-COM-AR-SAINT-MARC",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Saint-Marc",
+      "geojsonCode": "83149761B47439114057168",
+      "publicId": "hti_commune_ht_ar_saint_marc",
+      "path": "/HT/HT-AR/HT-COM-AR-SAINT-MARC",
+      "normalizedName": "saint marc",
+      "shapeId": "83149761B47439114057168",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.6819144,
+        "latitude": 19.0983196
+      }
+    },
+    {
+      "name": "Verrettes",
+      "code": "HT-COM-AR-VERRETTES",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Verrettes",
+      "geojsonCode": "83149761B14142608037443",
+      "publicId": "hti_commune_ht_ar_verrettes",
+      "path": "/HT/HT-AR/HT-COM-AR-VERRETTES",
+      "normalizedName": "verrettes",
+      "shapeId": "83149761B14142608037443",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4907152,
+        "latitude": 19.0256639
+      }
+    },
+    {
+      "name": "La Chapelle",
+      "code": "HT-COM-AR-LA-CHAPELLE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "La Chapelle",
+      "geojsonCode": "83149761B33713600317745",
+      "publicId": "hti_commune_ht_ar_la_chapelle",
+      "path": "/HT/HT-AR/HT-COM-AR-LA-CHAPELLE",
+      "normalizedName": "la chapelle",
+      "shapeId": "83149761B33713600317745",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3347833,
+        "latitude": 18.9094139
+      }
+    },
+    {
+      "name": "Dessalines",
+      "code": "HT-COM-AR-DESSALINES",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Dessalines",
+      "geojsonCode": "83149761B46745403288550",
+      "publicId": "hti_commune_ht_ar_dessalines",
+      "path": "/HT/HT-AR/HT-COM-AR-DESSALINES",
+      "normalizedName": "dessalines",
+      "shapeId": "83149761B46745403288550",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.4599202,
+        "latitude": 19.2184677
+      }
+    },
+    {
+      "name": "Petite Riviere de l'Artibonite",
+      "code": "HT-COM-AR-PETITE-RIVIERE-DE-L-ARTIBONITE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Petite Riviere de l'Artibonite",
+      "geojsonCode": "83149761B9566499130663",
+      "publicId": "hti_commune_ht_ar_petite_riviere_de_l_artibonite",
+      "path": "/HT/HT-AR/HT-COM-AR-PETITE-RIVIERE-DE-L-ARTIBONITE",
+      "normalizedName": "petite riviere de l artibonite",
+      "shapeId": "83149761B9566499130663",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3571078,
+        "latitude": 19.0704966
+      }
+    },
+    {
+      "name": "Grande Saline",
+      "code": "HT-COM-AR-GRANDE-SALINE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Grande Saline",
+      "geojsonCode": "83149761B9453060269667",
+      "publicId": "hti_commune_ht_ar_grande_saline",
+      "path": "/HT/HT-AR/HT-COM-AR-GRANDE-SALINE",
+      "normalizedName": "grande saline",
+      "shapeId": "83149761B9453060269667",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.7014006,
+        "latitude": 19.2584916
+      }
+    },
+    {
+      "name": "Desdunes",
+      "code": "HT-COM-AR-DESDUNES",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Desdunes",
+      "geojsonCode": "83149761B19023124504163",
+      "publicId": "hti_commune_ht_ar_desdunes",
+      "path": "/HT/HT-AR/HT-COM-AR-DESDUNES",
+      "normalizedName": "desdunes",
+      "shapeId": "83149761B19023124504163",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.689293,
+        "latitude": 19.3112801
+      }
+    },
+    {
+      "name": "Saint-Michel de l'Attalaye",
+      "code": "HT-COM-AR-SAINT-MICHEL-DE-L-ATTALAYE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Saint-Michel de l'Attalaye",
+      "geojsonCode": "83149761B63767524265916",
+      "publicId": "hti_commune_ht_ar_saint_michel_de_l_attalaye",
+      "path": "/HT/HT-AR/HT-COM-AR-SAINT-MICHEL-DE-L-ATTALAYE",
+      "normalizedName": "saint michel de l attalaye",
+      "shapeId": "83149761B63767524265916",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3387738,
+        "latitude": 19.3420063
+      }
+    },
+    {
+      "name": "Marmelade",
+      "code": "HT-COM-AR-MARMELADE",
+      "departmentCode": "HT-AR",
+      "departmentIsoCode": "HT-AR",
+      "geojsonName": "Marmelade",
+      "geojsonCode": "83149761B36866706422928",
+      "publicId": "hti_commune_ht_ar_marmelade",
+      "path": "/HT/HT-AR/HT-COM-AR-MARMELADE",
+      "normalizedName": "marmelade",
+      "shapeId": "83149761B36866706422928",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.3756624,
+        "latitude": 19.5255862
+      }
+    },
+    {
+      "name": "Hinche",
+      "code": "HT-COM-CE-HINCHE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Hinche",
+      "geojsonCode": "83149761B99570288249334",
+      "publicId": "hti_commune_ht_ce_hinche",
+      "path": "/HT/HT-CE/HT-COM-CE-HINCHE",
+      "normalizedName": "hinche",
+      "shapeId": "83149761B99570288249334",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0190536,
+        "latitude": 19.1444255
+      }
+    },
+    {
+      "name": "Maissade",
+      "code": "HT-COM-CE-MAISSADE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Maissade",
+      "geojsonCode": "83149761B77353664087948",
+      "publicId": "hti_commune_ht_ce_maissade",
+      "path": "/HT/HT-CE/HT-COM-CE-MAISSADE",
+      "normalizedName": "maissade",
+      "shapeId": "83149761B77353664087948",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.1790041,
+        "latitude": 19.1885087
+      }
+    },
+    {
+      "name": "Thomonde",
+      "code": "HT-COM-CE-THOMONDE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Thomonde",
+      "geojsonCode": "83149761B24133388098681",
+      "publicId": "hti_commune_ht_ce_thomonde",
+      "path": "/HT/HT-CE/HT-COM-CE-THOMONDE",
+      "normalizedName": "thomonde",
+      "shapeId": "83149761B24133388098681",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.9924525,
+        "latitude": 18.9995302
+      }
+    },
+    {
+      "name": "Cerca Carvajal",
+      "code": "HT-COM-CE-CERCA-CARVAJAL",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Cerca Carvajal",
+      "geojsonCode": "83149761B80798576003132",
+      "publicId": "hti_commune_ht_ce_cerca_carvajal",
+      "path": "/HT/HT-CE/HT-COM-CE-CERCA-CARVAJAL",
+      "normalizedName": "cerca carvajal",
+      "shapeId": "83149761B80798576003132",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.9396284,
+        "latitude": 19.260376
+      }
+    },
+    {
+      "name": "Mirebalais",
+      "code": "HT-COM-CE-MIREBALAIS",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Mirebalais",
+      "geojsonCode": "83149761B45316034624391",
+      "publicId": "hti_commune_ht_ce_mirebalais",
+      "path": "/HT/HT-CE/HT-COM-CE-MIREBALAIS",
+      "normalizedName": "mirebalais",
+      "shapeId": "83149761B45316034624391",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.0819664,
+        "latitude": 18.7851424
+      }
+    },
+    {
+      "name": "Saut d'Eau",
+      "code": "HT-COM-CE-SAUT-D-EAU",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Saut d'Eau",
+      "geojsonCode": "83149761B92877630221576",
+      "publicId": "hti_commune_ht_ce_saut_d_eau",
+      "path": "/HT/HT-CE/HT-COM-CE-SAUT-D-EAU",
+      "normalizedName": "saut d eau",
+      "shapeId": "83149761B92877630221576",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.2370404,
+        "latitude": 18.8309255
+      }
+    },
+    {
+      "name": "Boucan Carre",
+      "code": "HT-COM-CE-BOUCAN-CARRE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Boucan Carre",
+      "geojsonCode": "83149761B28342975331557",
+      "publicId": "hti_commune_ht_ce_boucan_carre",
+      "path": "/HT/HT-CE/HT-COM-CE-BOUCAN-CARRE",
+      "normalizedName": "boucan carre",
+      "shapeId": "83149761B28342975331557",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.1521831,
+        "latitude": 18.9524077
+      }
+    },
+    {
+      "name": "Lascahobas",
+      "code": "HT-COM-CE-LASCAHOBAS",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Lascahobas",
+      "geojsonCode": "83149761B65752774380466",
+      "publicId": "hti_commune_ht_ce_lascahobas",
+      "path": "/HT/HT-CE/HT-COM-CE-LASCAHOBAS",
+      "normalizedName": "lascahobas",
+      "shapeId": "83149761B65752774380466",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.950699,
+        "latitude": 18.866781
+      }
+    },
+    {
+      "name": "Belladere",
+      "code": "HT-COM-CE-BELLADERE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Belladere",
+      "geojsonCode": "83149761B70648572835835",
+      "publicId": "hti_commune_ht_ce_belladere",
+      "path": "/HT/HT-CE/HT-COM-CE-BELLADERE",
+      "normalizedName": "belladere",
+      "shapeId": "83149761B70648572835835",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.8097481,
+        "latitude": 18.8623204
+      }
+    },
+    {
+      "name": "Savanette",
+      "code": "HT-COM-CE-SAVANETTE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Savanette",
+      "geojsonCode": "83149761B28459715483525",
+      "publicId": "hti_commune_ht_ce_savanette",
+      "path": "/HT/HT-CE/HT-COM-CE-SAVANETTE",
+      "normalizedName": "savanette",
+      "shapeId": "83149761B28459715483525",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.8414127,
+        "latitude": 18.7463746
+      }
+    },
+    {
+      "name": "Cerca la Source",
+      "code": "HT-COM-CE-CERCA-LA-SOURCE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Cerca la Source",
+      "geojsonCode": "83149761B1686946804741",
+      "publicId": "hti_commune_ht_ce_cerca_la_source",
+      "path": "/HT/HT-CE/HT-COM-CE-CERCA-LA-SOURCE",
+      "normalizedName": "cerca la source",
+      "shapeId": "83149761B1686946804741",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.7421204,
+        "latitude": 19.1853766
+      }
+    },
+    {
+      "name": "Thomassique",
+      "code": "HT-COM-CE-THOMASSIQUE",
+      "departmentCode": "HT-CE",
+      "departmentIsoCode": "HT-CE",
+      "geojsonName": "Thomassique",
+      "geojsonCode": "83149761B87880064689574",
+      "publicId": "hti_commune_ht_ce_thomassique",
+      "path": "/HT/HT-CE/HT-COM-CE-THOMASSIQUE",
+      "normalizedName": "thomassique",
+      "shapeId": "83149761B87880064689574",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -71.825234,
+        "latitude": 19.0745302
+      }
+    },
+    {
+      "name": "Les Cayes",
+      "code": "HT-COM-SD-LES-CAYES",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Les Cayes",
+      "geojsonCode": "83149761B36622104387915",
+      "publicId": "hti_commune_ht_sd_les_cayes",
+      "path": "/HT/HT-SD/HT-COM-SD-LES-CAYES",
+      "normalizedName": "les cayes",
+      "shapeId": "83149761B36622104387915",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.7648686,
+        "latitude": 18.2627799
+      }
+    },
+    {
+      "name": "Torbeck",
+      "code": "HT-COM-SD-TORBECK",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Torbeck",
+      "geojsonCode": "83149761B30986226091864",
+      "publicId": "hti_commune_ht_sd_torbeck",
+      "path": "/HT/HT-SD/HT-COM-SD-TORBECK",
+      "normalizedName": "torbeck",
+      "shapeId": "83149761B30986226091864",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.8832366,
+        "latitude": 18.2455305
+      }
+    },
+    {
+      "name": "Chantal",
+      "code": "HT-COM-SD-CHANTAL",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Chantal",
+      "geojsonCode": "83149761B59805152057613",
+      "publicId": "hti_commune_ht_sd_chantal",
+      "path": "/HT/HT-SD/HT-COM-SD-CHANTAL",
+      "normalizedName": "chantal",
+      "shapeId": "83149761B59805152057613",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.9656809,
+        "latitude": 18.2803522
+      }
+    },
+    {
+      "name": "Camp Perrin",
+      "code": "HT-COM-SD-CAMP-PERRIN",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Camp Perrin",
+      "geojsonCode": "83149761B49056459391282",
+      "publicId": "hti_commune_ht_sd_camp_perrin",
+      "path": "/HT/HT-SD/HT-COM-SD-CAMP-PERRIN",
+      "normalizedName": "camp perrin",
+      "shapeId": "83149761B49056459391282",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.8613005,
+        "latitude": 18.3476205
+      }
+    },
+    {
+      "name": "Maniche",
+      "code": "HT-COM-SD-MANICHE",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Maniche",
+      "geojsonCode": "83149761B42142304612775",
+      "publicId": "hti_commune_ht_sd_maniche",
+      "path": "/HT/HT-SD/HT-COM-SD-MANICHE",
+      "normalizedName": "maniche",
+      "shapeId": "83149761B42142304612775",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.7516057,
+        "latitude": 18.3726533
+      }
+    },
+    {
+      "name": "Ile a Vache",
+      "code": "HT-COM-SD-ILE-A-VACHE",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Ile a Vache",
+      "geojsonCode": "83149761B70861901673915",
+      "publicId": "hti_commune_ht_sd_ile_a_vache",
+      "path": "/HT/HT-SD/HT-COM-SD-ILE-A-VACHE",
+      "normalizedName": "ile a vache",
+      "shapeId": "83149761B70861901673915",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.6356299,
+        "latitude": 18.0765281
+      }
+    },
+    {
+      "name": "Port Salut",
+      "code": "HT-COM-SD-PORT-SALUT",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Port Salut",
+      "geojsonCode": "83149761B50838830166651",
+      "publicId": "hti_commune_ht_sd_port_salut",
+      "path": "/HT/HT-SD/HT-COM-SD-PORT-SALUT",
+      "normalizedName": "port salut",
+      "shapeId": "83149761B50838830166651",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.9060562,
+        "latitude": 18.1162854
+      }
+    },
+    {
+      "name": "Saint-Jean du Sud",
+      "code": "HT-COM-SD-SAINT-JEAN-DU-SUD",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Saint-Jean du Sud",
+      "geojsonCode": "83149761B61489521294561",
+      "publicId": "hti_commune_ht_sd_saint_jean_du_sud",
+      "path": "/HT/HT-SD/HT-COM-SD-SAINT-JEAN-DU-SUD",
+      "normalizedName": "saint jean du sud",
+      "shapeId": "83149761B61489521294561",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.838982,
+        "latitude": 18.0593775
+      }
+    },
+    {
+      "name": "Arniquet",
+      "code": "HT-COM-SD-ARNIQUET",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Arniquet",
+      "geojsonCode": "83149761B21261299274035",
+      "publicId": "hti_commune_ht_sd_arniquet",
+      "path": "/HT/HT-SD/HT-COM-SD-ARNIQUET",
+      "normalizedName": "arniquet",
+      "shapeId": "83149761B21261299274035",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.8927231,
+        "latitude": 18.1415407
+      }
+    },
+    {
+      "name": "Aquin",
+      "code": "HT-COM-SD-AQUIN",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Aquin",
+      "geojsonCode": "83149761B74059786142833",
+      "publicId": "hti_commune_ht_sd_aquin",
+      "path": "/HT/HT-SD/HT-COM-SD-AQUIN",
+      "normalizedName": "aquin",
+      "shapeId": "83149761B74059786142833",
+      "shapeType": "ADM3",
+      "geometryType": "MultiPolygon",
+      "representativePoint": {
+        "longitude": -73.2178169,
+        "latitude": 18.2810883
+      }
+    },
+    {
+      "name": "Saint-Louis du Sud",
+      "code": "HT-COM-SD-SAINT-LOUIS-DU-SUD",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Saint-Louis du Sud",
+      "geojsonCode": "83149761B62574943160418",
+      "publicId": "hti_commune_ht_sd_saint_louis_du_sud",
+      "path": "/HT/HT-SD/HT-COM-SD-SAINT-LOUIS-DU-SUD",
+      "normalizedName": "saint louis du sud",
+      "shapeId": "83149761B62574943160418",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.5311709,
+        "latitude": 18.2823464
+      }
+    },
+    {
+      "name": "Cavaillon",
+      "code": "HT-COM-SD-CAVAILLON",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Cavaillon",
+      "geojsonCode": "83149761B98441254648958",
+      "publicId": "hti_commune_ht_sd_cavaillon",
+      "path": "/HT/HT-SD/HT-COM-SD-CAVAILLON",
+      "normalizedName": "cavaillon",
+      "shapeId": "83149761B98441254648958",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.6326338,
+        "latitude": 18.342411
+      }
+    },
+    {
+      "name": "Coteaux",
+      "code": "HT-COM-SD-COTEAUX",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Coteaux",
+      "geojsonCode": "83149761B76672528839585",
+      "publicId": "hti_commune_ht_sd_coteaux",
+      "path": "/HT/HT-SD/HT-COM-SD-COTEAUX",
+      "normalizedName": "coteaux",
+      "shapeId": "83149761B76672528839585",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.0260538,
+        "latitude": 18.2398829
+      }
+    },
+    {
+      "name": "Port a Piment",
+      "code": "HT-COM-SD-PORT-A-PIMENT",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Port a Piment",
+      "geojsonCode": "83149761B55568138520063",
+      "publicId": "hti_commune_ht_sd_port_a_piment",
+      "path": "/HT/HT-SD/HT-COM-SD-PORT-A-PIMENT",
+      "normalizedName": "port a piment",
+      "shapeId": "83149761B55568138520063",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.0663756,
+        "latitude": 18.2891798
+      }
+    },
+    {
+      "name": "Roche a Bateaux",
+      "code": "HT-COM-SD-ROCHE-A-BATEAUX",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Roche a Bateaux",
+      "geojsonCode": "83149761B22759595650925",
+      "publicId": "hti_commune_ht_sd_roche_a_bateaux",
+      "path": "/HT/HT-SD/HT-COM-SD-ROCHE-A-BATEAUX",
+      "normalizedName": "roche a bateaux",
+      "shapeId": "83149761B22759595650925",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.9738137,
+        "latitude": 18.1906837
+      }
+    },
+    {
+      "name": "Chardonnieres",
+      "code": "HT-COM-SD-CHARDONNIERES",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Chardonnieres",
+      "geojsonCode": "83149761B50422349529099",
+      "publicId": "hti_commune_ht_sd_chardonnieres",
+      "path": "/HT/HT-SD/HT-COM-SD-CHARDONNIERES",
+      "normalizedName": "chardonnieres",
+      "shapeId": "83149761B50422349529099",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.1026561,
+        "latitude": 18.3326415
+      }
+    },
+    {
+      "name": "Les Anglais",
+      "code": "HT-COM-SD-LES-ANGLAIS",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Les Anglais",
+      "geojsonCode": "83149761B75159937539117",
+      "publicId": "hti_commune_ht_sd_les_anglais",
+      "path": "/HT/HT-SD/HT-COM-SD-LES-ANGLAIS",
+      "normalizedName": "les anglais",
+      "shapeId": "83149761B75159937539117",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.1762446,
+        "latitude": 18.3516774
+      }
+    },
+    {
+      "name": "Tiburon",
+      "code": "HT-COM-SD-TIBURON",
+      "departmentCode": "HT-SD",
+      "departmentIsoCode": "HT-SD",
+      "geojsonName": "Tiburon",
+      "geojsonCode": "83149761B16985791111427",
+      "publicId": "hti_commune_ht_sd_tiburon",
+      "path": "/HT/HT-SD/HT-COM-SD-TIBURON",
+      "normalizedName": "tiburon",
+      "shapeId": "83149761B16985791111427",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.3191803,
+        "latitude": 18.3378583
+      }
+    },
+    {
+      "name": "Jeremie",
+      "code": "HT-COM-GA-JEREMIE",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Jeremie",
+      "geojsonCode": "83149761B15425145801963",
+      "publicId": "hti_commune_ht_ga_jeremie",
+      "path": "/HT/HT-GA/HT-COM-GA-JEREMIE",
+      "normalizedName": "jeremie",
+      "shapeId": "83149761B15425145801963",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.1611816,
+        "latitude": 18.5334111
+      }
+    },
+    {
+      "name": "Abricots",
+      "code": "HT-COM-GA-ABRICOTS",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Abricots",
+      "geojsonCode": "83149761B60343301281497",
+      "publicId": "hti_commune_ht_ga_abricots",
+      "path": "/HT/HT-GA/HT-COM-GA-ABRICOTS",
+      "normalizedName": "abricots",
+      "shapeId": "83149761B60343301281497",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.3153815,
+        "latitude": 18.6148917
+      }
+    },
+    {
+      "name": "Bonbon",
+      "code": "HT-COM-GA-BONBON",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Bonbon",
+      "geojsonCode": "83149761B84175290131068",
+      "publicId": "hti_commune_ht_ga_bonbon",
+      "path": "/HT/HT-GA/HT-COM-GA-BONBON",
+      "normalizedName": "bonbon",
+      "shapeId": "83149761B84175290131068",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.2374779,
+        "latitude": 18.6305757
+      }
+    },
+    {
+      "name": "Moron",
+      "code": "HT-COM-GA-MORON",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Moron",
+      "geojsonCode": "83149761B52929419116450",
+      "publicId": "hti_commune_ht_ga_moron",
+      "path": "/HT/HT-GA/HT-COM-GA-MORON",
+      "normalizedName": "moron",
+      "shapeId": "83149761B52929419116450",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.2653441,
+        "latitude": 18.4772167
+      }
+    },
+    {
+      "name": "Chambellan",
+      "code": "HT-COM-GA-CHAMBELLAN",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Chambellan",
+      "geojsonCode": "83149761B59961403666140",
+      "publicId": "hti_commune_ht_ga_chambellan",
+      "path": "/HT/HT-GA/HT-COM-GA-CHAMBELLAN",
+      "normalizedName": "chambellan",
+      "shapeId": "83149761B59961403666140",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.3311644,
+        "latitude": 18.5173041
+      }
+    },
+    {
+      "name": "Anse d'Hainault",
+      "code": "HT-COM-GA-ANSE-D-HAINAULT",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Anse d'Hainault",
+      "geojsonCode": "83149761B96943503471876",
+      "publicId": "hti_commune_ht_ga_anse_d_hainault",
+      "path": "/HT/HT-GA/HT-COM-GA-ANSE-D-HAINAULT",
+      "normalizedName": "anse d hainault",
+      "shapeId": "83149761B96943503471876",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.3986542,
+        "latitude": 18.460217
+      }
+    },
+    {
+      "name": "Dame Marie",
+      "code": "HT-COM-GA-DAME-MARIE",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Dame Marie",
+      "geojsonCode": "83149761B2256938773335",
+      "publicId": "hti_commune_ht_ga_dame_marie",
+      "path": "/HT/HT-GA/HT-COM-GA-DAME-MARIE",
+      "normalizedName": "dame marie",
+      "shapeId": "83149761B2256938773335",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.3953636,
+        "latitude": 18.5574668
+      }
+    },
+    {
+      "name": "Les Irois",
+      "code": "HT-COM-GA-LES-IROIS",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Les Irois",
+      "geojsonCode": "83149761B53912580987495",
+      "publicId": "hti_commune_ht_ga_les_irois",
+      "path": "/HT/HT-GA/HT-COM-GA-LES-IROIS",
+      "normalizedName": "les irois",
+      "shapeId": "83149761B53912580987495",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.3815944,
+        "latitude": 18.3975105
+      }
+    },
+    {
+      "name": "Corail",
+      "code": "HT-COM-GA-CORAIL",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Corail",
+      "geojsonCode": "83149761B22935383607966",
+      "publicId": "hti_commune_ht_ga_corail",
+      "path": "/HT/HT-GA/HT-COM-GA-CORAIL",
+      "normalizedName": "corail",
+      "shapeId": "83149761B22935383607966",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.9107334,
+        "latitude": 18.5370549
+      }
+    },
+    {
+      "name": "Roseaux",
+      "code": "HT-COM-GA-ROSEAUX",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Roseaux",
+      "geojsonCode": "83149761B22397268963530",
+      "publicId": "hti_commune_ht_ga_roseaux",
+      "path": "/HT/HT-GA/HT-COM-GA-ROSEAUX",
+      "normalizedName": "roseaux",
+      "shapeId": "83149761B22397268963530",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -74.0405429,
+        "latitude": 18.5154951
+      }
+    },
+    {
+      "name": "Beaumont",
+      "code": "HT-COM-GA-BEAUMONT",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Beaumont",
+      "geojsonCode": "83149761B90481420708161",
+      "publicId": "hti_commune_ht_ga_beaumont",
+      "path": "/HT/HT-GA/HT-COM-GA-BEAUMONT",
+      "normalizedName": "beaumont",
+      "shapeId": "83149761B90481420708161",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.9819347,
+        "latitude": 18.4458799
+      }
+    },
+    {
+      "name": "Pestel",
+      "code": "HT-COM-GA-PESTEL",
+      "departmentCode": "HT-GA",
+      "departmentIsoCode": "HT-GA",
+      "geojsonName": "Pestel",
+      "geojsonCode": "83149761B67073126107273",
+      "publicId": "hti_commune_ht_ga_pestel",
+      "path": "/HT/HT-GA/HT-COM-GA-PESTEL",
+      "normalizedName": "pestel",
+      "shapeId": "83149761B67073126107273",
+      "shapeType": "ADM3",
+      "geometryType": "MultiPolygon",
+      "representativePoint": {
+        "longitude": -73.8400334,
+        "latitude": 18.4688463
+      }
+    },
+    {
+      "name": "Port de Paix",
+      "code": "HT-COM-NO-PORT-DE-PAIX",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Port de Paix",
+      "geojsonCode": "83149761B38205509711348",
+      "publicId": "hti_commune_ht_no_port_de_paix",
+      "path": "/HT/HT-NO/HT-COM-NO-PORT-DE-PAIX",
+      "normalizedName": "port de paix",
+      "shapeId": "83149761B38205509711348",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.9189306,
+        "latitude": 19.8528969
+      }
+    },
+    {
+      "name": "La Tortue",
+      "code": "HT-COM-NO-LA-TORTUE",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "La Tortue",
+      "geojsonCode": "83149761B26537064966558",
+      "publicId": "hti_commune_ht_no_la_tortue",
+      "path": "/HT/HT-NO/HT-COM-NO-LA-TORTUE",
+      "normalizedName": "la tortue",
+      "shapeId": "83149761B26537064966558",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.7901395,
+        "latitude": 20.0463228
+      }
+    },
+    {
+      "name": "Bassin Bleu",
+      "code": "HT-COM-NO-BASSIN-BLEU",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Bassin Bleu",
+      "geojsonCode": "83149761B97851672516435",
+      "publicId": "hti_commune_ht_no_bassin_bleu",
+      "path": "/HT/HT-NO/HT-COM-NO-BASSIN-BLEU",
+      "normalizedName": "bassin bleu",
+      "shapeId": "83149761B97851672516435",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.8412016,
+        "latitude": 19.7859588
+      }
+    },
+    {
+      "name": "Chansolme",
+      "code": "HT-COM-NO-CHANSOLME",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Chansolme",
+      "geojsonCode": "83149761B87109931918349",
+      "publicId": "hti_commune_ht_no_chansolme",
+      "path": "/HT/HT-NO/HT-COM-NO-CHANSOLME",
+      "normalizedName": "chansolme",
+      "shapeId": "83149761B87109931918349",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.8115887,
+        "latitude": 19.8580264
+      }
+    },
+    {
+      "name": "Saint-Louis du Nord",
+      "code": "HT-COM-NO-SAINT-LOUIS-DU-NORD",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Saint-Louis du Nord",
+      "geojsonCode": "83149761B2986827697640",
+      "publicId": "hti_commune_ht_no_saint_louis_du_nord",
+      "path": "/HT/HT-NO/HT-COM-NO-SAINT-LOUIS-DU-NORD",
+      "normalizedName": "saint louis du nord",
+      "shapeId": "83149761B2986827697640",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.7102248,
+        "latitude": 19.8806479
+      }
+    },
+    {
+      "name": "Anse a Foleur",
+      "code": "HT-COM-NO-ANSE-A-FOLEUR",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Anse a Foleur",
+      "geojsonCode": "83149761B79901854868529",
+      "publicId": "hti_commune_ht_no_anse_a_foleur",
+      "path": "/HT/HT-NO/HT-COM-NO-ANSE-A-FOLEUR",
+      "normalizedName": "anse a foleur",
+      "shapeId": "83149761B79901854868529",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -72.6252652,
+        "latitude": 19.862174
+      }
+    },
+    {
+      "name": "Mole Saint-Nicolas",
+      "code": "HT-COM-NO-MOLE-SAINT-NICOLAS",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Mole Saint-Nicolas",
+      "geojsonCode": "83149761B75317235792926",
+      "publicId": "hti_commune_ht_no_mole_saint_nicolas",
+      "path": "/HT/HT-NO/HT-COM-NO-MOLE-SAINT-NICOLAS",
+      "normalizedName": "mole saint nicolas",
+      "shapeId": "83149761B75317235792926",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.3467652,
+        "latitude": 19.7781609
+      }
+    },
+    {
+      "name": "Baie de Henne",
+      "code": "HT-COM-NO-BAIE-DE-HENNE",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Baie de Henne",
+      "geojsonCode": "83149761B82598997030247",
+      "publicId": "hti_commune_ht_no_baie_de_henne",
+      "path": "/HT/HT-NO/HT-COM-NO-BAIE-DE-HENNE",
+      "normalizedName": "baie de henne",
+      "shapeId": "83149761B82598997030247",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.2001916,
+        "latitude": 19.6931321
+      }
+    },
+    {
+      "name": "Bombardopolis",
+      "code": "HT-COM-NO-BOMBARDOPOLIS",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Bombardopolis",
+      "geojsonCode": "83149761B22848613704693",
+      "publicId": "hti_commune_ht_no_bombardopolis",
+      "path": "/HT/HT-NO/HT-COM-NO-BOMBARDOPOLIS",
+      "normalizedName": "bombardopolis",
+      "shapeId": "83149761B22848613704693",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.3475443,
+        "latitude": 19.691518
+      }
+    },
+    {
+      "name": "Jean Rabel",
+      "code": "HT-COM-NO-JEAN-RABEL",
+      "departmentCode": "HT-NO",
+      "departmentIsoCode": "HT-NO",
+      "geojsonName": "Jean Rabel",
+      "geojsonCode": "83149761B79090029552039",
+      "publicId": "hti_commune_ht_no_jean_rabel",
+      "path": "/HT/HT-NO/HT-COM-NO-JEAN-RABEL",
+      "normalizedName": "jean rabel",
+      "shapeId": "83149761B79090029552039",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.1276925,
+        "latitude": 19.8303595
+      }
+    },
+    {
+      "name": "Miragoane",
+      "code": "HT-COM-NI-MIRAGOANE",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Miragoane",
+      "geojsonCode": "83149761B7804779791016",
+      "publicId": "hti_commune_ht_ni_miragoane",
+      "path": "/HT/HT-NI/HT-COM-NI-MIRAGOANE",
+      "normalizedName": "miragoane",
+      "shapeId": "83149761B7804779791016",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.0625197,
+        "latitude": 18.3598473
+      }
+    },
+    {
+      "name": "Paillant",
+      "code": "HT-COM-NI-PAILLANT",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Paillant",
+      "geojsonCode": "83149761B36283375685280",
+      "publicId": "hti_commune_ht_ni_paillant",
+      "path": "/HT/HT-NI/HT-COM-NI-PAILLANT",
+      "normalizedName": "paillant",
+      "shapeId": "83149761B36283375685280",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.1699219,
+        "latitude": 18.4140511
+      }
+    },
+    {
+      "name": "Petite Riviere de Nippes",
+      "code": "HT-COM-NI-PETITE-RIVIERE-DE-NIPPES",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Petite Riviere de Nippes",
+      "geojsonCode": "83149761B18875364117626",
+      "publicId": "hti_commune_ht_ni_petite_riviere_de_nippes",
+      "path": "/HT/HT-NI/HT-COM-NI-PETITE-RIVIERE-DE-NIPPES",
+      "normalizedName": "petite riviere de nippes",
+      "shapeId": "83149761B18875364117626",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.2003984,
+        "latitude": 18.4556707
+      }
+    },
+    {
+      "name": "Fonds des Negres",
+      "code": "HT-COM-NI-FONDS-DES-NEGRES",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Fonds des Negres",
+      "geojsonCode": "83149761B28398227437593",
+      "publicId": "hti_commune_ht_ni_fonds_des_negres",
+      "path": "/HT/HT-NI/HT-COM-NI-FONDS-DES-NEGRES",
+      "normalizedName": "fonds des negres",
+      "shapeId": "83149761B28398227437593",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.25053,
+        "latitude": 18.3815507
+      }
+    },
+    {
+      "name": "Baraderes",
+      "code": "HT-COM-NI-BARADERES",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Baraderes",
+      "geojsonCode": "83149761B55463234479790",
+      "publicId": "hti_commune_ht_ni_baraderes",
+      "path": "/HT/HT-NI/HT-COM-NI-BARADERES",
+      "normalizedName": "baraderes",
+      "shapeId": "83149761B55463234479790",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.690834,
+        "latitude": 18.4754269
+      }
+    },
+    {
+      "name": "Grand Boucan",
+      "code": "HT-COM-NI-GRAND-BOUCAN",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Grand Boucan",
+      "geojsonCode": "83149761B28332094025239",
+      "publicId": "hti_commune_ht_ni_grand_boucan",
+      "path": "/HT/HT-NI/HT-COM-NI-GRAND-BOUCAN",
+      "normalizedName": "grand boucan",
+      "shapeId": "83149761B28332094025239",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.6428808,
+        "latitude": 18.5681259
+      }
+    },
+    {
+      "name": "Anse a Veau",
+      "code": "HT-COM-NI-ANSE-A-VEAU",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Anse a Veau",
+      "geojsonCode": "83149761B3921299045535",
+      "publicId": "hti_commune_ht_ni_anse_a_veau",
+      "path": "/HT/HT-NI/HT-COM-NI-ANSE-A-VEAU",
+      "normalizedName": "anse a veau",
+      "shapeId": "83149761B3921299045535",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.334405,
+        "latitude": 18.4669665
+      }
+    },
+    {
+      "name": "Arnaud",
+      "code": "HT-COM-NI-ARNAUD",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Arnaud",
+      "geojsonCode": "83149761B1950765895483",
+      "publicId": "hti_commune_ht_ni_arnaud",
+      "path": "/HT/HT-NI/HT-COM-NI-ARNAUD",
+      "normalizedName": "arnaud",
+      "shapeId": "83149761B1950765895483",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.3861448,
+        "latitude": 18.4490089
+      }
+    },
+    {
+      "name": "L'Asile",
+      "code": "HT-COM-NI-L-ASILE",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "L'Asile",
+      "geojsonCode": "83149761B84784109443613",
+      "publicId": "hti_commune_ht_ni_l_asile",
+      "path": "/HT/HT-NI/HT-COM-NI-L-ASILE",
+      "normalizedName": "l asile",
+      "shapeId": "83149761B84784109443613",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.4359321,
+        "latitude": 18.3769374
+      }
+    },
+    {
+      "name": "Petit Trou de Nippes",
+      "code": "HT-COM-NI-PETIT-TROU-DE-NIPPES",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Petit Trou de Nippes",
+      "geojsonCode": "83149761B51067351870170",
+      "publicId": "hti_commune_ht_ni_petit_trou_de_nippes",
+      "path": "/HT/HT-NI/HT-COM-NI-PETIT-TROU-DE-NIPPES",
+      "normalizedName": "petit trou de nippes",
+      "shapeId": "83149761B51067351870170",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.4962406,
+        "latitude": 18.4681686
+      }
+    },
+    {
+      "name": "Plaisance du Sud",
+      "code": "HT-COM-NI-PLAISANCE-DU-SUD",
+      "departmentCode": "HT-NI",
+      "departmentIsoCode": "HT-NI",
+      "geojsonName": "Plaisance du Sud",
+      "geojsonCode": "83149761B66090671687686",
+      "publicId": "hti_commune_ht_ni_plaisance_du_sud",
+      "path": "/HT/HT-NI/HT-COM-NI-PLAISANCE-DU-SUD",
+      "normalizedName": "plaisance du sud",
+      "shapeId": "83149761B66090671687686",
+      "shapeType": "ADM3",
+      "geometryType": "Polygon",
+      "representativePoint": {
+        "longitude": -73.5658523,
+        "latitude": 18.4299934
+      }
+    }
+  ],
+  "sections": [],
+  "anomalies": {
+    "unmappedCommunes": [],
+    "ambiguousCommunes": [],
+    "duplicateCommuneNames": [],
+    "duplicateCommuneCodes": []
+  }
+}
